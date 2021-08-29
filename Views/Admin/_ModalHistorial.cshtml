@@ -1,0 +1,31 @@
+﻿@model IEnumerable<netCoreNew.Models.HistorialCompra>
+
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th>Fecha</th>
+            <th>Responsable</th>
+            <th>Propiedad</th>
+            <th>Cambio</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="text-center">
+                <td scope="row">
+                    @item.Fecha.ToString("dd/MM/yyyy HH:mm")
+                </td>
+                <td>
+                    @item.Responsable
+                </td>
+                <td>
+                    @item.Propiedad
+                </td>
+                <td>
+                    @item.Anterior => @item.Nuevo
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

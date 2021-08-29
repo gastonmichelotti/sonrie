@@ -1,0 +1,152 @@
+﻿@{
+    Layout = "~/Views/Shared/Admin/LayoutLogin.cshtml";
+}
+
+@model netCoreNew.ViewModels.LoginVM
+
+@{
+
+}
+
+<div class="kt-grid kt-grid--ver kt-grid--root tdp">
+
+    <div class="kt-grid kt-grid--hor kt-grid--root  kt-login kt-login--v1" id="kt_login">
+
+        <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--desktop kt-grid--ver-desktop kt-grid--hor-tablet-and-mobile">
+
+            <div class="kt-grid__item kt-grid__item--order-tablet-and-mobile-2 kt-grid kt-grid--hor kt-login__aside" style="background-image: url(../../bg.jpg);">
+                <div class="kt-grid__item">
+                    <a href="#" class="kt-login__logo">
+                        <img src="../logoLogin.png?v=1.0" style="width: 100%; object-fit: contain;">
+                    </a>
+                </div>
+                <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver">
+                    <div class="kt-grid__item kt-grid__item--middle">
+                        <h3 class="kt-login__title">
+                            Bienvenido a @netCoreNew.Enum.Valores.Nombre
+                        </h3>
+                        <h4 class="kt-login__subtitle"></h4>
+                    </div>
+                </div>
+                <div class="kt-grid__item">
+                    <div class="kt-login__info">
+                        <div class="kt-login__copyright">
+                            &copy 2020 @netCoreNew.Enum.Valores.Nombre
+                        </div>
+                        <div class="kt-login__menu">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kt-grid__item kt-grid__item--fluid  kt-grid__item--order-tablet-and-mobile-1 kt-login__wrapper">
+
+                <div class="kt-login__head" style="position:relative;">
+
+
+                </div>
+
+                <div class="kt-login__body">
+
+                    <div class="kt-login__form">
+
+                        <div id="partialLogin" class="partialDiv">
+
+                            <partial name="~/Views/Home/_Login.cshtml" model="new netCoreNew.ViewModels.LoginVM()" />
+
+                        </div>
+ 
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles{
+
+}
+
+@section Scripts{
+
+    <script>
+        "use strict";
+
+        var formError = function (btn, message) {
+            $(".input-validation-error").addClass("is-invalid");
+            $(".input-validation-error").first().focus();
+            errorMessage(message);
+            btn.attr('disabled', false);
+        };
+
+        var formSubmit = function (btn, url) {
+
+            btn.attr('disabled', true);
+
+            var form = btn.closest("form");
+            $.validator.unobtrusive.parse(form[0]);
+            var _data = new FormData(form[0]);
+
+            if (!form.valid()) {
+                formError(btn, "Algunos datos no son correctos");
+                return;
+            }
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: _data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.success) {
+                        successMessage(result.message);
+                        location.replace(result.redirect);
+                    }
+                    else {
+                        formError(btn, result.message);
+                    }
+                    return;
+                },
+                error: function (xhr, textStatus) {
+                    formError(btn, xhr.responseText);
+                    return;
+                }
+            });
+        };
+
+        var FormSubmit = function () {
+
+            var handleFormSubmit = function () {
+
+                $('#submitLogin').click(function (e) {
+                    formSubmit($(this), "/Home/Login");
+                });
+
+            };
+
+            var handleButtons = function () {
+      
+            };
+
+            return {
+                init: function () {
+                    handleFormSubmit();
+                    handleButtons();
+                }
+            };
+        }();
+
+        jQuery(document).ready(function () {
+            FormSubmit.init();
+        });
+
+    </script>
+
+}

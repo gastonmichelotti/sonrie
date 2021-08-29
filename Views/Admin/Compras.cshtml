@@ -1,0 +1,649 @@
+﻿@{
+    var model = new netCoreNew.ViewModels.BreadcrumVM
+    {
+        Back = "",
+        UrlBack = "",
+        Current = "Listado",
+        UrlCurrent = "/Admin/Compras"
+    };
+}
+
+<partial name="~/Views/Shared/Admin/_SubHeader.cshtml" model="model" />
+
+<div class="kt-content  kt-grid__item kt-grid__item--fluid" id="kt_content">
+
+    <div class="kt-portlet">
+
+        <div class="kt-portlet__head kt-portlet__head--lg">
+            <div class="kt-portlet__head-label">
+                <h3 class="kt-portlet__head-title">
+                    @ViewBag.Title
+                </h3>
+            </div>
+            <div class="kt-portlet__head-toolbar">
+
+                <div class="kt-portlet__head-wrapper">
+
+                    <div class="dropdown dropdown-inline">
+                        <div class="input-group">
+                            <input type="text" class="form-control text-center" id="fecha" name="fecha" placeholder="Selecciona una fecha" required value="@ViewBag.Fecha">
+                            <div class="input-group-append">
+                                <button class="btn btn-info btn-icon-sm" type="button" onclick="ActualizarTabla()">Buscar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown dropdown-inline ml-2">
+                        <button type="button" class="btn btn-brand btn-icon-sm" data-toggle="modal" data-target="#modal_nuevo" id="btn_crear">
+                            <i class="flaticon2-plus"></i> Nuevo
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="kt-portlet__head kt-portlet__head--lg">
+            <div class="kt-portlet__head-toolbar">
+
+                <div class="kt-portlet__head-wrapper">
+
+                    <div class="dropdown dropdown-inline ml-2">
+                        <select asp-items="@ViewBag.IdEstado" id="IdEstadoMenu" class="form-control kt-selectpicker" data-live-search="true" title="Estado" data-width="180px   ">
+                            <option selected value="">Todos los estados</option>
+                        </select>
+                    </div>
+
+                    <div class="dropdown dropdown-inline ml-2">
+                        <select asp-items="@ViewBag.IdArea" id="IdAreaMenu" class="form-control kt-selectpicker" data-live-search="true" title="Area" data-width="180px">
+                            <option selected value="">Todas las areas</option>
+                        </select>
+                    </div>
+
+                    <div class="dropdown dropdown-inline ml-2">
+                        <select asp-items="@ViewBag.IdProveedor" id="IdProveedorMenu" class="form-control kt-selectpicker" data-live-search="true" title="Proveedor" data-width="180px">
+                            <option selected value="">Todos los proveedores</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="kt-portlet__body">
+
+            <table class="table table-striped table-bordered table-hover" id="kt_table_1">
+                <thead>
+                    <tr>
+                        <th class="all">Id</th>
+                        <th class="all">Fecha</th>
+                        <th class="all">Entrega</th>
+                        <th class="">Solicitante</th>
+                        <th class="">Area</th>
+                        <th class="">Proveedor</th>
+                        <th class="all">Total</th>
+                        <th class="">Estado</th>
+                        <th class="">Aprobacion</th>
+                        <th class="all">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tabla-partial"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles{
+
+    <style>
+        .divResumen {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #5d78ff;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-menu .inner.show {
+            height: 200px !important;
+        }
+    </style>
+
+}
+
+@section Scripts{
+
+    <script src="~/admin/js/InitDatatable.js"></script>
+
+    <script>
+
+        $("#menu_compras").addClass("kt-menu__item--active");
+        $("#menu_ordenes").addClass("kt-menu__item--active");
+
+        "use strict";
+
+        var entregaVisible = '@(User.IsInRole("Gerencia General") || User.IsInRole("Gerencia Operaciones") || User.IsInRole("Administrador"))' == 'False';
+        var cambiarEstado = '@(User.IsInRole("Gerencia General") || User.IsInRole("Gerencia Operaciones") || User.IsInRole("Administrador"))' == 'True';
+
+        var columnaEstado = 7;
+        var columnaArea = 4;
+        var columnaProveedor = 5;
+        var columnaEntrega = 2;
+
+        var tabla;
+        var columns = [
+            { "data": "codigo" },
+            { "data": "fecha" },
+            { "data": "fechaEntrega" },
+            { "data": "usuario" },
+            { "data": "area" },
+            { "data": "proveedor" },
+            { "data": "total" },
+            { "data": "estado" },
+            { "data": "" },
+            { "data": "" }
+        ];
+        var columnDefs = [{
+            "defaultContent": "-",
+            "targets": "_all"
+        },
+        {
+            targets: columnaEntrega,
+            visible: entregaVisible,
+        },
+        {
+            targets: columnaEstado,
+            orderable: false,
+            render: function (data, type, full, meta) {
+                var acciones = data;
+                if (cambiarEstado) {
+                    acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="CambiarEstado($(this))" title="Cambiar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-refresh"></i></a>';
+                }
+                return acciones
+            }
+        },
+        {
+            targets: 8,
+            orderable: false,
+            render: function (data, type, full, meta) {
+                var acciones = "";
+
+                if (full.aprobar) {
+                    acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-label-success" onclick="Aprobar($(this))" title="Aprobar" data-id="' + full.id + '"><i class="la la-check"></i></a>';
+                    acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-label-danger" onclick="Rechazar($(this))" title="Rechazar" data-id="' + full.id + '"><i class="la la-times"></i></a>';
+                }
+
+                if (full.ignorar) {
+                    acciones += '<label class="m-checkbox ml-3"><input title="Ignorar para comparacion de precios" onclick="Ignorar($(this))" type="checkbox" value="true" ' + full.ignorarvalue + ' data-id="' + full.id + '"></input><span></span></label>';
+                }
+
+                return acciones
+            }
+        },
+        {
+            targets: -1,
+            orderable: false,
+            render: function (data, type, full, meta) {
+                var acciones = "";
+
+                if (full.editar) {
+                    acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md edit" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
+                }
+
+                acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Ver($(this))" title="Ver" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-eye"></i></a>';
+
+                if (full.formulario) {
+                    acciones += '<a href="/Admin/Formulario/' + full.id + '" target="_blank" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Formulario"><i class="la la-print"></i></a>';
+                }
+
+                if (full.exportar) {
+                    acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Exportar($(this))" data-toggle="modal" data-target="#modal_nuevo" title="Exportar" data-id="' + full.id + '"><i class="la la-share"></i></a>';
+                }
+
+                if (full.cancelar) {
+                    acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-label-danger" onclick="Cancelar($(this))" title="Cancelar" data-id="' + full.id + '">Cancelar</a>';
+                }
+
+                acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Historial($(this))" title="Historial" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-calendar"></i></a>';
+
+                return acciones
+            }
+            }];
+
+        var DataTable = function () {
+
+            return {
+
+                init: function () {
+                    initTable("/Admin/CargarTablaCompras");
+                    initMetodos(
+                        "/Admin/CreateCompra",
+                        "/Admin/EditCompra"
+                    );
+                },
+
+            };
+
+        }();
+
+        jQuery(document).ready(function () {
+            DataTable.init();
+            tabla.column(columnaEstado).search($('#IdEstadoMenu').val()).draw();
+            $('.kt-selectpicker').selectpicker();
+        });
+
+        $("#fecha").daterangepicker({
+            autoApply: true,
+            locale: {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Guardar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Custom",
+                "weekLabel": "S",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ],
+                "firstDay": 1
+            }
+        });
+
+        function ActualizarTabla() {
+            urlDetalle = "/Admin/CargarTablaCompras?fecha=" + $("#fecha").val();
+            tabla.ajax.url(urlDetalle).load();
+            rows_selected = [];
+        }
+
+        function Ver(btn) {
+
+            console.log("Ver");
+
+            KTApp.block('.modal-body', {});
+
+            $("#title_modal_nuevo").html("Ver");
+            $("#btn_modal_nuevo").hide();
+
+            $.get("/Admin/VerCompra", { id: btn.data("id") }, function (result) {
+
+                $('#content_modal_nuevo').html(result);
+
+                InitModal();
+
+            }).fail(function (xhr, status, error) {
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+        }
+
+        function Cancelar(btn) {
+
+            console.log("Cancelar");
+
+            var current = btn.closest("tr");
+
+            swal.fire({
+                title: "Esta seguro?",
+                text: "Se CANCELARA este registro",
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Aceptar'
+            }).then(function (result) {
+                if (result.value) {
+
+                    $.get("/Admin/Cancelar", { id: btn.data("id") }, function (result) {
+
+                        if (result.success) {
+                            tabla.row(current).data(result.data);
+                            successMessage(result.message);
+                        }
+                        else {
+                            formError(btn, result.message);
+                        }
+
+                    });
+
+                }
+            });
+        }
+
+        function Aprobar(btn) {
+
+            console.log("Aprobar");
+
+            var current = btn.closest("tr");
+
+            swal.fire({
+                title: "Esta seguro?",
+                text: "Se APROBARA este registro",
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Aceptar'
+            }).then(function (result) {
+                if (result.value) {
+
+                    $.get("/Admin/Aprobar", { id: btn.data("id") }, function (result) {
+
+                        if (result.success) {
+                            if ($("#modal_nuevo").is(':visible')) {
+                                ActualizarTabla();
+                                $("#modal_nuevo").modal("toggle")
+                            }
+                            else {
+                                tabla.row(current).data(result.data);
+                            }
+                            successMessage(result.message);
+                        }
+                        else {
+                            formError(btn, result.message);
+                        }
+
+                    });
+
+                }
+            });
+        }
+
+        function Rechazar(btn) {
+
+            console.log("Rechazar");
+
+            var current = btn.closest("tr");
+
+            swal.fire({
+                title: "Esta seguro?",
+                text: "Se RECHAZARA este registro",
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Aceptar'
+            }).then(function (result) {
+                if (result.value) {
+
+                    $.get("/Admin/Rechazar", { id: btn.data("id") }, function (result) {
+
+                        if (result.success) {
+                            if ($("#modal_nuevo").is(':visible')) {
+                                ActualizarTabla();
+                                $("#modal_nuevo").modal("toggle")
+                            }
+                            else {
+                                tabla.row(current).data(result.data);
+                            }
+                            successMessage(result.message);
+                        }
+                        else {
+                            formError(btn, result.message);
+                        }
+
+                    });
+
+                }
+            });
+        }
+
+        function Ignorar(btn) {
+
+            console.log("Ignorar");
+
+            var current = btn.closest("tr");
+
+            $.get("/Admin/Ignorar", { id: btn.data("id") }, function (result) {
+
+                if (result.success) {
+                    tabla.row(current).data(result.data);
+                    successMessage(result.message);
+                }
+                else {
+                    formError(btn, result.message);
+                }
+
+            });
+
+        }
+
+        //$('.select2Simple').each(function () {
+        //    $(this).select2({
+        //        width: '100%'
+        //    });
+        //});
+
+        $('#IdAreaMenu').on('change', function () {
+            debugger;
+            tabla.column(columnaArea).search(this.value).draw();
+        });
+
+        $('#IdProveedorMenu').on('change', function () {
+            debugger;
+            tabla.column(columnaProveedor).search(this.value).draw();
+        });
+
+        $('#IdEstadoMenu').on('change', function () {
+            tabla.column(columnaEstado).search(this.value).draw();
+        });
+
+        function Historial(btn) {
+
+            KTApp.block('.modal-body', {});
+
+            var current = btn.closest("tr");
+
+            $("#title_modal_nuevo").html("Historial");
+            $("#btn_modal_nuevo").hide();
+
+            $.get("/Admin/Historial", { id: btn.data("id") }, function (result) {
+
+                $('#content_modal_nuevo').html(result);
+
+                InitModal();
+
+            }).fail(function (xhr, status, error) {
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+        }
+
+        function CambiarEstado(btn) {
+
+            KTApp.block('.modal-body', {});
+
+            var current = btn.closest("tr");
+
+            $("#title_modal_nuevo").html("Cambiar estado");
+            $("#btn_modal_nuevo").show();
+
+            $.get("/Admin/EditEstado", { id: btn.data("id") }, function (result) {
+
+                $('#content_modal_nuevo').html(result);
+
+                InitModal();
+
+                $('#btn_modal_nuevo').unbind('click').click(function (e) {
+
+                    e.preventDefault();
+
+                    btn = $(this);
+
+                    btn.attr('disabled', true);
+
+                    var form = btn.closest("form");
+                    $.validator.unobtrusive.parse(form[0]);
+                    var _data = new FormData(form[0]);
+
+                    if (!form.valid()) {
+                        formError(btn, "Algunos datos no son correctos");
+                        return;
+                    }
+
+                    KTApp.block('.modal-body', {});
+
+                    $.ajax({
+                        url: "/Admin/EditEstado",
+                        type: "POST",
+                        data: _data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+                            if (result.success) {
+                                $('#modal_nuevo').modal('toggle');
+                                successMessage(result.message);
+                                tabla.row(current).data(result.data);
+                            }
+                            else {
+                                formError(btn, result.message);
+                            }
+                            return;
+                        },
+                        error: function (xhr, textStatus) {
+                            formError(btn, "Algunos datos no son correctos");
+                            return;
+                        }
+                    });
+
+                });
+
+            }).fail(function (xhr, status, error) {
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+        }
+
+        function Exportar(btn) {
+
+            KTApp.block('.modal-body', {});
+
+            var current = btn.closest("tr");
+
+            $("#title_modal_nuevo").html("Exportar planilla");
+            $("#btn_modal_nuevo").show();
+
+            var id = btn.data("id");
+
+            $.get("/Admin/Exportar", { id: id }, function (result) {
+
+                $('#content_modal_nuevo').html(result);
+
+                InitModal();
+
+                $('#btn_modal_nuevo').unbind('click').click(function (e) {
+
+                    e.preventDefault();
+
+                    btn = $(this);
+
+                    btn.attr('disabled', true);
+
+                    var form = btn.closest("form");
+                    $.validator.unobtrusive.parse(form[0]);
+                    var _data = new FormData(form[0]);
+
+                    if (!form.valid()) {
+                        formError(btn, "Algunos datos no son correctos");
+                        return;
+                    }
+
+                    KTApp.block('.modal-body', {});
+
+                    $.ajax({
+                        url: "/Admin/Exportar",
+                        type: "POST",
+                        data: _data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+                            if (result.success) {
+
+                                $('#modal_nuevo').modal('toggle');
+
+                                window.open("/Admin/Presupuesto/" + id, "_blank");
+
+                                //tabla.row(current).data(result.data);
+                            }
+                            else {
+                                formError(btn, result.message);
+                            }
+                            return;
+                        },
+                        error: function (xhr, textStatus) {
+                            formError(btn, "Algunos datos no son correctos");
+                            return;
+                        }
+                    });
+
+                });
+
+            }).fail(function (xhr, status, error) {
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+        }
+
+        function Partir(btn) {
+
+            if ($(".partir:checkbox").filter(":checked").length == 0) {
+                formError(btn, "Seleccione una OC");
+                return;
+            }
+
+            var itemsList = [];
+
+            $(".partir:checkbox").filter(":checked").each(function () {
+
+                var id = $(this).val();
+
+                itemsList.push(id);
+
+            });
+
+            $.get("/Admin/Partir", { id: itemsList.join(","), idCompra: $("#Id").val() }, function (result) {
+
+                if (result.success) {
+                    successMessage(result.message);
+                    tabla.ajax.reload();
+                    $('#modal_nuevo').modal('toggle');
+                }
+                else {
+                    formError(btn, result.message);
+                }
+                return;
+            });
+
+        }
+
+    </script>
+}

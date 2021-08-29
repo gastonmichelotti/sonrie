@@ -1,0 +1,27 @@
+﻿@model IEnumerable<netCoreNew.Models.DetalleCompra>
+
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th>Fecha</th>
+            <th>OC</th>
+            <th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="text-center">
+                <td scope="row">
+                    @item.Compra.Fecha.ToString("dd/MM/yyyy")
+                </td>
+                <td>
+                    @item.Compra.Codigo
+                </td>
+                <td>
+                    @item.Precio.ToString("C1")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

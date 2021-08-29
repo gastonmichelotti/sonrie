@@ -1,0 +1,76 @@
+﻿@model netCoreNew.Models.Remito
+
+<input asp-for="@Model.Id" type="hidden">
+<input asp-for="@Model.IdCompra" type="hidden">
+
+<div class="row">
+
+    <div class="form-group col-md-3">
+        <label asp-for="@Model.FechaRecepcion" class="">Fecha de Recepcion</label>
+        <input asp-for="@Model.FechaRecepcionString" class="form-control dateOnlyPicker">
+        <input asp-for="@Model.FechaRecepcionString" type="hidden">
+    </div>
+
+    <div class="form-group col-md-3">
+        <label asp-for="@Model.FechaRemito" class="">Fecha de Remito</label>
+        <input asp-for="@Model.FechaRemitoString" class="form-control dateOnlyPicker">
+        <input asp-for="@Model.FechaRemitoString" type="hidden">
+    </div>
+
+    <div class="form-group col-md-3">
+        <label asp-for="@Model.PuntoVenta" class="">Punto Venta</label>
+        <input asp-for="@Model.PuntoVenta" class="form-control">
+        <span asp-validation-for="@Model.PuntoVenta" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-3">
+        <label asp-for="@Model.NumeroRemito" class="">Numero Remito</label>
+        <input asp-for="@Model.NumeroRemito" class="form-control">
+        <span asp-validation-for="@Model.NumeroRemito" class="text-danger"></span>
+    </div>
+
+</div>
+
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th>Articulo</th>
+            <th>Recibidos</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.ItemsCompra.Length; i++)
+        {
+            <tr class="text-center">
+                <td scope="row">
+                    <input asp-for="@Model.ItemsCompra[i].Id" type="hidden">
+                    @Model.ItemsCompra[i].Articulo.NombreCompleto
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input asp-for="@Model.ItemsCompra[i].CantidadRemito" class="form-control text-center" placeholder="Cant">
+                        <div class="input-group-append"><span class="input-group-text" id="basic-addon1">Q</span></div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="row mt-2">
+
+    <div class="form-group col-md-4">
+        <label asp-for="@Model.File1" class="">Adjunto</label>
+        @if (Model.Adjunto != null)
+        {
+            <a class="kt-link kt-font-bold" href="@Model.Adjunto" target="_blank">Ver</a>
+        }
+        @Html.TextBoxFor(model => model.File1, htmlAttributes: new { @type = "file", @class = "dropify", @data_default_file = Model.Adjunto })
+    </div>
+
+    <div class="form-group col-md-8">
+        <label asp-for="@Model.Comentario" class="">Comentario</label>
+        <textarea asp-for="@Model.Comentario" class="form-control" rows="5"></textarea>
+    </div>
+
+</div>

@@ -1,0 +1,45 @@
+﻿@model netCoreNew.ViewModels.ErrorVM
+
+<div class="kt-error_container">
+    <span class="kt-error_title">
+        <h1>@Model.Titulo</h1>
+    </span>
+    <p class="kt-error_subtitle">
+        @Model.Subtitulo
+    </p>
+    <p class="kt-error_description">
+        @Model.Descripcion
+    </p>
+</div>
+
+<style>
+    .modal-body {
+        background-image: url(./media/error/bg5.jpg);
+        background-position: center;
+        background-size: cover;
+    }
+
+    .kt-error_container .kt-error_title > h1 {
+        font-size: 5rem;
+        font-weight: 700;
+        color: #314DA7;
+        -webkit-text-stroke-color: white;
+    }
+
+    .kt-error_container .kt-error_subtitle {
+        font-size: 2.3rem;
+        font-weight: 700;
+        color: #6c7293;
+    }
+
+    .kt-error_container .kt-error_description {
+        font-size: 1.8rem;
+        font-weight: 500;
+        line-height: 130%;
+        color: #a7abc3;
+    }
+
+    .modal-footer{
+        display: none;
+    }
+</style>

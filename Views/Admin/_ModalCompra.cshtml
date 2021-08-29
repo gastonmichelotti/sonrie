@@ -1,0 +1,286 @@
+﻿@model netCoreNew.Models.Compra
+
+<input asp-for="@Model.Id" type="hidden">
+
+<div class="kt-portlet__body">
+
+    <ul class="nav nav-pills nav-fill" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#kt_tabs_1">Datos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#kt_tabs_2">Articulos</a>
+        </li>
+        @if (Model.Id != 0)
+        {
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#kt_tabs_3">Partir</a>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content">
+
+        <div class="tab-pane active" id="kt_tabs_1" role="tabpanel">
+
+            <div class="row">
+
+                <div class="form-group col-md-4">
+                    <label asp-for="@Model.FechaEntrega" class="">Plazo necesario</label>
+                    <input asp-for="@Model.FechaEntregaString" class="form-control dateOnlyPicker">
+                    <input asp-for="@Model.FechaEntregaString" type="hidden">
+                </div>
+
+                @*<div class="form-group col-md-4">
+                    <label asp-for="@Model.IdCentroCostos" class="">Centro de costos</label>
+                    <select asp-for="@Model.IdCentroCostos" asp-items="@ViewBag.IdCentroCostos" class="form-control select2Simple">
+                    </select>
+                    <span asp-validation-for="@Model.IdCentroCostos" class="text-danger"></span>
+                </div>*@
+
+                <div class="form-group col-md-4">
+                    <label asp-for="@Model.IdTipoCompra" class="">Tipo de compra</label>
+                    <select asp-for="@Model.IdTipoCompra" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.TipoCompraEnum>()" class="form-control select2Simple">
+                    </select>
+                    <span asp-validation-for="@Model.IdTipoCompra" class="text-danger"></span>
+                </div>
+
+                @if (User.IsInRole("Compras"))
+                {
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.LugarEntrega" class="">Lugar de entrega</label>
+                        <input asp-for="@Model.LugarEntrega" class="form-control">
+                        <span asp-validation-for="@Model.LugarEntrega" class="text-danger"></span>
+                    </div>
+
+                    @if (Model.Id != 0)
+                    {
+                        <div class="form-group col-md-4">
+                            <label asp-for="@Model.MontoEnvio" class="">Monto de envio</label>
+                            <input asp-for="@Model.MontoEnvio" class="form-control">
+                            <span asp-validation-for="@Model.MontoEnvio" class="text-danger"></span>
+                        </div>
+                    }
+                }
+
+                @if (Model.Id != 0)
+                {
+                    <script>
+                        ObservacionPago();
+                    </script>
+
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.IdFormaPago" class="">Forma de Pago</label>
+                        <select asp-for="@Model.IdFormaPago" asp-items="@ViewBag.IdFormaPago" class="form-control select2Simple">
+                            <option selected value="">-</option>
+                        </select>
+                        <span asp-validation-for="@Model.IdFormaPago" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.IdCondicionPago" class="">Condicion de pago</label>
+                        <select asp-for="@Model.IdCondicionPago" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.CondicionPagoOrdenEnum>()" class="form-control select2Simple">
+                        </select>
+                        <span asp-validation-for="@Model.IdCondicionPago" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group col-md-4" id="divObservacionPago">
+                        <label asp-for="@Model.ObservacionPago" class="">Observacion condicion de pago</label>
+                        <textarea asp-for="@Model.ObservacionPago" class="form-control"></textarea>
+                        <span asp-validation-for="@Model.ObservacionPago" class="text-danger"></span>
+                    </div>
+                }
+
+            </div>
+
+            @if (Model.Id != 0)
+            {
+                <div class="row">
+
+                    <div class="form-group col-md-2">
+                        <label asp-for="@Model.File1" class="">Presupuesto 1*</label>
+                        @if (Model.Presupuesto1 != null)
+                        {
+                            <a class="kt-link kt-font-bold" href="@Model.Presupuesto1" target="_blank">Ver</a>
+                        }
+                        @Html.TextBoxFor(model => model.File1, htmlAttributes: new { @type = "file", @class = "dropify", @data_default_file = Model.Presupuesto1 })
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label asp-for="@Model.File2" class="">Presupuesto 2</label>
+                        @if (Model.Presupuesto2 != null)
+                        {
+                            <a class="kt-link kt-font-bold" href="@Model.Presupuesto2" target="_blank">Ver</a>
+                        }
+                        @Html.TextBoxFor(model => model.File2, htmlAttributes: new { @type = "file", @class = "dropify", @data_default_file = Model.Presupuesto2 })
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label asp-for="@Model.File3" class="">Presupuesto 3</label>
+                        @if (Model.Presupuesto3 != null)
+                        {
+                            <a class="kt-link kt-font-bold" href="@Model.Presupuesto3" target="_blank">Ver</a>
+                        }
+                        @Html.TextBoxFor(model => model.File3, htmlAttributes: new { @type = "file", @class = "dropify", @data_default_file = Model.Presupuesto3 })
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="tab-pane" id="kt_tabs_2" role="tabpanel">
+
+            <div class="row">
+
+                <div class="form-group col-md-6" id="divProveedor">
+                    <label asp-for="@Model.IdProveedor" class="">Proveedor recomendado</label>
+                    <select asp-for="@Model.IdProveedor" asp-items="@ViewBag.IdProveedor" class="form-control select2Simple" title="">
+                        <option>== Proveedor ==</option>
+                    </select>
+                    <span asp-validation-for="@Model.IdProveedor" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12">
+
+                    <div id="kt_repeater_1" data-items="@Model.ItemsLoad" data-empty="true" class="repeater" style="width: 100%;">
+
+                        <div class="row" id="kt_repeater_1">
+
+                            <div data-repeater-list="Items" class="col-lg-12">
+
+                                <div data-repeater-item class="form-group row align-items-center rowRepeater" name="inner-group">
+
+                                    <div class="col-md-4">
+                                        <select name="IdArticulo" asp-items="@ViewBag.IdArticulo" class="form-control kt-selectpicker" data-live-search="true" title="== Articulo ==">
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="input-group">
+                                            <input name="Cantidad" type="text" class="form-control cantidad" value="1" placeholder="Cant" onblur="ActualizarRepeater();">
+                                            <div class="input-group-append"><span class="input-group-text" id="basic-addon1">Q</span></div>
+                                        </div>
+                                    </div>
+
+                                    @if (Model.Id != 0)
+                                    {
+                                        <div class="col-md-1.5">
+                                            <div class="input-group">
+                                                <select name="Iva" asp-items="@ViewBag.Iva" class="form-control iva" data-live-search="true" title="Iva" onblur="ActualizarRepeater();">
+                                                    <option value="-1">-</option>
+                                                </select>
+                                                <div class="input-group-append"><span class="input-group-text" id="basic-addon1">IVA</span></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input name="Precio" type="text" class="form-control precio" value="0" placeholder="precio uni" onblur="ActualizarRepeater();">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input name="Total" type="text" class="form-control subtotal" value="0" placeholder="subtotal" readonly>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="col-md-0.5">
+                                        <a href="javascript:;" name="Boton" data-repeater-delete="" class="btn-sm btn btn-label-danger btn-bold" onclick="ActualizarRepeater(true);">
+                                            <i class="la la-trash-o"></i>
+                                        </a>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group form-group-last">
+                            <a href="javascript:;" data-repeater-create="" id="repeater-button" class="btn btn-bold btn-sm btn-label-brand mt-2" onclick="ActualizarRepeater(true);">
+                                <i class="la la-plus"></i> AGREGAR
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            @if (Model.Id != 0)
+            {
+                <div class="col-md-3 divResumen">
+                    <b class="">SUBTOTAL </b> <span class="float-right" id="resumenSubtotal"></span>
+                    <br />
+                    <b class="">IVA </b> <span class="float-right" id="resumenIva"></span>
+                    <br />
+                    <b class="">TOTAL </b> <span class="float-right" id="resumenTotal"></span>
+                </div>
+            }
+
+        </div>
+
+
+        <div class="tab-pane" id="kt_tabs_3" role="tabpanel">
+
+            <div class="row">
+
+                <div class="col-md-12">
+
+                    <div>
+
+                        @foreach (var item in Model.ItemsPartir)
+                        {
+                            <div class="row">
+
+                                <div class="col-lg-12">
+
+                                    <div class="form-group row align-items-center" name="inner-group">
+
+                                        <div class="col-md-2 text-center">
+                                            <label class="kt-checkbox kt-checkbox--bold">
+                                                <input type="checkbox" class="partir" value="@item.Id">
+                                                <span></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="col-md-10">
+
+                                            @item.Nombre
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
+                        <div class="form-group form-group-last">
+                            <a href="javascript:;" class="btn btn-bold btn-sm btn-label-success mt-2" onclick="Partir($(this));">
+                                PARTIR OC
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

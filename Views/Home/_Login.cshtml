@@ -1,0 +1,30 @@
+﻿@model netCoreNew.ViewModels.LoginVM
+
+<div class="kt-login__title">
+    <h3 class="">Ingresar</h3>
+</div>
+
+<form class="kt-form">
+
+    <div class="form-group">
+        <label asp-for="@Model.Email" class=""></label>
+        <input asp-for="@Model.Email" class="form-control">
+        <span asp-validation-for="@Model.Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.Password" class=""></label>
+        <input asp-for="@Model.Password" class="form-control">
+        <span asp-validation-for="@Model.Password" class="text-danger"></span>
+    </div>
+
+    <div class="kt-login__actions">
+        <a href="javascript:void(0);" class="kt-link kt-login__link-forgot partialButton">
+            Olvide mi contraseña
+        </a>
+        <button id="submitLogin" type="button" class="btn btn-primary btn-elevate kt-login__btn-primary">
+            Ingresar
+        </button>
+    </div>
+
+</form>

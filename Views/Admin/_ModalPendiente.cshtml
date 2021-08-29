@@ -1,0 +1,29 @@
+﻿@model IEnumerable<netCoreNew.Models.DetalleCompra>
+
+<h4>@ViewBag.Title</h4>
+
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th>Articulo</th>
+            <th>Cantidad comprada</th>
+            <th>Pendientes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="text-center">
+                <td scope="row">
+                    @item.Articulo.Nombre
+                </td>
+                <td>
+                    @item.Cantidad
+                </td>
+                <td>
+                    @item.CantidadPendiente
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
