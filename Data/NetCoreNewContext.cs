@@ -11,19 +11,15 @@ namespace netCoreNew.Data
         {
         }
 
-        public DbSet<Compra> Compra { get; set; }
+        public DbSet<Proyecto> Compra { get; set; }
         public DbSet<Rol> Rol { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Proveedor> Proveedor { get; set; }
         public DbSet<Articulo> Articulo { get; set; }
-        public DbSet<EstadoCompra> EstadoCompra { get; set; }
-        public DbSet<DetalleCompra> DetalleCompra { get; set; }
-        public DbSet<CentroCostos> CentroCostos { get; set; }
         public DbSet<Negocio> Negocio { get; set; }
-        public DbSet<Remito> Remito { get; set; }
-        public DbSet<DetalleRemito> DetalleRemito { get; set; }
-        public DbSet<HistorialCompra> HistorialCompra { get; set; }
-        public DbSet<HistorialRemito> HistorialRemito { get; set; }
+        public DbSet<DetalleRecuento> DetalleRecuento { get; set; }
+        public DbSet<Proyecto> Proyecto { get; set; }
+        public DbSet<Recuento> Recuento { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

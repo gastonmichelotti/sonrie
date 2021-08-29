@@ -733,7 +733,7 @@
             $("#title_modal_nuevo").html("Configuración de aprobación");
             $("#btn_modal_nuevo").show();
 
-            $.get("/Admin/Montos", {}, function (result) {
+            $.get("/Admin/Negocio", {}, function (result) {
 
                 $('#content_modal_nuevo').html(result);
 
@@ -758,7 +758,7 @@
                     KTApp.block('.modal-body', {});
 
                     $.ajax({
-                        url: "/Admin/Montos",
+                        url: "/Admin/Negocio",
                         type: "POST",
                         data: _data,
                         cache: false,

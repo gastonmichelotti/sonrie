@@ -89,18 +89,13 @@ namespace netCoreNew
             });
 
             services.AddScoped<IUsuarioService, UsuarioService>();
-            services.AddScoped<ICompraService, CompraService>();
             services.AddScoped<IRolService, RolService>();
             services.AddScoped<IProveedorService, ProveedorService>();
             services.AddScoped<IArticuloService, ArticuloService>();
-            services.AddScoped<IDetalleCompraService, DetalleCompraService>();
-            services.AddScoped<IEstadoCompraService, EstadoCompraService>();
-            services.AddScoped<ICentroCostosService, CentroCostosService>();
             services.AddScoped<INegocioService, NegocioService>();
-            services.AddScoped<IRemitoService, RemitoService>();
-            services.AddScoped<IDetalleRemitoService, DetalleRemitoService>();
-            services.AddScoped<IHistorialCompraService, HistorialCompraService>();
-            services.AddScoped<IHistorialRemitoService, HistorialRemitoService>();
+            services.AddScoped<IDetalleRecuentoService, DetalleRecuentoService>();
+            services.AddScoped<IProyectoService, ProyectoService>();
+            services.AddScoped<IRecuentoService, RecuentoService>();
 
             services.AddScoped<IEntidadesLogicService, EntidadesLogicService>();
 

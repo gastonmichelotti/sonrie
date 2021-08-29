@@ -16,14 +16,6 @@
         <span asp-validation-for="@Model.Telefono" class="text-danger"></span>
     </div>
 
-    <div class="form-group col-md-6">
-        <label asp-for="@Model.IdProvincia" class="">Provincia</label>
-        <select asp-for="@Model.IdProvincia" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.ProvinciaUsuarioEnum>()" class="form-control select2Simple">
-            <option>-- Seleccione uno --</option>
-        </select>
-        <span asp-validation-for="@Model.IdProvincia" class="text-danger"></span>
-    </div>
-
 </div>
 
 <div class="kt-separator kt-separator--border-dashed kt-separator--space-lg kt-separator--portlet-fit"></div>

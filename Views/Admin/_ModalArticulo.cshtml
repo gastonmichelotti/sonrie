@@ -22,14 +22,6 @@
         <span asp-validation-for="@Model.UnidMedida" class="text-danger"></span>
     </div>
 
-    <div class="form-group col-md-6">
-        <label asp-for="@Model.IdTipoArticulo" class="">Tipo</label>
-        <select asp-for="@Model.IdTipoArticulo" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.TipoArticuloEnum>()" class="form-control select2Simple">
-            @*<option>-- Seleccione uno --</option>*@
-        </select>
-        <span asp-validation-for="@Model.IdTipoArticulo" class="text-danger"></span>
-    </div>
-
     <div class="form-group col-md-12">
         <label asp-for="@Model.Descripcion" class="">Descripción</label>
         <textarea asp-for="@Model.Descripcion" class="form-control"></textarea>

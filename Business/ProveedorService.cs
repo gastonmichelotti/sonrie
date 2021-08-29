@@ -20,7 +20,7 @@ namespace netCoreNew.Business
 
             FixProveedor(entity);
 
-            if (_context.Proveedor.Any(c => c.Email == entity.Email || c.CUIT == entity.CUIT || c.RazonSocial == entity.RazonSocial))
+            if (_context.Proveedor.Any(c => c.Email == entity.Email))
             {
                 throw new Exception("Posible proveedor repetido");
             }
@@ -33,7 +33,6 @@ namespace netCoreNew.Business
         public void FixProveedor(Proveedor proveedor)
         {
             proveedor.Email = proveedor.Email.ToLower();
-            proveedor.CUIT = proveedor.CUIT.Replace(" ","").Replace("-","");
         }
     }
 }
