@@ -17,6 +17,7 @@ namespace netCoreNew.Models
         public string Observaciones { get; set; }
         public string UnidMedida { get; set; }
         public bool Activo { get; set; }
+        public bool Eliminado { get; set; }
         public string Etiquetas { get; set; }
     }
 }

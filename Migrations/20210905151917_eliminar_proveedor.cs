@@ -2,21 +2,22 @@
 
 namespace netCoreNew.Migrations
 {
-    public partial class etiquetas : Migration
+    public partial class eliminar_proveedor : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Etiquetas",
+            migrationBuilder.AddColumn<bool>(
+                name: "Eliminado",
                 table: "Proveedor",
-                type: "nvarchar(max)",
-                nullable: true);
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Etiquetas",
+                name: "Eliminado",
                 table: "Proveedor");
         }
     }

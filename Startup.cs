@@ -66,9 +66,12 @@ namespace netCoreNew
             //    options.DefaultRequestCulture = new RequestCulture("es-AR");
             //});
 
-            var cultureInfo = new CultureInfo("en-AR");
+            var cultureInfo = new CultureInfo("es-AR");
             cultureInfo.NumberFormat.NumberDecimalSeparator = ",";
             cultureInfo.NumberFormat.NumberGroupSeparator = ".";
+            cultureInfo.NumberFormat.CurrencyDecimalSeparator = ",";
+            cultureInfo.NumberFormat.CurrencyGroupSeparator = ".";
+            cultureInfo.NumberFormat.CurrencySymbol = "$";
 
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;

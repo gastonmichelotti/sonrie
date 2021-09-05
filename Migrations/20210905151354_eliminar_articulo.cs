@@ -2,13 +2,13 @@
 
 namespace netCoreNew.Migrations
 {
-    public partial class ignorar : Migration
+    public partial class eliminar_articulo : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "Ignorar",
-                table: "Compra",
+                name: "Eliminado",
+                table: "Articulo",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
@@ -17,8 +17,8 @@ namespace netCoreNew.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Ignorar",
-                table: "Compra");
+                name: "Eliminado",
+                table: "Articulo");
         }
     }
 }

@@ -123,6 +123,11 @@ namespace netCoreNew.Controllers
                     throw new Exception(Valores.Incorrectos);
                 }
 
+                if (!usuario.Activo)
+                {
+                    throw new Exception("Usuario desactivado");
+                }
+
                 CrearSesion(usuario);
 
                 return Json(new { success = true, message = "Bienvenido! Serás redireccionado.", redirect = usuario.Rol.Redirect });

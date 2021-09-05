@@ -28,6 +28,7 @@ namespace netCoreNew.Controllers
         private readonly IArticuloService articuloService;
         private readonly IRolService rolService;
         private readonly INegocioService negocioService;
+        private readonly IProyectoService proyectoService;
         private readonly IWebHostEnvironment hostingEnvironment;
 
         public AdminController(
@@ -36,6 +37,7 @@ namespace netCoreNew.Controllers
             IArticuloService articuloService,
             IRolService rolService,
             INegocioService negocioService,
+            IProyectoService proyectoService,
 
             IWebHostEnvironment hostingEnvironment)
         {
@@ -44,6 +46,7 @@ namespace netCoreNew.Controllers
             this.articuloService = articuloService;
             this.rolService = rolService;
             this.negocioService = negocioService;
+            this.proyectoService = proyectoService;
             this.hostingEnvironment = hostingEnvironment;
         }
 
@@ -186,7 +189,7 @@ namespace netCoreNew.Controllers
 
         private IEnumerable<object> CargarProveedores(int? id)
         {
-            return proveedorService.GetList(c => (id == null ? true : c.Id == id))
+            return proveedorService.GetList(c => (id == null ? !c.Eliminado : c.Id == id))
                 .Select(c => new
                 {
                     id = c.Id,
@@ -375,6 +378,19 @@ namespace netCoreNew.Controllers
                 return Json(new { success = false, message = e.Message });
             }
         }
+
+        public IActionResult EliminarProveedor(int id)
+        {
+            var model = proveedorService.GetById(id);
+
+            model.Eliminado = true;
+
+            proveedorService.Edit(model);
+
+            var final = CargarProveedores(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
         #endregion
 
         #region ARTICULOS
@@ -396,7 +412,7 @@ namespace netCoreNew.Controllers
 
         private IEnumerable<object> CargarArticulos(int? id)
         {
-            return articuloService.GetList(c => (id == null ? true : c.Id == id))
+            return articuloService.GetList(c => (id == null ? !c.Eliminado : c.Id == id))
                 .Select(c => new
                 {
                     id = c.Id,
@@ -404,7 +420,8 @@ namespace netCoreNew.Controllers
                     activo = c.Activo,
                     codigo = c.Codigo,
                     unidad = c.UnidMedida,
-                    etiqueta = c.Etiquetas
+                    etiqueta = c.Etiquetas,
+                    precio = c.Precio.ToString("C1")
                 })
                 .OrderBy(c => c.nombre);
         }
@@ -476,6 +493,19 @@ namespace netCoreNew.Controllers
             var model = articuloService.GetById(id);
 
             model.Activo = !model.Activo;
+
+            articuloService.Edit(model);
+
+            var final = CargarArticulos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
+
+        public IActionResult EliminarArticulo(int id)
+        {
+            var model = articuloService.GetById(id);
+
+            model.Eliminado = true;
 
             articuloService.Edit(model);
 
@@ -589,6 +619,92 @@ namespace netCoreNew.Controllers
             {
                 return Json(new { success = false, message = e.Message });
             }
+        }
+        #endregion
+
+        #region PROYECTOS
+        [HttpGet]
+        public IActionResult Proyectos()
+        {
+            ViewData["Title"] = "Proyectos";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaProyectos()
+        {
+            var final = CargarProyectos(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarProyectos(int? id)
+        {
+            return proyectoService.GetList(c => (id == null ? true : c.Id == id), c => c.Usuario)
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,
+                    usuario = c.Usuario.Nombre,
+                    fecha = c.FechaCreacion.ToString("dd/MM/yyyy")
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateProyecto(int id)
+        {
+            return PartialView("_ModalProyecto", new Proyecto
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateProyecto(Proyecto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.FechaCreacion = CurrentDate;
+            model.IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id;
+
+            proyectoService.Add(model);
+
+            var final = CargarProyectos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditProyecto(int id)
+        {
+            var result = proyectoService.GetById(id);
+
+            return PartialView("_ModalProyecto", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditProyecto(Proyecto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var proyecto = proyectoService.GetById(model.Id);
+
+            proyecto.Nombre = model.Nombre;
+            proyecto.FechaModificacion = CurrentDate;
+
+            proyectoService.Edit(proyecto);
+
+            var final = CargarProyectos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
         }
         #endregion
 

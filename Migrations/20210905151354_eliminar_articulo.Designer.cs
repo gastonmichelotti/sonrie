@@ -10,8 +10,8 @@ using netCoreNew.Data;
 namespace netCoreNew.Migrations
 {
     [DbContext(typeof(NetCoreNewContext))]
-    [Migration("20210630154815_presupuestos")]
-    partial class presupuestos
+    [Migration("20210905151354_eliminar_articulo")]
+    partial class eliminar_articulo
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,8 +37,11 @@ namespace netCoreNew.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("IdTipoArticulo")
-                        .HasColumnType("int");
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Etiquetas")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -46,6 +49,9 @@ namespace netCoreNew.Migrations
 
                     b.Property<string>("Observaciones")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Precio")
+                        .HasColumnType("float");
 
                     b.Property<string>("UnidMedida")
                         .HasColumnType("nvarchar(max)");
@@ -55,84 +61,7 @@ namespace netCoreNew.Migrations
                     b.ToTable("Articulo");
                 });
 
-            modelBuilder.Entity("netCoreNew.Models.CentroCostos", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Codigo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CentroCostos");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.Compra", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Aprobador")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("FechaEntrega")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IdCentroCostos")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdCondicionPago")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdEstadoCompra")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdFormaPago")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdProveedor")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdTipoCompra")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdUsuario")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Presupuesto1")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Presupuesto2")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Presupuesto3")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdCentroCostos");
-
-                    b.HasIndex("IdEstadoCompra");
-
-                    b.HasIndex("IdProveedor");
-
-                    b.HasIndex("IdUsuario");
-
-                    b.ToTable("Compra");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.DetalleCompra", b =>
+            modelBuilder.Entity("netCoreNew.Models.DetalleRecuento", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,40 +74,16 @@ namespace netCoreNew.Migrations
                     b.Property<int>("IdArticulo")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdCompra")
+                    b.Property<int>("IdRecuento")
                         .HasColumnType("int");
-
-                    b.Property<double?>("Iva")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Precio")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IdArticulo");
 
-                    b.HasIndex("IdCompra");
+                    b.HasIndex("IdRecuento");
 
-                    b.ToTable("DetalleCompra");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.EstadoCompra", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Color")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EstadoCompra");
+                    b.ToTable("DetalleRecuento");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.Negocio", b =>
@@ -187,12 +92,6 @@ namespace netCoreNew.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("MontoDiferencia")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MontoMinimo")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -213,60 +112,25 @@ namespace netCoreNew.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Banco")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CBU")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CPFiscal")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CUIT")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Contacto")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DireccionFiscal")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Domicilio")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Etiquetas")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("FechaAlta")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("IdCondicionIva")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdCondicionPago")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdProvincia")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdProvinciaFiscal")
-                        .HasColumnType("int");
 
                     b.Property<string>("Localidad")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LocalidadFiscal")
+                    b.Property<string>("NombreContacto")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Notas")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RazonSocial")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RetencionGanancias")
+                    b.Property<string>("Observaciones")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefono")
@@ -275,6 +139,72 @@ namespace netCoreNew.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Proveedor");
+                });
+
+            modelBuilder.Entity("netCoreNew.Models.Proyecto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Proyecto");
+                });
+
+            modelBuilder.Entity("netCoreNew.Models.Recuento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Etiquetas")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdProyecto")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnidadMedida")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdProyecto");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Recuento");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.Rol", b =>
@@ -303,9 +233,6 @@ namespace netCoreNew.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
                     b.Property<string>("Email")
@@ -340,41 +267,7 @@ namespace netCoreNew.Migrations
                     b.ToTable("Usuario");
                 });
 
-            modelBuilder.Entity("netCoreNew.Models.Compra", b =>
-                {
-                    b.HasOne("netCoreNew.Models.CentroCostos", "CentroCostos")
-                        .WithMany()
-                        .HasForeignKey("IdCentroCostos")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("netCoreNew.Models.EstadoCompra", "EstadoCompra")
-                        .WithMany()
-                        .HasForeignKey("IdEstadoCompra")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("netCoreNew.Models.Proveedor", "Proveedor")
-                        .WithMany()
-                        .HasForeignKey("IdProveedor")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("netCoreNew.Models.Usuario", "Solicitante")
-                        .WithMany("Compras")
-                        .HasForeignKey("IdUsuario")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CentroCostos");
-
-                    b.Navigation("EstadoCompra");
-
-                    b.Navigation("Proveedor");
-
-                    b.Navigation("Solicitante");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.DetalleCompra", b =>
+            modelBuilder.Entity("netCoreNew.Models.DetalleRecuento", b =>
                 {
                     b.HasOne("netCoreNew.Models.Articulo", "Articulo")
                         .WithMany()
@@ -382,15 +275,45 @@ namespace netCoreNew.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("netCoreNew.Models.Compra", "Compra")
-                        .WithMany("Detalles")
-                        .HasForeignKey("IdCompra")
+                    b.HasOne("netCoreNew.Models.Recuento", "Recuento")
+                        .WithMany()
+                        .HasForeignKey("IdRecuento")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Articulo");
 
-                    b.Navigation("Compra");
+                    b.Navigation("Recuento");
+                });
+
+            modelBuilder.Entity("netCoreNew.Models.Proyecto", b =>
+                {
+                    b.HasOne("netCoreNew.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("netCoreNew.Models.Recuento", b =>
+                {
+                    b.HasOne("netCoreNew.Models.Proyecto", "Proyecto")
+                        .WithMany()
+                        .HasForeignKey("IdProyecto")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("netCoreNew.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Proyecto");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.Usuario", b =>
@@ -404,19 +327,9 @@ namespace netCoreNew.Migrations
                     b.Navigation("Rol");
                 });
 
-            modelBuilder.Entity("netCoreNew.Models.Compra", b =>
-                {
-                    b.Navigation("Detalles");
-                });
-
             modelBuilder.Entity("netCoreNew.Models.Rol", b =>
                 {
                     b.Navigation("Usuarios");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.Usuario", b =>
-                {
-                    b.Navigation("Compras");
                 });
 #pragma warning restore 612, 618
         }

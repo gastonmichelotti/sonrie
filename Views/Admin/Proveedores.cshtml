@@ -22,7 +22,7 @@
             </div>
             <div class="kt-portlet__head-toolbar">
                 <div class="kt-portlet__head-wrapper">
-                    <div class="dropdown">
+                    @*<div class="dropdown">
                         <a href="#" class="btn btn-label-brand btn-bold dropdown-toggle" data-toggle="dropdown">
                             Acciones
                         </a>
@@ -38,13 +38,21 @@
                             </ul>
 
                         </div>
-                    </div>
+                    </div>*@
                     &nbsp;
                     <div class="dropdown dropdown-inline">
                         <button type="button" class="btn btn-brand btn-icon-sm ml-2" data-toggle="modal" data-target="#modal_nuevo" id="btn_crear">
                             <i class="fa fa-plus"></i> Nuevo
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kt-portlet__head kt-portlet__head--lg">
+            <div class="kt-portlet__head-toolbar">
+                <div class="kt-portlet__head-wrapper">
+                    <input id="filtrarCategoria" class="form-control" placeholder="Categoria">
                 </div>
             </div>
         </div>
@@ -84,7 +92,6 @@
 
     <script>
 
-        $("#menu_compras").addClass("kt-menu__item--active");
         $("#menu_proveedores").addClass("kt-menu__item--active");
 
         "use strict";
@@ -99,27 +106,13 @@
             { "data": "etiqueta" },
             { "data": "" }
         ];
+
         var columnDefs = [{
             "defaultContent": "-",
             "targets": "_all"
         },
         {
-            targets: 2,
-            visible: false,
-            render: function (data, type, full, meta) {
-                return data;
-            }
-        },
-        {
-            targets: 3,
-            visible: false,
-            render: function (data, type, full, meta) {
-                return data;
-            }
-        },
-        {
             targets: 4,
-            orderable: false,
             render: function (data, type, full, meta) {
 
                 return data ? '<a href="javascript:void(0);" class="btn text-success btn-sm btn-clean btn-icon btn-icon-md" data-id="' + full.id + '" onclick="Cambiar($(this))"><i class="fa fa-check text-success"></a>'
@@ -138,6 +131,7 @@
                 var acciones = "";
 
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
+                acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Eliminar($(this))" title="Eliminar" data-id="' + full.id + '"><i class="la la-trash text-danger"></i></a>';
 
                 return acciones
             }
@@ -237,7 +231,7 @@
                     initMetodos(
                         "/Admin/CreateProveedor",
                         "/Admin/EditProveedor",
-                        "",
+                        "/Admin/EliminarProveedor",
                         "/Admin/ActivarProveedor"
                     );
                     initAcciones();
@@ -249,6 +243,12 @@
 
         jQuery(document).ready(function () {
             DataTable.init();
+            $('#filtrarCategoria').on('keyup', function () {
+                tabla
+                    .columns(5)
+                    .search(this.value)
+                    .draw();
+            });
         });
 
     </script>
