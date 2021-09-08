@@ -544,11 +544,11 @@
             $('.repeater').each(function () {
 
                 var defaultValues = {
-                    //'Id': 0,
+                    'Codigo': "",
                     'IdArticulo': -1,
-                    'Cantidad': 1,
-                    'Precio': 0,
-                    'Iva': -1
+                    'Cantidad': "1",
+                    'UnidadMedida': "unidad",
+                    'Precio': "0"
                 };
 
                 var repeater = $(this).repeater({
@@ -573,26 +573,7 @@
 
                         if($("#Id").val() != 0)
                         {
-                            ActualizarRepeater();
                         }
-
-                        $('.partir').each(function () {
-
-                            if ($(this).val() == 0) {
-                                $(this).hide();
-                            }
-
-                        });
-
-                        //$(".cantidad").on('blur', function (e) {
-                        //    ActualizarRepeater();
-                        //});
-                        //$(".precio").on('blur', function (e) {
-                        //    ActualizarRepeater();
-                        //});
-                        //$(".iva").on('blur', function (e) {
-                        //    ActualizarRepeater();
-                        //});
                     },
 
                     hide: function (deleteElement) {
@@ -611,37 +592,16 @@
                     if (split1 != "") {
                         var split2 = split1[i].split('+');
                         listado.push({
-                            //'Id': split2[0],
-                            'IdArticulo': split2[0],
-                            'Cantidad': split2[1],
-                            'Iva': split2[2],
-                            'Precio': split2[3],
+                            'Codigo': split2[0],
+                            'IdArticulo': split2[1],
+                            'Cantidad': split2[2],
+                            'UnidadMedida': split2[3],
+                            'Precio': split2[4]
                         });
                     }
                 }
 
                 repeater.setList(listado);
-
-            });
-
-            $("#IdCondicionPago").on('change', function (e) {
-
-                ObservacionPago();
-
-            });
-
-            $("#IdTipoCompra").on('change', function (e) {
-
-                if ($("#Id").val() == 0) {
-
-                    if ($("#IdTipoCompra").val() == 2) {
-                        $("#divProveedor").hide();
-                    }
-                    else {
-                        $("#divProveedor").show();
-                    }
-
-                }
 
             });
 
@@ -668,56 +628,6 @@
                 <div class="tooltip-inner"></div>\
             </div>'
             });
-        }
-
-        function ActualizarRepeater(wait) {
-
-            if (wait) {
-                setTimeout(function () {
-                    ActualizarRepeater();
-                }, 1000);
-            }
-
-            console.log("ActualizarRepeater");
-
-            var subtotalAcu = 0;
-            var ivaAcu = 0;
-
-            $('.rowRepeater').each(function () {
-                var cantidad = Number($(this).find(".cantidad")[0].value.replace(",", ".") ?? 0);
-                var precio = Number($(this).find(".precio")[0].value.replace(",", ".") ?? 0);
-
-                console.log(precio);
-
-                var iva = $(this).find(".iva")[0].value.replace(",", ".") ?? 0;
-
-                if (iva == "-1") {
-                    iva = 0;
-                }
-
-                var subtotal = cantidad * precio;
-
-                subtotalAcu += subtotal;
-                ivaAcu += subtotal * (parseFloat(iva) / 100);
-
-                $(this).find(".subtotal")[0].value = subtotal;
-            });
-
-            var total = subtotalAcu + ivaAcu;
-
-            $("#resumenSubtotal").html("$" + Math.round(subtotalAcu));
-            $("#resumenIva").html("$" + Math.round(ivaAcu));
-            $("#resumenTotal").html("$" + Math.round(total));
-        }
-
-        function ObservacionPago() {
-            var valor = $("#IdCondicionPago").val();
-            if (valor == 4) {
-                $("#divObservacionPago").show();
-            }
-            else {
-                $("#divObservacionPago").hide();
-            }
         }
 
         function InitTabla() {
@@ -788,38 +698,6 @@
             });
 
         });
-
-        function CargarNotificaciones() {
-            $.get("/Admin/Notificaciones", {}, function (result) {
-                $('#divNotificaciones').html(result);
-                InitModal();
-            }).fail(function (xhr, status, error) {
-                errorMessage("Ups.. Surgio un error inesperado");
-                return;
-            });
-
-        }
-
-        function VerNotificacion(id) {
-
-            console.log("Ver");
-
-            KTApp.block('.modal-body', {});
-
-            $("#title_modal_nuevo").html("Ver");
-            $("#btn_modal_nuevo").hide();
-
-            $.get("/Admin/VerCompra", { id: id }, function (result) {
-
-                $('#content_modal_nuevo').html(result);
-
-                InitModal();
-
-            }).fail(function (xhr, status, error) {
-                errorMessage("Ups.. Surgio un error inesperado");
-                return;
-            });
-        }
 
     </script>
 

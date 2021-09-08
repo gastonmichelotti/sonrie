@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -29,6 +29,8 @@ namespace netCoreNew.Controllers
         private readonly IRolService rolService;
         private readonly INegocioService negocioService;
         private readonly IProyectoService proyectoService;
+        private readonly IRecuentoService recuentoService;
+        private readonly IDetalleRecuentoService detalleRecuentoService;
         private readonly IWebHostEnvironment hostingEnvironment;
 
         public AdminController(
@@ -38,6 +40,8 @@ namespace netCoreNew.Controllers
             IRolService rolService,
             INegocioService negocioService,
             IProyectoService proyectoService,
+            IRecuentoService recuentoService,
+            IDetalleRecuentoService detalleRecuentoService,
 
             IWebHostEnvironment hostingEnvironment)
         {
@@ -47,6 +51,8 @@ namespace netCoreNew.Controllers
             this.rolService = rolService;
             this.negocioService = negocioService;
             this.proyectoService = proyectoService;
+            this.recuentoService = recuentoService;
+            this.detalleRecuentoService = detalleRecuentoService;
             this.hostingEnvironment = hostingEnvironment;
         }
 
@@ -326,7 +332,7 @@ namespace netCoreNew.Controllers
 
                         if (version != "1")
                         {
-                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la �ltima. Porfavor descargala." });
+                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
                         }
                     }
 
@@ -569,7 +575,7 @@ namespace netCoreNew.Controllers
 
                         if (version != "2")
                         {
-                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la �ltima. Porfavor descargala." });
+                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
                         }
                     }
 
@@ -705,6 +711,178 @@ namespace netCoreNew.Controllers
             var final = CargarProyectos(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+        #endregion
+
+        #region RECUENTOS
+        [HttpGet]
+        public IActionResult Recuentos()
+        {
+            ViewData["Title"] = "Recuentos";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaRecuentos()
+        {
+            var final = CargarRecuentos(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarRecuentos(int? id)
+        {
+            return recuentoService.GetList(c => (id == null ? !c.Eliminado : c.Id == id), c => c.Usuario, c => c.Detalles)
+                .AsEnumerable()
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,
+                    usuario = c.Usuario.Nombre,
+                    fecha = c.FechaCreacion.ToString("dd/MM/yyyy"),
+                    total = c.Detalles.Sum(c => c.Subtotal) .ToString("C1") + " " + (c.Detalles.Any(x => x.Precio == 0) ? "💸" : ""),
+                    modificado = c.FechaModificacion?.ToString("dd/MM/yyyy"),
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateRecuento(int id)
+        {
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto");
+
+            return PartialView("_ModalRecuento", new Recuento
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateRecuento(Recuento model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.FechaCreacion = CurrentDate;
+            model.IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id;
+
+            foreach (var item in model.Items)
+            {
+                model.Detalles.Add(new DetalleRecuento
+                {
+                    IdArticulo = item.IdArticulo,
+                    Cantidad = item.Cantidad,
+                    Precio = item.Precio,
+                    UnidadMedida = item.UnidadMedida,
+                    Codigo = item.Codigo
+                });
+            }
+
+            recuentoService.Add(model);
+
+            var final = CargarRecuentos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditRecuento(int id)
+        {
+            var result = recuentoService.GetById(id);
+
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto");
+
+            var items = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).Select(c => new
+            {
+                Nombre = c.Codigo + "+" + c.IdArticulo + "+" + c.Cantidad + "+" + c.UnidadMedida + "+" + c.Precio
+            });
+
+            result.ItemsLoad = string.Join(';', items.Select(c => c.Nombre));
+
+            return PartialView("_ModalRecuento", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditRecuento(Recuento model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var recuento = recuentoService.GetById(model.Id);
+
+            var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == model.Id);
+
+            detalleRecuentoService.DeleteRange(detalles.ToArray());
+
+            foreach (var item in model.Items)
+            {
+                recuento.Detalles.Add(new DetalleRecuento
+                {
+                    IdArticulo = item.IdArticulo,
+                    Cantidad = item.Cantidad,
+                    Precio = item.Precio,
+                    UnidadMedida = item.UnidadMedida,
+                    Codigo = item.Codigo
+                });
+            }
+
+            recuento.Nombre = model.Nombre;
+            recuento.FechaModificacion = CurrentDate;
+            recuento.Etiquetas = model.Etiquetas;
+            recuento.Descripcion = model.Descripcion;
+            recuento.IdProyecto = model.IdProyecto;
+
+            recuentoService.Edit(recuento);
+
+            var final = CargarRecuentos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        public IActionResult EliminarRecuento(int id)
+        {
+            var model = recuentoService.GetById(id);
+
+            model.Eliminado = true;
+
+            recuentoService.Edit(model);
+
+            var final = CargarRecuentos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
+
+        [HttpGet]
+        public IActionResult VerRecuento(int id)
+        {
+            var result = recuentoService.GetSingle(c => c.Id == id, c => c.Usuario);
+            var detalle = detalleRecuentoService.GetList(c => c.IdRecuento == result.Id, c => c.Articulo);
+
+            var final = new VerRecuentoVM
+            {
+                FechaCreacion = result.FechaCreacion.ToString("dd/MM/yyyy"),
+                FechaModificacion = result.FechaModificacion?.ToString("dd/MM/yyyy"),
+                Nombre = result.Nombre,
+                CreadoPor = result.Usuario.Nombre,
+                Descripcion = result.Descripcion,
+                Total = detalle.Sum(c => c.Subtotal).ToString("C0"),
+                Detalles = detalle.Select(x => new VerRecuentoDetalleVM
+                {
+                    Nombre = x.Articulo.NombreCompleto,
+                    Cantidad = x.Cantidad + "",
+                    Precio = x.Precio.ToString("C0"),
+                    Subtotal = x.Subtotal.ToString("C0"),
+                    Id = x.IdArticulo,
+                    Codigo = x.Codigo
+                }).ToList()
+            };
+
+            return PartialView("_ModalVerRecuento", final);
         }
         #endregion
 
