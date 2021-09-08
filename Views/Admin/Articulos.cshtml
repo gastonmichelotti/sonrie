@@ -100,7 +100,6 @@
             { "data": "codigo" },
             { "data": "nombre" },
             { "data": "unidad" },
-            { "data": "precio" },
             { "data": "activo" },
             { "data": "etiqueta" },
             { "data": "" }
@@ -111,7 +110,7 @@
             "targets": "_all"
         },
         {
-            targets: 4,
+            targets: 3,
             render: function (data, type, full, meta) {
 
                 return data ? '<a href="javascript:void(0);" class="btn text-success btn-sm btn-clean btn-icon btn-icon-md" data-id="' + full.id + '" onclick="Cambiar($(this))"><i class="fa fa-check text-success"></a>'
@@ -120,7 +119,7 @@
             }
         },
         {
-            targets: 5,
+            targets: 4,
             visible: false,
         },
         {
@@ -130,7 +129,6 @@
                 var acciones = "";
 
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
-                //acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Historial($(this))" title="Historial de compra" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-calendar"></i></a>';
                 acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Eliminar($(this))" title="Eliminar" data-id="' + full.id + '"><i class="la la-trash text-danger"></i></a>';
 
                 return acciones
@@ -245,7 +243,7 @@
             DataTable.init();
             $('#filtrarCategoria').on('keyup', function () {
                 tabla
-                    .columns(5)
+                    .columns(4)
                     .search(this.value)
                     .draw();
             });
