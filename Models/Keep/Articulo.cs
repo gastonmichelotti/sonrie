@@ -19,5 +19,7 @@ namespace netCoreNew.Models
         public bool Activo { get; set; }
         public bool Eliminado { get; set; }
         public string Etiquetas { get; set; }
+
+        public string Marca { get; set; }
     }
 }

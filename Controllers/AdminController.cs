@@ -427,7 +427,8 @@ namespace netCoreNew.Controllers
                     codigo = c.Codigo,
                     unidad = c.UnidMedida,
                     etiqueta = c.Etiquetas,
-                    precio = c.Precio.ToString("C1")
+                    precio = c.Precio.ToString("C1"),
+                    marca = c.Marca,
                 })
                 .OrderBy(c => c.nombre);
         }
@@ -486,6 +487,7 @@ namespace netCoreNew.Controllers
             articulo.UnidMedida = model.UnidMedida;
             articulo.Codigo = model.Codigo;
             articulo.Etiquetas = model.Etiquetas;
+            articulo.Marca = model.Marca;
 
             articuloService.Edit(articulo);
 
@@ -595,7 +597,8 @@ namespace netCoreNew.Controllers
                                 Nombre = worksheet.Cells[row, 1]?.Value.ToString(),
                                 Codigo = worksheet.Cells[row, 2]?.Value.ToString(),
                                 UnidMedida = worksheet.Cells[row, 3]?.Value.ToString(),
-                                Etiquetas = worksheet.Cells[row, 4]?.Value.ToString(),
+                                Marca = worksheet.Cells[row, 4]?.Value.ToString(),
+                                Etiquetas = worksheet.Cells[row, 5]?.Value.ToString(),
                                 Activo = true
                             };
 
