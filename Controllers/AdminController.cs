@@ -425,6 +425,7 @@ namespace netCoreNew.Controllers
                     nombre = c.Nombre,
                     activo = c.Activo,
                     codigo = c.Codigo,
+                    marca = c.Marca,
                     unidad = c.UnidMedida,
                     etiqueta = c.Etiquetas,
                     precio = c.Precio.ToString("C1")
@@ -486,6 +487,7 @@ namespace netCoreNew.Controllers
             articulo.UnidMedida = model.UnidMedida;
             articulo.Codigo = model.Codigo;
             articulo.Etiquetas = model.Etiquetas;
+            articulo.Marca = model.Marca;
 
             articuloService.Edit(articulo);
 

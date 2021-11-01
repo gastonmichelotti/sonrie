@@ -13,6 +13,7 @@ namespace netCoreNew.Models
         public string Codigo { get; set; }
         public string NombreCompleto => Nombre + " (" + UnidMedida + ")";
         public string Descripcion { get; set; }
+        public string Marca { get; set; }
         public double Precio { get; set; }
         public string Observaciones { get; set; }
         public string UnidMedida { get; set; }
