@@ -57,6 +57,9 @@ namespace netCoreNew.Migrations
                     b.Property<string>("UnidMedida")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Marca")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Articulo");
