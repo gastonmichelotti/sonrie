@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using netCoreNew.Data;
 
 namespace netCoreNew.Migrations
 {
     [DbContext(typeof(NetCoreNewContext))]
-    partial class NetCoreNewContextModelSnapshot : ModelSnapshot
+    [Migration("20211101222024_agregadoMarcaEnAticulo-IN-20")]
+    partial class agregadoMarcaEnAticuloIN20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,9 +57,6 @@ namespace netCoreNew.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("UnidMedida")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Marca")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

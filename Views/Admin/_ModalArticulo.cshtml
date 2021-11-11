@@ -17,6 +17,12 @@
     </div>
 
     <div class="form-group col-md-6">
+        <label asp-for="@Model.Marca" class=""></label>
+        <input asp-for="@Model.Marca" class="form-control">
+        <span asp-validation-for="@Model.Marca" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
         <label asp-for="@Model.UnidMedida" class="">Unidad de medida</label>
         <input asp-for="@Model.UnidMedida" class="form-control">
         <span asp-validation-for="@Model.UnidMedida" class="text-danger"></span>

@@ -425,6 +425,7 @@ namespace netCoreNew.Controllers
                     nombre = c.Nombre,
                     activo = c.Activo,
                     codigo = c.Codigo,
+                    marca = c.Marca,
                     unidad = c.UnidMedida,
                     etiqueta = c.Etiquetas,
                     precio = c.Precio.ToString("C1"),
