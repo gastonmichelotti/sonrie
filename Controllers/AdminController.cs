@@ -429,7 +429,7 @@ namespace netCoreNew.Controllers
                     unidad = c.UnidMedida,
                     etiqueta = c.Etiquetas,
                     precio = c.Precio.ToString("C1"),
-                    marca = c.Marca,
+                    //marca = c.Marca,
                 })
                 .OrderBy(c => c.nombre);
         }
