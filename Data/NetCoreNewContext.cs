@@ -20,7 +20,7 @@ namespace netCoreNew.Data
         public DbSet<DetalleRecuento> DetalleRecuento { get; set; }
         public DbSet<Proyecto> Proyecto { get; set; }
         public DbSet<Recuento> Recuento { get; set; }
-        public DbSet<CodigoProveedor> CodigoProveedors { get; set; }
+        public DbSet<CodigoProveedor> CodigoProveedor { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
