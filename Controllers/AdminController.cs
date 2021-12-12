@@ -31,7 +31,9 @@ namespace netCoreNew.Controllers
         private readonly IProyectoService proyectoService;
         private readonly IRecuentoService recuentoService;
         private readonly IDetalleRecuentoService detalleRecuentoService;
+        private readonly ICodigoProveedorService codigoProveedor;
         private readonly IWebHostEnvironment hostingEnvironment;
+        
 
         public AdminController(
             IUsuarioService usuarioService,
@@ -42,6 +44,7 @@ namespace netCoreNew.Controllers
             IProyectoService proyectoService,
             IRecuentoService recuentoService,
             IDetalleRecuentoService detalleRecuentoService,
+            ICodigoProveedorService codigoProveedorService,
 
             IWebHostEnvironment hostingEnvironment)
         {
@@ -53,6 +56,7 @@ namespace netCoreNew.Controllers
             this.proyectoService = proyectoService;
             this.recuentoService = recuentoService;
             this.detalleRecuentoService = detalleRecuentoService;
+            this.codigoProveedor = codigoProveedorService;
             this.hostingEnvironment = hostingEnvironment;
         }
 
@@ -887,6 +891,228 @@ namespace netCoreNew.Controllers
             };
 
             return PartialView("_ModalVerRecuento", final);
+        }
+        #endregion
+
+        #region CODIGOS
+        [HttpGet]
+        public IActionResult CodigoProveedor()
+        {
+            ViewData["Title"] = "CodigoProveedor";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaCodigoProveedor()
+        {
+            var final = CargarCodigoProveedor(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarCodigoProveedor(int? idProveedor)
+        {
+            return codigoProveedorService.GetList(c => (idProveedor == null ? true : c.IdProveedor == idProveedor), c=> c.idProveedor, c=> c.idArticulo).
+                AsEnumerable().Select(c => new
+                {
+                    idProveedor = c.IdProveedor,
+                    proveedor = c.idProveedor.Alias,
+                    idArticulo = c.IdArticulo,
+                    articulo = c.IdArticulo.Nombre,
+                    codigo = c.Codigo,
+                    precio = c.precioProveedor.ToString("C1"),
+                    
+                })
+                .OrderBy(c => c.articulo);
+        }
+
+        [HttpGet]
+        public IActionResult CreateCodigoProveedor(int id) //TODO: OJO CON ESTO CHEEE, PUEDE SER QUE VAYA MAS DE UN ID
+        {
+            //ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias");
+
+            return PartialView("_ModalCodigoProveedor", new CodigoProveedor
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateCodigoProveedor(CodigoProveedor model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            codigoProveedorService.Add(model);
+
+            var final = CargarCodigoProveedor(model.Id).First(); //TODO: NO SE SI VA ID PROVEEDOR ACA
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditCordigoProveedor(int id)
+        {
+            var result = codigoProvedeorService.GetById(id);
+
+            //ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias", result.IdProveedor);
+
+            return PartialView("_ModalCodigoProveedor", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditCordigoProveedor(CodigoProveedor model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var codigoProveedor = codigoProveedorService.GetById(model.Id);
+
+            codigoProveedor.IdProveedor = model.IdProveedor;
+            codigoProveedor.IdArticulo = model.IdArticulo;
+            codigoProveedor.Codigo = model.Codigo;
+            codigoProveedor.PrecioProveedor = model.PrecioProveedor;
+            
+            codigoProveedorService.Edit(codigoProveedor);
+
+            var final = CargarCodigoProveedor(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        //public IActionResult ActivarArticulo(int id)
+        //{
+        //    var model = articuloService.GetById(id);
+
+        //    model.Activo = !model.Activo;
+
+        //    articuloService.Edit(model);
+
+        //    var final = CargarArticulos(model.Id).First();
+
+        //    return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        //}
+
+        public IActionResult EliminarCodigoProveedor(int id)
+        {
+            var model = codigoProveedorService.GetById(id);
+
+            codigoProveedorService.Edit(model);
+
+            var final = CargarCodigoProveedor(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
+
+        [HttpGet]
+        public IActionResult ImportarCodigoProveedor()
+        {
+            var model = new ExcelVM
+            {
+                Url = "/files/ExcelModeloCodigoProveedor.xlsx"
+            };
+
+            return PartialView("_ImportarCodigoProveedor", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarCodigopRoveedor(ExcelVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Json(new { success = false, message = Valores.Incorrectos });
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return Json(new { success = false, message = "Debes seleccionar un archivo primero" });
+                }
+
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+                var nombre = Path.GetRandomFileName() + ".xlsx";
+
+                var filePath = Path.Combine(uploads, nombre);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                var file = new FileInfo(filePath);
+
+                var exitos = new List<string>();
+                var errores = new List<string>();
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    var sb = new StringBuilder();
+                    var worksheet = package.Workbook.Worksheets[0];
+                    var rowCount = worksheet.Dimension.Rows;
+                    var colCount = worksheet.Dimension.Columns;
+
+                    if (rowCount == 1)
+                    {
+                        var version = worksheet.Cells[1, 1].Value.ToString();
+
+                        if (version != "2")
+                        {
+                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
+                        }
+                    }
+
+                    var validadRepetidos = new List<string>();
+
+                    for (int row = 3; row <= rowCount; row++)
+                    {
+                        try
+                        {
+                            if (worksheet.Cells[row, 1]?.Value?.ToString() == null)
+                            {
+                                continue;
+                            }
+
+                            var nuevo = new CodigoProveedor
+                            {
+                                IdProveedor = (int) worksheet.Cells[row, 1]?.Value,
+                                IdArticulo = (int) worksheet.Cells[row, 2]?.Value,
+                                Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
+                                PrecioProveedor = (double) worksheet.Cells[row, 4]?.Value,
+                            };
+
+                            try
+                            {
+                                codigoProveedorService.Add(nuevo);
+                            }
+                            catch (Exception e)
+                            {
+                                errores.Add($"{e.Message} en la fila {row}");
+                                continue;
+                            }
+
+                            exitos.Add(nuevo.IdArticulo.ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            errores.Add($"Algunos valores en la fila {row} son incorrectos");
+                            continue;
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = Valores.Edicion, exitos = exitos.ToArray(), errores = errores.ToArray() });
+            }
+            catch (System.Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
         }
         #endregion
 
