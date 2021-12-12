@@ -99,6 +99,7 @@ namespace netCoreNew
             services.AddScoped<IDetalleRecuentoService, DetalleRecuentoService>();
             services.AddScoped<IProyectoService, ProyectoService>();
             services.AddScoped<IRecuentoService, RecuentoService>();
+            services.AddScoped<ICodigoProveedorService, CodigoProveedorService>();
 
             services.AddScoped<IEntidadesLogicService, EntidadesLogicService>();
 
