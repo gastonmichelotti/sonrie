@@ -18,8 +18,12 @@ namespace netCoreNew.Models
         public int IdArticulo { get; set; }
         [ForeignKey("IdArticulo")]
 
+        public Articulo Articulo { get; set; }
+
         public int IdProveedor { get; set; }
         [ForeignKey("IdProveedor")]
+
+        public Proveedor Proveedor { get; set; }
 
         public string Codigo { get; set; }
 

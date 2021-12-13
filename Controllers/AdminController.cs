@@ -31,7 +31,7 @@ namespace netCoreNew.Controllers
         private readonly IProyectoService proyectoService;
         private readonly IRecuentoService recuentoService;
         private readonly IDetalleRecuentoService detalleRecuentoService;
-        private readonly ICodigoProveedorService codigoProveedor;
+        private readonly ICodigoProveedorService codigoProveedorService;
         private readonly IWebHostEnvironment hostingEnvironment;
         
 
@@ -56,7 +56,7 @@ namespace netCoreNew.Controllers
             this.proyectoService = proyectoService;
             this.recuentoService = recuentoService;
             this.detalleRecuentoService = detalleRecuentoService;
-            this.codigoProveedor = codigoProveedorService;
+            this.codigoProveedorService = codigoProveedorService;
             this.hostingEnvironment = hostingEnvironment;
         }
 
@@ -894,7 +894,7 @@ namespace netCoreNew.Controllers
         }
         #endregion
 
-        #region CODIGOS
+#region CODIGOS
         [HttpGet]
         public IActionResult CodigoProveedor()
         {
@@ -913,15 +913,15 @@ namespace netCoreNew.Controllers
 
         private IEnumerable<object> CargarCodigoProveedor(int? idProveedor)
         {
-            return codigoProveedorService.GetList(c => (idProveedor == null ? true : c.IdProveedor == idProveedor), c=> c.idProveedor, c=> c.idArticulo).
+            return codigoProveedorService.GetList(c => (idProveedor == null ? true : c.IdProveedor == idProveedor), c=> c.Proveedor, c=> c.Articulo).
                 AsEnumerable().Select(c => new
                 {
                     idProveedor = c.IdProveedor,
-                    proveedor = c.idProveedor.Alias,
+                    proveedor = c.Proveedor.Alias,
                     idArticulo = c.IdArticulo,
-                    articulo = c.IdArticulo.Nombre,
+                    articulo = c.Articulo.Nombre,
                     codigo = c.Codigo,
-                    precio = c.precioProveedor.ToString("C1"),
+                    precio = c.PrecioProveedor.ToString("C1"),
                     
                 })
                 .OrderBy(c => c.articulo);
