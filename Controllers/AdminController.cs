@@ -969,7 +969,7 @@ namespace netCoreNew.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditCordigoProveedor(CodigoProveedor model)
+        public IActionResult EditCodigoProveedor(CodigoProveedor model)
         {
             if (!ModelState.IsValid)
             {
