@@ -1048,7 +1048,7 @@ namespace netCoreNew.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportarCodigopRoveedor(ExcelVM model)
+        public async Task<IActionResult> ImportarCodigoRoveedor(ExcelVM model)
         {
             try
             {
@@ -1089,7 +1089,7 @@ namespace netCoreNew.Controllers
                     {
                         var version = worksheet.Cells[1, 1].Value.ToString();
 
-                        if (version != "2")
+                        if (version != "1")
                         {
                             return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
                         }
@@ -1108,8 +1108,16 @@ namespace netCoreNew.Controllers
 
                             var nuevo = new CodigoProveedor
                             {
-                                IdProveedor = (int) worksheet.Cells[row, 1]?.Value,
-                                IdArticulo = (int) worksheet.Cells[row, 2]?.Value,
+                                //IdProveedor = codigoProveedorService.GetList(c => c.Proveedor.Alias.Equals(worksheet.Cells[row, 1].Value), c => c.Proveedor).Select
+                                //(c => new
+                                //{
+                                //   Id
+                                //}).FirstOrDefault(),
+
+                                IdProveedor = (int) codigoProveedorService.GetList(c => c.Proveedor.Alias.Equals(worksheet.Cells[row, 1].Value), c => c.Proveedor).FirstOrDefault().IdProveedor,
+                                //IdProveedor = (int) worksheet.Cells[row, 1]?.Value,
+                                IdArticulo = (int)codigoProveedorService.GetList(c => c.Articulo.Nombre.Equals(worksheet.Cells[row, 2].Value), c => c.Articulo).FirstOrDefault().IdArticulo,
+                                //IdArticulo = (int) worksheet.Cells[row, 2]?.Value,
                                 Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
                                 PrecioProveedor = (double) worksheet.Cells[row, 4]?.Value,
                             };
