@@ -894,7 +894,7 @@ namespace netCoreNew.Controllers
         }
         #endregion
 
-#region CODIGOS
+        #region CODIGOS
         [HttpGet]
         public IActionResult CodigoProveedor()
         {
@@ -911,11 +911,12 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, data = final });
         }
 
-        private IEnumerable<object> CargarCodigoProveedor(int? idProveedor)
+        private IEnumerable<object> CargarCodigoProveedor(int? id)
         {
-            return codigoProveedorService.GetList(c => (idProveedor == null ? true : c.IdProveedor == idProveedor), c=> c.Proveedor, c=> c.Articulo).
+            return codigoProveedorService.GetList(c => (id == null ? true : c.Id == id), c=> c.Proveedor, c=> c.Articulo).
                 AsEnumerable().Select(c => new
                 {
+                    id = c.Id,
                     //idProveedor = c.IdProveedor,
                     proveedor = c.Proveedor.Alias,
                     //idArticulo = c.IdArticulo,
@@ -927,6 +928,25 @@ namespace netCoreNew.Controllers
                 })
                 .OrderBy(c => c.articulo);
         }
+
+        //LO GUARDO PARA USARLO EN EL OTRO METODO
+        //private IEnumerable<object> CargarCodigoProveedor(int? idProveedor)
+        //{
+        //    return codigoProveedorService.GetList(c => (idProveedor == null ? true : c.IdProveedor == idProveedor), c => c.Proveedor, c => c.Articulo).
+        //        AsEnumerable().Select(c => new
+        //        {
+        //            id = c.Id,
+        //            //idProveedor = c.IdProveedor,
+        //            proveedor = c.Proveedor.Alias,
+        //            //idArticulo = c.IdArticulo,
+        //            articulo = c.Articulo.Nombre,
+        //            codigoGeneral = c.Articulo.Codigo,
+        //            codigo = c.Codigo,
+        //            precio = c.PrecioProveedor.ToString("C1"),
+
+        //        })
+        //        .OrderBy(c => c.articulo);
+        //}
 
         [HttpGet]
         public IActionResult CreateCodigoProveedor(int id) 
@@ -971,6 +991,8 @@ namespace netCoreNew.Controllers
         [HttpPost]
         public IActionResult EditCodigoProveedor(CodigoProveedor model)
         {
+            ModelState.Remove("Id");
+
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = Valores.Incorrectos });

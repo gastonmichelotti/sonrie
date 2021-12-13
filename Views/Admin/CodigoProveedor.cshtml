@@ -124,26 +124,26 @@
             DataTable.init();
         });
 
-        function Ver(btn) {
+        //function Ver(btn) {
 
-            console.log("Ver");
+        //    console.log("Ver");
 
-            KTApp.block('.modal-body', {});
+        //    KTApp.block('.modal-body', {});
 
-            $("#title_modal_nuevo").html("Ver");
-            $("#btn_modal_nuevo").hide();
+        //    $("#title_modal_nuevo").html("Ver");
+        //    $("#btn_modal_nuevo").hide();
 
-            $.get("/Admin/VerRecuento", { id: btn.data("id") }, function (result) {
+        //    $.get("/Admin/VerRecuento", { id: btn.data("id") }, function (result) {
 
-                $('#content_modal_nuevo').html(result);
+        //        $('#content_modal_nuevo').html(result);
 
-                InitModal();
+        //        InitModal();
 
-            }).fail(function (xhr, status, error) {
-                errorMessage("Ups.. Surgio un error inesperado");
-                return;
-            });
-        }
+        //    }).fail(function (xhr, status, error) {
+        //        errorMessage("Ups.. Surgio un error inesperado");
+        //        return;
+        //    });
+        //}
 
     </script>
 
