@@ -916,10 +916,11 @@ namespace netCoreNew.Controllers
             return codigoProveedorService.GetList(c => (idProveedor == null ? true : c.IdProveedor == idProveedor), c=> c.Proveedor, c=> c.Articulo).
                 AsEnumerable().Select(c => new
                 {
-                    idProveedor = c.IdProveedor,
+                    //idProveedor = c.IdProveedor,
                     proveedor = c.Proveedor.Alias,
-                    idArticulo = c.IdArticulo,
+                    //idArticulo = c.IdArticulo,
                     articulo = c.Articulo.Nombre,
+                    codigoGeneral = c.Articulo.Codigo, 
                     codigo = c.Codigo,
                     precio = c.PrecioProveedor.ToString("C1"),
                     
@@ -928,9 +929,11 @@ namespace netCoreNew.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateCodigoProveedor(int id) //TODO: OJO CON ESTO CHEEE, PUEDE SER QUE VAYA MAS DE UN ID
+        public IActionResult CreateCodigoProveedor(int id) 
         {
-            //ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias");
+            ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias");
+
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto");
 
             return PartialView("_ModalCodigoProveedor", new CodigoProveedor
             {
@@ -948,17 +951,19 @@ namespace netCoreNew.Controllers
 
             codigoProveedorService.Add(model);
 
-            var final = CargarCodigoProveedor(model.Id).First(); //TODO: NO SE SI VA ID PROVEEDOR ACA
+            var final = CargarCodigoProveedor(model.Id).First(); 
 
             return Json(new { success = true, data = final, message = Valores.Creacion });
         }
 
         [HttpGet]
-        public IActionResult EditCordigoProveedor(int id)
+        public IActionResult EditCodigoProveedor(int id)
         {
             var result = codigoProveedorService.GetById(id);
 
-            //ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias", result.IdProveedor);
+            ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias", result.IdProveedor);
+
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto", result.IdArticulo);
 
             return PartialView("_ModalCodigoProveedor", result);
         }
