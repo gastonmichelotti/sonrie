@@ -956,7 +956,7 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult EditCordigoProveedor(int id)
         {
-            var result = codigoProvedeorService.GetById(id);
+            var result = codigoProveedorService.GetById(id);
 
             //ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias", result.IdProveedor);
 
