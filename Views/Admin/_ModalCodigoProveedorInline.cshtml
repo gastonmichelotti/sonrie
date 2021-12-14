@@ -1,4 +1,4 @@
-﻿@model  netCoreNew.ViewModels.EditCodigoProveedorVM
+﻿@model IEnumerable<netCoreNew.ViewModels.EditCodigoProveedorVM>
 
 <table class="table table-striped m-table">
     <thead>
@@ -22,23 +22,23 @@
     </thead>
     <tbody>
 
-        @foreach (var item in Model.Configuracion)
+        @foreach (var item in Model)
         {
             <tr>
                 <td>
-                    @item.Proveedor.Alias
+                    @item.Proveedor
                 </td>
                 <td>
-                    @item.Articulo.Nombre
+                    @item.Articulo
                 </td>
                 <td>
-                    @item.Articulo.Codigo
+                    @item.CodigoGral
                 </td>
                 <td>
-                    <a href="#" class="xeditable" data-type="number" data-pk="@item.IdProveedor" data-pk2="@item.IdArticulo" data-field="Codigo Proveedor" data-urlSend="/Admin/EditInlineCodigoProveedor">@item.Codigo</a>
+                    <a href="#" class="xeditable" data-type="number" data-pk="@item.Id" data-field="codigo" data-urlSend="/Admin/EditInlineCodigoProveedor">@item.Codigo</a>
                 </td>
                 <td>
-                    <a href="#" class="xeditable" data-type="number" data-pk="@item.IdProveedor" data-pk2="@item.IdArticulo" data-field="Precio Artículo" data-urlSend="/Admin/EditInlineCodigoProveedor">@item.PrecioProveedor</a>
+                    <a href="#" class="xeditable" data-type="number" data-pk="@item.Id" data-field="precio" data-urlSend="/Admin/EditInlineCodigoProveedor">@item.Precio</a>
                 </td>
             </tr>
         }

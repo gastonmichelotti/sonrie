@@ -1012,103 +1012,61 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, data = final, message = Valores.Edicion });
         }
 
-        //[HttpGet]
-        //public IActionResult EditInlineCodigoProveedor(int id)
-        //{
-        //    var result = codigoProveedorService.GetById(id);
+        [HttpGet]
+        public IActionResult EditInlineCodigoProveedor(int id)
+        {
+            var result = codigoProveedorService.GetList(c => c.IdProveedor == id, c => c.Proveedor, c => c.Articulo)
+                .Select(c => new EditCodigoProveedorVM
+                {
+                    Id = c.Id,
+                    Articulo = c.Articulo.Nombre,
+                    Codigo = c.Articulo.Codigo,
+                    CodigoGral = c.Codigo,
+                    Precio = c.PrecioProveedor,
+                    Proveedor = c.Proveedor.Alias
+                });
 
-        //    ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias", result.IdProveedor);
+            return PartialView("_ModalCodigoProveedorInline", result);
+        }
 
-        //    ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto", result.IdArticulo);
+        [HttpPost]
+        public ActionResult EditInlineCodigoProveedor(int id, string valor, string campo)
+        {
+            var model = codigoProveedorService.GetById(id);
 
-        //    return PartialView("_ModalCodigoProveedorInline", result);
-        //}
+            if (model == null)
+            {
+                return Json(new { Resultado = false, Mensaje = "Codigo Proveedor no encontrado" });
+            }
 
+            switch (campo)
+            {
+                case "codigo":
+                    model.Codigo = valor;
+                    codigoProveedorService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Éxito!",
+                    });
+                case "precio":
+                    model.PrecioProveedor = double.Parse(valor);
+                    codigoProveedorService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Exito!",
+                    });
+                default:
+                    break;
+            }
 
-
-
-        //[HttpPost]
-        //public ActionResult EditInlineCodigoProveedor(int idArticulo, int idProveedor, string valor, string campo)
-        //{
-        //    var model = articuloService.GetById(idArticulo);
-
-        //    if (model == null)
-        //    {
-        //        return Json(new { Resultado = false, Mensaje = "Codigo Proveedor no encontrado" });
-        //    }
-
-        //    switch (campo)
-        //    {
-        //        case "Código":
-        //            var codigoCustom = codigoProveedorService.GetSingle(c => c.IdProveedor == idProveedor
-        //            && c.IdArticulo == idArticulo);
-        //            if (codigoCustom == null)
-        //            {
-        //                codigoProveedorService.Add(new CodigoProveedor
-        //                {
-        //                    IdArticulo = idArticulo,
-        //                    IdProveedor = idProveedor,
-        //                    Codigo = valor == null? "-" : valor
-        //                });
-
-        //                return Json(new
-        //                {
-        //                    Resultado = true,
-        //                    Mensaje = "Éxito!",
-        //                });
-        //            }
-        //            else
-        //            {
-        //                codigoCustom.Codigo = valor ;
-
-        //                codigoProveedorService.Edit(codigoCustom);
-
-        //                return Json(new
-        //                {
-        //                    Resultado = true,
-        //                    Mensaje = "Éxito!",
-        //                });
-        //            }
-        //        case "PrecioProveedor":
-        //            var precioProveedorCustom = codigoProveedorService.GetSingle(c => c.IdProveedor == idProveedor
-        //            && c.IdArticulo == idArticulo);
-        //            if (precioProveedorCustom == null)
-        //            {
-        //                codigoProveedorService.Add(new CodigoProveedor
-        //                {
-        //                    IdArticulo = idArticulo,
-        //                    IdProveedor = idProveedor,
-        //                    PrecioProveedor = valor == null ? 0 : Double.Parse(valor)
-        //                });
-
-        //                return Json(new
-        //                {
-        //                    Resultado = true,
-        //                    Mensaje = "Éxito!",
-        //                });
-        //            }
-        //            else
-        //            {
-        //                precioProveedorCustom.PrecioProveedor = double.Parse(valor);
-
-        //                codigoProveedorService.Edit(precioProveedorCustom);
-
-        //                return Json(new
-        //                {
-        //                    Resultado = true,
-        //                    Mensaje = "Exito!",
-        //                });
-        //            }
-        //        default:
-        //            break;
-        //    }
-
-        //    return Json(new
-        //    {
-        //        Resultado = false,
-        //        Mensaje = "Hubo un error al modificar el valor",
-        //    });
-        //}
+            return Json(new
+            {
+                Resultado = false,
+                Mensaje = "Hubo un error al modificar el valor",
+            });
+        }
 
 
 
