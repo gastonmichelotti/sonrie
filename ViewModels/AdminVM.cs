@@ -37,4 +37,22 @@ namespace netCoreNew.ViewModels
         public string Unidad { get; set; }
         public string Codigo { get; set; }
     }
+
+    public class CodigoProveedorVM
+    {
+        public int Id { get; set; }
+        public int IdArticulo { get; set; }
+        public Articulo Articulo { get; set; }
+        public int IdProveedor { get; set; }
+        public Proveedor Proveedor { get; set; }
+        public string Codigo { get; set; }
+        public double PrecioProveedor { get; set; }
+    }
+
+    public class EditCodigoProveedorVM
+    {
+        public int IdArticulo { get; set; }
+        public int IdProveedor { get; set; }
+        public List<CodigoProveedorVM> Configuracion { get; set; }
+    }
 }

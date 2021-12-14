@@ -1,0 +1,47 @@
+﻿@model  netCoreNew.ViewModels.EditCodigoProveedorVM
+
+<table class="table table-striped m-table">
+    <thead>
+        <tr>
+            <th>
+                Proveedor
+            </th>
+            <th>
+                Artículo
+            </th>
+            <th>
+                Codigo General
+            </th>
+            <th>
+                Codigo Proveedor
+            </th>
+            <th>
+                Precio Artículo
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.Configuracion)
+        {
+            <tr>
+                <td>
+                    @item.Proveedor.Alias
+                </td>
+                <td>
+                    @item.Articulo.Nombre
+                </td>
+                <td>
+                    @item.Articulo.Codigo
+                </td>
+                <td>
+                    <a href="#" class="xeditable" data-type="number" data-pk="@item.IdProveedor" data-pk2="@item.IdArticulo" data-field="Codigo Proveedor" data-urlSend="/Admin/EditInlineCodigoProveedor">@item.Codigo</a>
+                </td>
+                <td>
+                    <a href="#" class="xeditable" data-type="number" data-pk="@item.IdProveedor" data-pk2="@item.IdArticulo" data-field="Precio Artículo" data-urlSend="/Admin/EditInlineCodigoProveedor">@item.PrecioProveedor</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>

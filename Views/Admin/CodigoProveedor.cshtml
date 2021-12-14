@@ -110,7 +110,7 @@
                 
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
                 acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Eliminar($(this))" title="Eliminar" data-id="' + full.id + '"><i class="la la-trash text-danger"></i></a>';
-                //acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Ver($(this))" title="Ver" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-eye"></i></a>';
+                //acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="EditInline($(this))" title="EditInline" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-eye"></i></a>';
 
                 return acciones
             }
@@ -226,14 +226,14 @@
 
         //function Ver(btn) {
 
-        //    console.log("Ver");
+        //    console.log("EditInline");
 
         //    KTApp.block('.modal-body', {});
 
-        //    $("#title_modal_nuevo").html("Ver");
+        //    $("#title_modal_nuevo").html("Editar Código Proveedor");
         //    $("#btn_modal_nuevo").hide();
 
-        //    $.get("/Admin/VerRecuento", { id: btn.data("id") }, function (result) {
+        //    $.get("/Admin/EditInlineCodigoProveedor", { id: btn.data("id") }, function (result) {
 
         //        $('#content_modal_nuevo').html(result);
 

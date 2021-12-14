@@ -1012,6 +1012,106 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, data = final, message = Valores.Edicion });
         }
 
+        //[HttpGet]
+        //public IActionResult EditInlineCodigoProveedor(int id)
+        //{
+        //    var result = codigoProveedorService.GetById(id);
+
+        //    ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias", result.IdProveedor);
+
+        //    ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto", result.IdArticulo);
+
+        //    return PartialView("_ModalCodigoProveedorInline", result);
+        //}
+
+
+
+
+        //[HttpPost]
+        //public ActionResult EditInlineCodigoProveedor(int idArticulo, int idProveedor, string valor, string campo)
+        //{
+        //    var model = articuloService.GetById(idArticulo);
+
+        //    if (model == null)
+        //    {
+        //        return Json(new { Resultado = false, Mensaje = "Codigo Proveedor no encontrado" });
+        //    }
+
+        //    switch (campo)
+        //    {
+        //        case "Código":
+        //            var codigoCustom = codigoProveedorService.GetSingle(c => c.IdProveedor == idProveedor
+        //            && c.IdArticulo == idArticulo);
+        //            if (codigoCustom == null)
+        //            {
+        //                codigoProveedorService.Add(new CodigoProveedor
+        //                {
+        //                    IdArticulo = idArticulo,
+        //                    IdProveedor = idProveedor,
+        //                    Codigo = valor == null? "-" : valor
+        //                });
+
+        //                return Json(new
+        //                {
+        //                    Resultado = true,
+        //                    Mensaje = "Éxito!",
+        //                });
+        //            }
+        //            else
+        //            {
+        //                codigoCustom.Codigo = valor ;
+
+        //                codigoProveedorService.Edit(codigoCustom);
+
+        //                return Json(new
+        //                {
+        //                    Resultado = true,
+        //                    Mensaje = "Éxito!",
+        //                });
+        //            }
+        //        case "PrecioProveedor":
+        //            var precioProveedorCustom = codigoProveedorService.GetSingle(c => c.IdProveedor == idProveedor
+        //            && c.IdArticulo == idArticulo);
+        //            if (precioProveedorCustom == null)
+        //            {
+        //                codigoProveedorService.Add(new CodigoProveedor
+        //                {
+        //                    IdArticulo = idArticulo,
+        //                    IdProveedor = idProveedor,
+        //                    PrecioProveedor = valor == null ? 0 : Double.Parse(valor)
+        //                });
+
+        //                return Json(new
+        //                {
+        //                    Resultado = true,
+        //                    Mensaje = "Éxito!",
+        //                });
+        //            }
+        //            else
+        //            {
+        //                precioProveedorCustom.PrecioProveedor = double.Parse(valor);
+
+        //                codigoProveedorService.Edit(precioProveedorCustom);
+
+        //                return Json(new
+        //                {
+        //                    Resultado = true,
+        //                    Mensaje = "Exito!",
+        //                });
+        //            }
+        //        default:
+        //            break;
+        //    }
+
+        //    return Json(new
+        //    {
+        //        Resultado = false,
+        //        Mensaje = "Hubo un error al modificar el valor",
+        //    });
+        //}
+
+
+
         //public IActionResult ActivarArticulo(int id)
         //{
         //    var model = articuloService.GetById(id);
@@ -1048,7 +1148,7 @@ namespace netCoreNew.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportarCodigoRoveedor(ExcelVM model)
+        public async Task<IActionResult> ImportarCodigoProveedor(ExcelVM model)
         {
             try
             {
