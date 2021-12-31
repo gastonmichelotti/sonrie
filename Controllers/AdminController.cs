@@ -1030,7 +1030,7 @@ namespace netCoreNew.Controllers
             return PartialView("_ModalCodigoProveedorInline", result);
         }
 
-        public ActionResult EditInlineCodigo(int id, string valor, string campo)
+        public IActionResult EditInlineCodigo(int id, string valor, string campo)
         {
             var model = codigoProveedorService.GetById(id);
 
@@ -1067,8 +1067,6 @@ namespace netCoreNew.Controllers
                 Mensaje = "Hubo un error al modificar el valor",
             });
         }
-
-
 
         //public IActionResult ActivarArticulo(int id)
         //{

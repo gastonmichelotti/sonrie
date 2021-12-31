@@ -621,30 +621,43 @@
                     inputclass: 'some_class',
                     url: function (params) {
 
+                        debugger;
+
                         var field = $(this).attr("data-field");
                         var url = $(this).attr("data-urlSend");
                         var pk = $(this).attr("data-pk");
 
-                        debugger;
-
-                        return $.ajax({
-                            dataType: "json",
-                            type: "post",
-                            data: JSON.stringify({ id: pk, valor: params.value, campo: field }),
-                            url: url,
-                            contentType: 'application/json; charset=utf-8',
-                            success: function (data) {
-                                if (data.Resultado) {
-                                    notyf.success(data.Mensaje);
-                                }
-                                else {
-                                    notyf.error(data.Mensaje);
-                                }
-                            },
-                            error: function () {
-                                notyf.error("Oh no!");
+                        $.get(url, { id: pk, valor: params.value, campo: field }, function (data) {
+                            debugger;
+                            if (data.resultado) {
+                                notyf.success(data.mensaje);
                             }
+                            else {
+                                notyf.error(data.mensaje);
+                            }
+                        }).fail(function (xhr, status, error) {
+                            notyf.error("Oh no!");
+                            return;
                         });
+
+                        //return $.ajax({
+                        //    dataType: "json",
+                        //    type: "post",
+                        //    data: JSON.stringify({ id: pk, valor: params.value, campo: field }),
+                        //    url: url,
+                        //    contentType: 'application/json; charset=utf-8',
+                        //    success: function (data) {
+                        //        if (data.Resultado) {
+                        //            notyf.success(data.Mensaje);
+                        //        }
+                        //        else {
+                        //            notyf.error(data.Mensaje);
+                        //        }
+                        //    },
+                        //    error: function () {
+                        //        notyf.error("Oh no!");
+                        //    }
+                        //});
                     }
                 });
             });
