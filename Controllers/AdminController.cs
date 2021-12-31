@@ -634,6 +634,7 @@ namespace netCoreNew.Controllers
                 return Json(new { success = false, message = e.Message });
             }
         }
+
         #endregion
 
         #region PROYECTOS
@@ -917,9 +918,9 @@ namespace netCoreNew.Controllers
                 AsEnumerable().Select(c => new
                 {
                     id = c.Id,
-                    //idProveedor = c.IdProveedor,
+                    idProveedor = c.IdProveedor,
                     proveedor = c.Proveedor.Alias,
-                    //idArticulo = c.IdArticulo,
+                    idArticulo = c.IdArticulo,
                     articulo = c.Articulo.Nombre,
                     codigoGeneral = c.Articulo.Codigo, 
                     codigo = c.Codigo,
@@ -1029,8 +1030,7 @@ namespace netCoreNew.Controllers
             return PartialView("_ModalCodigoProveedorInline", result);
         }
 
-        [HttpPost]
-        public ActionResult EditInlineCodigoProveedor(int id, string valor, string campo)
+        public ActionResult EditInlineCodigo(int id, string valor, string campo)
         {
             var model = codigoProveedorService.GetById(id);
 

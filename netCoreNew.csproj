@@ -43,8 +43,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Content\vendors\" />
     <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\vendors\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\admin\vendors\bootstrap4-editable\css\bootstrap-editable.css" />
+    <None Include="wwwroot\admin\vendors\bootstrap4-editable\img\clear.png" />
+    <None Include="wwwroot\admin\vendors\bootstrap4-editable\img\loading.gif" />
+    <None Include="wwwroot\admin\vendors\bootstrap4-editable\js\bootstrap-editable.js" />
+    <None Include="wwwroot\admin\vendors\bootstrap4-editable\js\bootstrap-editable.min.js" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
