@@ -903,9 +903,9 @@ namespace netCoreNew.Controllers
         public IActionResult ImportarRecuento()
         {
                var model = new ExcelVM
-                {
+               {
                     Url = "/files/ExcelModeloRecuento.xlsx"
-                };
+               };
 
             return PartialView("_ImportarRecuento", model);
         }

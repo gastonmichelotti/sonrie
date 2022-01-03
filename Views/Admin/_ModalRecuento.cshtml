@@ -137,7 +137,7 @@
 
                  <ul class="kt-nav">
                     <li class="kt-nav__item">
-                        <a href="#" button type="button" class="btn btn-brand btn-icon-sm ml-2" data-toggle="modal" data-target="#modal_nuevo" id="btn_importar">
+                        <a href="#" button type="button" class="btn btn-brand btn-icon-sm ml-2" onClick="Importar()">
                             <i class="kt-nav__link-icon flaticon-upload"></i>
                             <span class="kt-nav__link-text">Importar</span>
                         </a>
@@ -155,9 +155,7 @@
 
     <script>
 
-        function initAcciones() {
-
-            $('#btn_importar').on('click', function (e) {
+        function Importar() {
 
                 KTApp.block('.modal-body', {});
 
@@ -236,7 +234,13 @@
                     return;
                 });
 
-            });
+            }
+
+        function initAcciones() {
+
+            debugger;
+
+            
 
         }
 
