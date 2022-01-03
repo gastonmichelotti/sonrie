@@ -1048,7 +1048,7 @@ namespace netCoreNew.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportarCodigoRoveedor(ExcelVM model)
+        public async Task<IActionResult> ImportarCodigoProveedor(ExcelVM model)
         {
             try
             {
@@ -1114,12 +1114,12 @@ namespace netCoreNew.Controllers
                                 //   Id
                                 //}).FirstOrDefault(),
 
-                                IdProveedor = (int) codigoProveedorService.GetList(c => c.Proveedor.Alias.Equals(worksheet.Cells[row, 1].Value), c => c.Proveedor).FirstOrDefault().IdProveedor,
+                                IdProveedor = codigoProveedorService.GetList(c => c.Proveedor.Alias.Equals(worksheet.Cells[row, 1].Value), c => c.Proveedor).FirstOrDefault().IdProveedor,
                                 //IdProveedor = (int) worksheet.Cells[row, 1]?.Value,
-                                IdArticulo = (int)codigoProveedorService.GetList(c => c.Articulo.Nombre.Equals(worksheet.Cells[row, 2].Value), c => c.Articulo).FirstOrDefault().IdArticulo,
+                                IdArticulo = codigoProveedorService.GetList(c => c.Articulo.Nombre.Equals(worksheet.Cells[row, 2].Value), c => c.Articulo).FirstOrDefault().IdArticulo,
                                 //IdArticulo = (int) worksheet.Cells[row, 2]?.Value,
                                 Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
-                                PrecioProveedor = (double) worksheet.Cells[row, 4]?.Value,
+                                PrecioProveedor = (double)worksheet.Cells[row, 4]?.Value,
                             };
 
                             try
