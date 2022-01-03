@@ -11,6 +11,9 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#kt_tabs_2">Items</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#kt_tabs_3">Importar</a>
+        </li>
     </ul>
 
     <div class="tab-content">
@@ -52,11 +55,11 @@
                         <div class="row text-center mb-2">
 
                             <div class="col-md-2">
-                                Codigo
+                                Código
                             </div>
 
                             <div class="col-md-2">
-                                Articulo
+                                Artículo
                             </div>
 
                             <div class="col-md-2">
@@ -64,7 +67,7 @@
                             </div>
 
                             <div class="col-md-2">
-                                UnidadMedida
+                                Unidad de Medida
                             </div>
 
                             <div class="col-md-2">
@@ -117,7 +120,7 @@
                         </div>
 
                         <div class="form-group form-group-last">
-                            <a href="javascript:;" data-repeater-create="" id="repeater-button" class="btn btn-bold btn-sm btn-label-brand mt-2">
+                            <a href="javascript:;" data-repeater-create="" id="repeater-button" class="btn-sm btn btn-label-danger btn-bold">
                                 <i class="la la-plus"></i> AGREGAR
                             </a>
                         </div>
@@ -130,6 +133,113 @@
 
         </div>
 
+        <div class="tab-pane" id="kt_tabs_3" role="tabpanel">
+
+                 <ul class="kt-nav">
+                    <li class="kt-nav__item">
+                        <a href="#" button type="button" class="btn btn-brand btn-icon-sm ml-2" data-toggle="modal" data-target="#modal_nuevo" id="btn_importar">
+                            <i class="kt-nav__link-icon flaticon-upload"></i>
+                            <span class="kt-nav__link-text">Importar</span>
+                        </a>
+                    </li>
+                 </ul>
+
+        </div>
+
     </div>
 
 </div>
+
+
+@section Scripts{
+
+    <script>
+
+        function initAcciones() {
+
+            $('#btn_importar').on('click', function (e) {
+
+                KTApp.block('.modal-body', {});
+
+                $("#title_modal_nuevo").html("Importar");
+                $("#btn_modal_nuevo").show();
+
+                $.get("/Admin/ImportarRecuento", {}, function (result) {
+
+                    $('#content_modal_nuevo').html(result);
+
+                    InitModal();
+
+                    $('#btn_modal_nuevo').unbind('click').click(function (e) {
+
+                        e.preventDefault();
+
+                        var btn = $(this);
+                        btn.attr('disabled', true);
+
+                        var form = $(this).closest("form");
+                        $.validator.unobtrusive.parse(form[0]);
+                        var _data = new FormData(form[0]);
+
+                        if (!form.valid()) {
+                            formError(btn, "Algunos datos no son correctos");
+                            return;
+                        }
+
+                        KTApp.block('.modal-body', {});
+
+                        $.ajax({
+                            url: "/Admin/ImportarRecuento",
+                            type: "POST",
+                            data: _data,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function (result) {
+                                if (result.success) {
+
+                                    var acciones = "";
+                                    function Convertir(texto, color) {
+                                        return '<div class="kt-list-timeline__item">' +
+                                            '<span class="kt-list-timeline__badge kt-list-timeline__badge--' + color + '"></span>' +
+                                            '<span class="kt-list-timeline__text">' + texto + '</span>' +
+                                            '</div>';
+                                    }
+                                    for (var i = 0; i < result.exitos.length; i++) {
+                                        acciones += Convertir("Ítem nuevo | " + result.exitos[i], "success");
+                                    }
+                                    for (var i = 0; i < result.errores.length; i++) {
+                                        acciones += Convertir("Error | " + result.errores[i], "danger");
+                                    }
+                                    $("#divResultado").html(acciones);
+
+                                    KTApp.unblock('.modal-body');
+                                    btn.attr('disabled', true);
+                                    successMessage(result.message);
+                                    tabla.ajax.reload();
+                                }
+                                else {
+                                    formError(btn, result.message);
+                                }
+                                return;
+                            },
+                            error: function (xhr, textStatus) {
+                                formError(btn, "Algunos datos no son correctos");
+                                return;
+                            }
+                        });
+
+                    });
+
+                }).fail(function (xhr, status, error) {
+                    errorMessage("Ups.. Surgio un error inesperado");
+                    return;
+                });
+
+            });
+
+        }
+
+    </script>
+
+}
