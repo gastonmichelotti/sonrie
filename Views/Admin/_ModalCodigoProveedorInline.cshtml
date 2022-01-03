@@ -1,0 +1,47 @@
+﻿@model IEnumerable<netCoreNew.ViewModels.EditCodigoProveedorVM>
+
+<table class="table table-striped m-table">
+    <thead>
+        <tr>
+            <th>
+                Proveedor
+            </th>
+            <th>
+                Artículo
+            </th>
+            <th>
+                Codigo General
+            </th>
+            <th>
+                Codigo Proveedor
+            </th>
+            <th>
+                Precio Artículo
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.Proveedor
+                </td>
+                <td>
+                    @item.Articulo
+                </td>
+                <td>
+                    @item.CodigoGral
+                </td>
+                <td>
+                    <a href="#" class="xeditable" data-type="text" data-pk="@item.Id" data-field="codigo" data-urlSend="/Admin/EditInlineCodigo">@item.Codigo</a>
+                </td>
+                <td>
+                    <a href="#" class="xeditable" data-type="number" data-pk="@item.Id" data-field="precio" data-urlSend="/Admin/EditInlineCodigo">@item.Precio</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>

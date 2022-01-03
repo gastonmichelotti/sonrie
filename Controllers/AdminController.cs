@@ -532,7 +532,7 @@ namespace netCoreNew.Controllers
         {
             var model = new ExcelVM
             {
-                Url = "/files/ExcelModeloArticulos.xlsx"
+                Url = "/files/ExcelModeloArticulo.xlsx"
             };
 
             return PartialView("_ImportarArticulo", model);
@@ -601,10 +601,14 @@ namespace netCoreNew.Controllers
                             {
                                 Nombre = worksheet.Cells[row, 1]?.Value.ToString(),
                                 Codigo = worksheet.Cells[row, 2]?.Value.ToString(),
-                                UnidMedida = worksheet.Cells[row, 3]?.Value.ToString(),
+                                Descripcion = worksheet.Cells[row, 3]?.Value.ToString(),
                                 Marca = worksheet.Cells[row, 4]?.Value.ToString(),
-                                Etiquetas = worksheet.Cells[row, 5]?.Value.ToString(),
-                                Activo = true
+                                UnidMedida = worksheet.Cells[row, 5]?.Value.ToString(),
+                                Precio = Convert.ToDouble(worksheet.Cells[row, 6]?.Value),
+                                Observaciones = worksheet.Cells[row, 7]?.Value.ToString(),
+                                Etiquetas = worksheet.Cells[row, 8]?.Value.ToString(),
+                                Activo = true,
+                                Eliminado = false, 
                             };
 
                             try
@@ -634,6 +638,7 @@ namespace netCoreNew.Controllers
                 return Json(new { success = false, message = e.Message });
             }
         }
+
         #endregion
 
         #region PROYECTOS
@@ -801,7 +806,7 @@ namespace netCoreNew.Controllers
         {
             var result = recuentoService.GetById(id);
 
-            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto");
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto", "Codigo");
 
             var items = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).Select(c => new
             {
@@ -892,6 +897,115 @@ namespace netCoreNew.Controllers
 
             return PartialView("_ModalVerRecuento", final);
         }
+
+
+        [HttpGet]
+        public IActionResult ImportarRecuento()
+        {
+               var model = new ExcelVM
+                {
+                    Url = "/files/ExcelModeloRecuento.xlsx"
+                };
+
+            return PartialView("_ImportarRecuento", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarRecuento(ExcelVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Json(new { success = false, message = Valores.Incorrectos });
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return Json(new { success = false, message = "Debes seleccionar un archivo primero" });
+                }
+
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+                var nombre = Path.GetRandomFileName() + ".xlsx";
+
+                var filePath = Path.Combine(uploads, nombre);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                var file = new FileInfo(filePath);
+
+                var exitos = new List<string>();
+                var errores = new List<string>();
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    var sb = new StringBuilder();
+                    var worksheet = package.Workbook.Worksheets[0];
+                    var rowCount = worksheet.Dimension.Rows;
+                    var colCount = worksheet.Dimension.Columns;
+
+                    if (rowCount == 1)
+                    {
+                        var version = worksheet.Cells[1, 1].Value.ToString();
+
+                        if (version != "2")
+                        {
+                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
+                        }
+                    }
+
+                    var validadRepetidos = new List<string>();
+
+                    for (int row = 3; row <= rowCount; row++)
+                    {
+                        try
+                        {
+                            if (worksheet.Cells[row, 1]?.Value?.ToString() == null)
+                            {
+                                continue;
+                            }
+
+                            var nuevo = new DetalleRecuento
+                            {
+                                IdArticulo = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).Id,
+                                Cantidad = (int) worksheet.Cells[row, 2]?.Value,
+                                IdRecuento = recuentoService.GetAll().LastOrDefault().Id + 1,
+                                Codigo = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).Codigo,
+                                Precio = (double) worksheet.Cells[row, 3].Value,
+                                UnidadMedida = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).UnidMedida,
+                            };
+
+                            try
+                            {
+                                detalleRecuentoService.Add(nuevo);
+                            }
+                            catch (Exception e)
+                            {
+                                errores.Add($"{e.Message} en la fila {row}");
+                                continue;
+                            }
+
+                            exitos.Add(nuevo.IdArticulo.ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            errores.Add($"Algunos valores en la fila {row} son incorrectos");
+                            continue;
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = Valores.Edicion, exitos = exitos.ToArray(), errores = errores.ToArray() });
+            }
+            catch (System.Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+        }
         #endregion
 
         #region CODIGOS
@@ -917,9 +1031,9 @@ namespace netCoreNew.Controllers
                 AsEnumerable().Select(c => new
                 {
                     id = c.Id,
-                    //idProveedor = c.IdProveedor,
+                    idProveedor = c.IdProveedor,
                     proveedor = c.Proveedor.Alias,
-                    //idArticulo = c.IdArticulo,
+                    idArticulo = c.IdArticulo,
                     articulo = c.Articulo.Nombre,
                     codigoGeneral = c.Articulo.Codigo, 
                     codigo = c.Codigo,
@@ -1010,6 +1124,61 @@ namespace netCoreNew.Controllers
             var final = CargarCodigoProveedor(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        [HttpGet]
+        public IActionResult EditInlineCodigoProveedor(int id)
+        {
+            var result = codigoProveedorService.GetList(c => c.IdArticulo == id, c => c.Proveedor, c => c.Articulo)
+                .Select(c => new EditCodigoProveedorVM
+                {
+                    Id = c.Id,
+                    Articulo = c.Articulo.Nombre,
+                    Codigo = c.Articulo.Codigo,
+                    CodigoGral = c.Codigo,
+                    Precio = c.PrecioProveedor,
+                    Proveedor = c.Proveedor.Alias
+                });
+
+            return PartialView("_ModalCodigoProveedorInline", result);
+        }
+
+        public IActionResult EditInlineCodigo(int id, string valor, string campo)
+        {
+            var model = codigoProveedorService.GetById(id);
+
+            if (model == null)
+            {
+                return Json(new { Resultado = false, Mensaje = "Codigo Proveedor no encontrado" });
+            }
+
+            switch (campo)
+            {
+                case "codigo":
+                    model.Codigo = valor;
+                    codigoProveedorService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Éxito!",
+                    });
+                case "precio":
+                    model.PrecioProveedor = double.Parse(valor);
+                    codigoProveedorService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Exito!",
+                    });
+                default:
+                    break;
+            }
+
+            return Json(new
+            {
+                Resultado = false,
+                Mensaje = "Hubo un error al modificar el valor",
+            });
         }
 
         //public IActionResult ActivarArticulo(int id)

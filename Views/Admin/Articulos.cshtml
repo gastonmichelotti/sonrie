@@ -22,7 +22,7 @@
             </div>
             <div class="kt-portlet__head-toolbar">
                 <div class="kt-portlet__head-wrapper">
-                    @*<div class="dropdown">
+                    <div class="dropdown">
                         <a href="#" class="btn btn-label-brand btn-bold dropdown-toggle" data-toggle="dropdown">
                             Acciones
                         </a>
@@ -38,7 +38,7 @@
                             </ul>
 
                         </div>
-                    </div>*@
+                    </div>
                     &nbsp;
                     <div class="dropdown dropdown-inline">
                         <button type="button" class="btn btn-brand btn-icon-sm ml-2" data-toggle="modal" data-target="#modal_nuevo" id="btn_crear">
@@ -134,6 +134,8 @@
 
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
                 acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Eliminar($(this))" title="Eliminar" data-id="' + full.id + '"><i class="la la-trash text-danger"></i></a>';
+                acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="EditInline($(this))" title="Códigos de proveedor" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-cubes"></i></a>';
+
 
                 return acciones
             }
@@ -252,6 +254,27 @@
                     .draw();
             });
         });
+
+        function EditInline(btn) {
+
+            console.log("EditInline");
+
+            KTApp.block('.modal-body', {});
+
+            $("#title_modal_nuevo").html("Editar Código Proveedor");
+            $("#btn_modal_nuevo").hide();
+
+            $.get("/Admin/EditInlineCodigoProveedor", { id: btn.data("id") }, function (result) {
+
+                $('#content_modal_nuevo').html(result);
+
+                InitModal();
+
+            }).fail(function (xhr, status, error) {
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+        }
 
     </script>
 
