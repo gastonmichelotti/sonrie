@@ -146,6 +146,32 @@
             });
         }
 
+        function CargarDatosArticulo(item) {
+
+            var id = item.val();
+
+            $.get("/Admin/CargarDatosArticulo", { id: id }, function (result) {
+
+                $('.rowRepeater').each(function () {
+
+                    var existe = $(this).find("select")[0].value == id;
+
+                    if (existe) {
+
+                        $(this).find(".codigo")[0].value = result.data.codigo;
+                        $(this).find(".precio")[0].value = result.data.precio;
+                    }
+
+                });
+
+
+            }).fail(function (xhr, status, error) {
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+
+        }
+
     </script>
 
 }

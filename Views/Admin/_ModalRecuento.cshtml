@@ -58,11 +58,11 @@
                                 Código
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 Artículo
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 Cantidad
                             </div>
 
@@ -87,15 +87,15 @@
                                 <div data-repeater-item class="form-group row align-items-center rowRepeater rowRepeaterCompra" name="inner-group">
 
                                     <div class="col-md-2">
-                                        <input name="Codigo" type="text" class="form-control text-center">
+                                        <input name="Codigo" type="text" class="form-control text-center codigo">
                                     </div>
 
-                                    <div class="col-md-2">
-                                        <select name="IdArticulo" asp-items="@ViewBag.IdArticulo" class="form-control kt-selectpicker" data-live-search="true" title="== Articulo ==">
+                                    <div class="col-md-3">
+                                        <select name="IdArticulo" asp-items="@ViewBag.IdArticulo" class="form-control kt-selectpicker idArticulo" data-live-search="true" title="== Articulo ==" onchange="CargarDatosArticulo($(this))">
                                         </select>
                                     </div>
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
                                         <input name="Cantidad" type="text" class="form-control text-center">
                                     </div>
 
@@ -104,7 +104,7 @@
                                     </div>
 
                                     <div class="col-md-2">
-                                        <input name="Precio" type="text" class="form-control text-center">
+                                        <input name="Precio" type="text" class="form-control text-center precio">
                                     </div>
 
                                     <div class="col-md-1">
@@ -118,6 +118,8 @@
                             </div>
 
                         </div>
+
+                        <hr />
 
                         <div class="form-group form-group-last">
                             <a href="javascript:;" data-repeater-create="" id="repeater-button" class="btn-sm btn btn-label-danger btn-bold">

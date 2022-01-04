@@ -898,7 +898,6 @@ namespace netCoreNew.Controllers
             return PartialView("_ModalVerRecuento", final);
         }
 
-
         [HttpGet]
         public IActionResult ImportarRecuento()
         {
@@ -1005,6 +1004,18 @@ namespace netCoreNew.Controllers
             {
                 return Json(new { success = false, message = e.Message });
             }
+        }
+
+        [HttpGet]
+        public IActionResult CargarDatosArticulo(int id)
+        {
+            var final = articuloService.GetById(id);
+
+            return Json(new { success = true, data = new
+            {
+                final.Codigo,
+                final.Precio
+            }});
         }
         #endregion
 
