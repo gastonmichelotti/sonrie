@@ -66,7 +66,6 @@
                         <th class="all">Nombre</th>
                         <th class="all">Marca</th>
                         <th class="all">Unidad</th>
-                        @*<th class="all">Marca</th>*@
                         <th class="all">Activo</th>
                         <th class="">Etiquetas</th>
                         <th class="all">Acciones</th>
@@ -103,7 +102,6 @@
             { "data": "nombre" },
             { "data": "marca" },
             { "data": "unidad" },
-            //{ "data": "marca" }
             { "data": "activo" },
             { "data": "etiqueta" },
             { "data": "" }
@@ -114,17 +112,13 @@
             "targets": "_all"
         },
         {
-            targets: 3,
+            targets: 4,
             render: function (data, type, full, meta) {
 
                 return data ? '<a href="javascript:void(0);" class="btn text-success btn-sm btn-clean btn-icon btn-icon-md" data-id="' + full.id + '" onclick="Cambiar($(this))"><i class="fa fa-check text-success"></a>'
                     : '<a href="javascript:void(0);" class="btn text-danger btn-sm btn-clean btn-icon btn-icon-md" data-id="' + full.id + '" onclick="Cambiar($(this))"><i class="fa fa-times text-danger"></a>';
 
             }
-        },
-        {
-            targets: 4,
-            visible: false,
         },
         {
             targets: -1,
