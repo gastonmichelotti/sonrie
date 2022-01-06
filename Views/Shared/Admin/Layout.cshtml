@@ -124,7 +124,7 @@
                     <div class="modal-body">
                         <div class="kt-scroll" data-scroll="true" data-height="550">
 
-                            <div id="content_modal_nuevo" class="col-md-12">
+                            <div id="content_modal_nuevo" class="col-md-12" style="position: relative; height: 100%" >
 
 
                             </div>
@@ -274,6 +274,7 @@
 
         function Editar(btn) {
 
+            debugger;
             console.log("Editar");
 
             KTApp.block('.modal-body', {});
@@ -281,7 +282,7 @@
             var current = btn.closest("tr");
 
             $("#title_modal_nuevo").html("Editar");
-            $("#btn_modal_nuevo").show();
+            $("#btn_modal_nuevo").show();          
 
             $.get(urlEdit, { id: btn.data("id") }, function (result) {
 
@@ -302,6 +303,10 @@
                     var _data = new FormData(form[0]);
 
                     debugger;
+
+                    if(btn.data() != null){
+                        urlEdit = "/Admin/GuardarComo"
+                    }
 
                     if (!form.valid()) {
                         formError(btn, "Algunos datos no son correctos");

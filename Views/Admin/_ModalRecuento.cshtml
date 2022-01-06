@@ -2,7 +2,10 @@
 
 <input asp-for="@Model.Id" type="hidden">
 
-<div class="kt-portlet__body">
+<a class="btn btn-info" href="#." style="position: absolute; bottom: 0px; right: 0px;" id="btn_modal_nuevo" data="true">Guarar como</a>
+
+<div class="kt-portlet__body">    
+    
 
     <ul class="nav nav-pills nav-fill" role="tablist">
         <li class="nav-item">
@@ -58,7 +61,7 @@
                                 Código
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 Artículo
                             </div>
 
@@ -66,7 +69,7 @@
                                 Cantidad
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 Unidad de Medida
                             </div>
 
@@ -86,11 +89,11 @@
 
                                 <div data-repeater-item class="form-group row align-items-center rowRepeater rowRepeaterCompra" name="inner-group">
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-1.5">
                                         <input name="Codigo" type="text" class="form-control text-center codigo">
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-5">
                                         <select name="IdArticulo" asp-items="@ViewBag.IdArticulo" class="form-control kt-selectpicker idArticulo" data-live-search="true" title="== Articulo ==" onchange="CargarDatosArticulo($(this))">
                                         </select>
                                     </div>
@@ -99,7 +102,7 @@
                                         <input name="Cantidad" type="text" class="form-control text-center">
                                     </div>
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
                                         <input name="UnidadMedida" type="text" class="form-control text-center unidadMedida">
                                     </div>
 
@@ -196,100 +199,3 @@
 
 </div>
 
-
-@section Scripts{
-
-    <script>
-
-        function Importar() {
-
-                KTApp.block('.modal-body', {});
-
-                $("#title_modal_nuevo").html("Importar");
-                $("#btn_modal_nuevo").show();
-
-                $.get("/Admin/ImportarRecuento", {}, function (result) {
-
-                    $('#content_modal_nuevo').html(result);
-
-                    InitModal();
-
-                    $('#btn_modal_nuevo').unbind('click').click(function (e) {
-
-                        e.preventDefault();
-
-                        var btn = $(this);
-                        btn.attr('disabled', true);
-
-                        var form = $(this).closest("form");
-                        $.validator.unobtrusive.parse(form[0]);
-                        var _data = new FormData(form[0]);
-
-                        if (!form.valid()) {
-                            formError(btn, "Algunos datos no son correctos");
-                            return;
-                        }
-
-                        KTApp.block('.modal-body', {});
-
-                        $.ajax({
-                            url: "/Admin/ImportarRecuento",
-                            type: "POST",
-                            data: _data,
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-                            success: function (result) {
-                                if (result.success) {
-
-                                    var acciones = "";
-                                    function Convertir(texto, color) {
-                                        return '<div class="kt-list-timeline__item">' +
-                                            '<span class="kt-list-timeline__badge kt-list-timeline__badge--' + color + '"></span>' +
-                                            '<span class="kt-list-timeline__text">' + texto + '</span>' +
-                                            '</div>';
-                                    }
-                                    for (var i = 0; i < result.exitos.length; i++) {
-                                        acciones += Convertir("Ítem nuevo | " + result.exitos[i], "success");
-                                    }
-                                    for (var i = 0; i < result.errores.length; i++) {
-                                        acciones += Convertir("Error | " + result.errores[i], "danger");
-                                    }
-                                    $("#divResultado").html(acciones);
-
-                                    KTApp.unblock('.modal-body');
-                                    btn.attr('disabled', true);
-                                    successMessage(result.message);
-                                    tabla.ajax.reload();
-                                }
-                                else {
-                                    formError(btn, result.message);
-                                }
-                                return;
-                            },
-                            error: function (xhr, textStatus) {
-                                formError(btn, "Algunos datos no son correctos");
-                                return;
-                            }
-                        });
-
-                    });
-
-                }).fail(function (xhr, status, error) {
-                    errorMessage("Ups.. Surgio un error inesperado");
-                    return;
-                });
-
-            }
-
-        function initAcciones() {
-
-            debugger;
-
-
-
-        }
-
-    </script>
-
-}

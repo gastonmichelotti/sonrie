@@ -36,5 +36,9 @@ namespace netCoreNew.Models
         public string ItemsLoad { get; set; }
         [NotMapped]
         public DetalleRecuento[] Items { get; set; }
+        [NotMapped]
+        public bool GuardarComo { get; set; }
+
+        
     }
 }
