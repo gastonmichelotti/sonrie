@@ -7,6 +7,7 @@ using netCoreNew.Enum;
 using netCoreNew.Models;
 using netCoreNew.ViewModels;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -527,7 +528,7 @@ namespace netCoreNew.Controllers
         {
             var model = new ExcelVM
             {
-                Url = "/files/ExcelModeloArticulo.xlsx"
+                Url = ExcelArticulos()
             };
 
             return PartialView("_ImportarArticulo", model);
@@ -571,15 +572,15 @@ namespace netCoreNew.Controllers
                     var rowCount = worksheet.Dimension.Rows;
                     var colCount = worksheet.Dimension.Columns;
 
-                    if (rowCount == 1)
-                    {
-                        var version = worksheet.Cells[1, 1].Value.ToString();
+                    //if (rowCount == 1)
+                    //{
+                    //    var version = worksheet.Cells[1, 1].Value.ToString();
 
-                        if (version != "2")
-                        {
-                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
-                        }
-                    }
+                    //    if (version != "2")
+                    //    {
+                    //        return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
+                    //    }
+                    //}
 
                     var validadRepetidos = new List<string>();
 
@@ -587,21 +588,36 @@ namespace netCoreNew.Controllers
                     {
                         try
                         {
-                            if (worksheet.Cells[row, 1]?.Value?.ToString() == null)
+                            if (worksheet.Cells[row, 1]?.Value?.ToString() != null)
                             {
+                                var id = int.Parse(worksheet.Cells[row, 1].Value.ToString());
+
+                                var articulo = articuloService.GetById(id);
+
+                                //TODO-GASTON: MAPEAR LA PROPIEDAD CON LA COLUMNA DEFINIDA ARRIBA
+
+                                articuloService.Edit(articulo);
+
                                 continue;
                             }
 
+                            if (worksheet.Cells[row, 2]?.Value?.ToString() != null)
+                            {
+                                //nada mas
+                                break;
+                            }
+
+                            //TODO-GASTON: MAPEAR LA PROPIEDAD CON LA COLUMNA DEFINIDA ARRIBA
                             var nuevo = new Articulo
                             {
-                                Nombre = worksheet.Cells[row, 1]?.Value.ToString(),
-                                Codigo = worksheet.Cells[row, 2]?.Value.ToString(),
-                                Descripcion = worksheet.Cells[row, 3]?.Value.ToString(),
-                                Marca = worksheet.Cells[row, 4]?.Value.ToString(),
-                                UnidMedida = worksheet.Cells[row, 5]?.Value.ToString(),
-                                Precio = Convert.ToDouble(worksheet.Cells[row, 6]?.Value),
-                                Observaciones = worksheet.Cells[row, 7]?.Value.ToString(),
-                                Etiquetas = worksheet.Cells[row, 8]?.Value.ToString(),
+                                Nombre = worksheet.Cells[row, 2]?.Value.ToString(),
+                                Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
+                                Descripcion = worksheet.Cells[row, 4]?.Value.ToString(),
+                                Marca = worksheet.Cells[row, 5]?.Value.ToString(),
+                                UnidMedida = worksheet.Cells[row, 6]?.Value.ToString(),
+                                Precio = Convert.ToDouble(worksheet.Cells[row, 7]?.Value),
+                                Observaciones = worksheet.Cells[row, 8]?.Value.ToString(),
+                                Etiquetas = worksheet.Cells[row, 9]?.Value.ToString(),
                                 Activo = true,
                                 Eliminado = false,
                             };
@@ -632,6 +648,199 @@ namespace netCoreNew.Controllers
             {
                 return Json(new { success = false, message = e.Message });
             }
+        }
+
+        public string ExcelArticulos()
+        {
+            var folder = "files";
+
+            var uploads = Path.Combine(hostingEnvironment.WebRootPath, folder);
+
+            var nombre = Path.GetRandomFileName() + ".xlsx";
+
+            var filePath = Path.Combine(uploads, nombre);
+
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    await model.File.CopyToAsync(stream);
+            //}
+
+            var file = new FileInfo(filePath);
+
+            using (ExcelPackage package = new ExcelPackage(file))
+            {
+                var worksheet = package.Workbook.Worksheets.Add("MIS ARTICULOS");
+
+                var column = 1;
+
+                worksheet.Cells[1, column++].Value = "Id (NO TOCAR)";
+                worksheet.Cells[1, column++].Value = "Artículo";
+                worksheet.Cells[1, column++].Value = "Codigo General";
+                worksheet.Cells[1, column++].Value = "Descripción";
+                worksheet.Cells[1, column++].Value = "Marca";
+                worksheet.Cells[1, column++].Value = "Precio";
+                worksheet.Cells[1, column++].Value = "Observaciones";
+                worksheet.Cells[1, column++].Value = "Un. Medida";
+                worksheet.Cells[1, column++].Value = "Activo (si o no)";
+                worksheet.Cells[1, column++].Value = "Etiquetas (separadas por comas)";
+                worksheet.Cells[1, column++].Value = "Codigo Richetta";
+                worksheet.Cells[1, column++].Value = "Precio Richetta ";
+                worksheet.Cells[1, column++].Value = "Código Schneider";
+                worksheet.Cells[1, column++].Value = "PrecioSchenider";
+
+                var _codigoproveedor = codigoProveedorService.GetAll()
+                    .ToList();
+
+                var _articulos = articuloService.GetList(c => !c.Eliminado)
+                .AsEnumerable()
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Nombre,
+                    c.Codigo,
+                    c.Descripcion,
+                    c.Marca,
+                    c.Precio,
+                    c.Observaciones,
+                    c.UnidMedida,
+                    c.Activo,
+                    c.Etiquetas,
+                    codigoRichetta = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Richetta)?.Codigo,
+                    precioRichetta = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Richetta)?.PrecioProveedor,
+                    codigoSchneider = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Schneider)?.Codigo,
+                    precioSchneider = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Schneider)?.PrecioProveedor
+                })
+                .OrderBy(c => c.Nombre);
+
+                var _rowPublicaciones = 2;
+                var totalArticulos = 0;
+
+                foreach (var item in _articulos)
+                {
+                    column = 1;
+
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Id;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Nombre;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Codigo;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Descripcion;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Marca;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Precio;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Observaciones;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.UnidMedida;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Activo ? "si" : "no";
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Etiquetas;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.codigoRichetta;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.precioRichetta;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.codigoSchneider;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.precioSchneider;
+
+                    _rowPublicaciones++;
+                }
+
+                totalArticulos = _rowPublicaciones;
+
+                //var _categorias = categoriaService.GetList(c => c.IdNegocio == NegocioHelper.GetCurrentNegocioId)
+                //.Select(c => new
+                //{
+                //    c.Id,
+                //    c.Nombre
+                //})
+                // .OrderBy(c => c.Nombre);
+                //_rowPublicaciones = 2;
+                //foreach (var item in _categorias)
+                //{
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.IdCategoria].Value = item.Id;
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.CategoriaNombre].Value = item.Nombre;
+                //    _rowPublicaciones++;
+                //}
+
+                //var _subcategorias = subCategoriaService.GetList(c => c.Categoria.IdNegocio == NegocioHelper.GetCurrentNegocioId, c => c.Categoria)
+                //.Select(c => new
+                //{
+                //    c.Id,
+                //    Nombre = c.Categoria.Nombre + " | " + c.Nombre
+                //})
+                //.OrderBy(c => c.Nombre);
+                //_rowPublicaciones = 2;
+                //foreach (var item in _subcategorias)
+                //{
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.IdSubcategoria].Value = item.Id;
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.SubcategoriaNombre].Value = item.Nombre;
+                //    _rowPublicaciones++;
+                //}
+
+                //var _marcas = marcaService.GetList(c => c.IdNegocio == NegocioHelper.GetCurrentNegocioId)
+                //.Select(c => new
+                //{
+                //    c.Id,
+                //    c.Nombre
+                //})
+                //.OrderBy(c => c.Nombre);
+                //_rowPublicaciones = 2;
+                //foreach (var item in _marcas)
+                //{
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.IdMarca].Value = item.Id;
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.MarcaNombre].Value = item.Nombre;
+                //    _rowPublicaciones++;
+                //}
+
+                using (var range = worksheet.Cells[1, 1, 1, column])
+                {
+                    range.Style.Font.Bold = true;
+                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                    range.Style.Font.Size = 11;
+                }
+
+                //using (var range = worksheet.Cells[1, (int)Valores.ColumnaExcel.IdCategoria, 1, (int)Valores.ColumnaExcel.CategoriaNombre])
+                //{
+                //    range.Style.Font.Bold = true;
+                //    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                //    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                //    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                //    range.Style.Font.Size = 11;
+                //}
+
+                //using (var range = worksheet.Cells[1, (int)Valores.ColumnaExcel.IdSubcategoria, 1, (int)Valores.ColumnaExcel.SubcategoriaNombre])
+                //{
+                //    range.Style.Font.Bold = true;
+                //    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                //    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                //    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                //    range.Style.Font.Size = 11;
+                //}
+
+                //using (var range = worksheet.Cells[1, (int)Valores.ColumnaExcel.IdMarca, 1, (int)Valores.ColumnaExcel.MarcaNombre])
+                //{
+                //    range.Style.Font.Bold = true;
+                //    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                //    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                //    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                //    range.Style.Font.Size = 11;
+                //}
+
+                worksheet.Cells.AutoFitColumns(10, 100);  //Autofit columns for all cells
+
+                //using (var range = worksheet.Cells[2, 1, totalArticulos, (int)Valores.ColumnaExcel.UltimoProducto])
+                //{
+                //    range.Style.Font.Size = 9;
+                //    range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //    range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                //    range.Style.WrapText = true;
+                //}
+
+                //for (int i = 1; i <= (int)Valores.ColumnaExcel.MarcaNombre; i++)
+                //{
+                //    worksheet.Column(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //    worksheet.Column(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                //    worksheet.Column(i).Style.WrapText = false;
+                //}
+
+                package.Save();
+            }
+
+            return Path.Combine("../" + folder, nombre);
         }
 
         #endregion
@@ -1058,6 +1267,7 @@ namespace netCoreNew.Controllers
             });
         }
         #endregion
+<<<<<<< HEAD
 
         //public ActionResult ImportCodigoExcel()
         //{
@@ -1253,6 +1463,8 @@ namespace netCoreNew.Controllers
         //        throw;
         //    }
         //}
+=======
+>>>>>>> 89e26c7f07949f2c0a5a3d820182ab2eae93dc32
 
         #region CODIGOS
         [HttpGet]

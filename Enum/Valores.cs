@@ -26,6 +26,9 @@ namespace netCoreNew.Enum
         Schneider = 4,
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 89e26c7f07949f2c0a5a3d820182ab2eae93dc32
 
 
