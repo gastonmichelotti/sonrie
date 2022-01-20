@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>9f0945fb-f1ed-407f-b294-fdadb121638f</UserSecretsId>
     <!--<RazorCompileOnBuild>false</RazorCompileOnBuild>
     <RazorCompileOnPublish>false</RazorCompileOnPublish>-->
@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <Folder Include="Content\vendors\" />
+    <Folder Include="Services\" />
     <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\vendors\" />
   </ItemGroup>
