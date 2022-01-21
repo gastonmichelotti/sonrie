@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using netCoreNew.Data;
 
 namespace netCoreNew.Migrations
 {
     [DbContext(typeof(NetCoreNewContext))]
-    partial class NetCoreNewContextModelSnapshot : ModelSnapshot
+    [Migration("20210905151354_eliminar_articulo")]
+    partial class eliminar_articulo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,9 +43,6 @@ namespace netCoreNew.Migrations
                     b.Property<string>("Etiquetas")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Marca")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -62,34 +61,6 @@ namespace netCoreNew.Migrations
                     b.ToTable("Articulo");
                 });
 
-            modelBuilder.Entity("netCoreNew.Models.CodigoProveedor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Codigo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IdArticulo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdProveedor")
-                        .HasColumnType("int");
-
-                    b.Property<double>("PrecioProveedor")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdArticulo");
-
-                    b.HasIndex("IdProveedor");
-
-                    b.ToTable("CodigoProveedor");
-                });
-
             modelBuilder.Entity("netCoreNew.Models.DetalleRecuento", b =>
                 {
                     b.Property<int>("Id")
@@ -100,20 +71,11 @@ namespace netCoreNew.Migrations
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
-                    b.Property<string>("Codigo")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("IdArticulo")
                         .HasColumnType("int");
 
                     b.Property<int>("IdRecuento")
                         .HasColumnType("int");
-
-                    b.Property<double>("Precio")
-                        .HasColumnType("float");
-
-                    b.Property<string>("UnidadMedida")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -152,9 +114,6 @@ namespace netCoreNew.Migrations
 
                     b.Property<string>("Domicilio")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -218,9 +177,6 @@ namespace netCoreNew.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Etiquetas")
                         .HasColumnType("nvarchar(max)");
 
@@ -230,13 +186,16 @@ namespace netCoreNew.Migrations
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("IdProyecto")
+                    b.Property<int>("IdProyecto")
                         .HasColumnType("int");
 
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
                     b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnidadMedida")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -308,25 +267,6 @@ namespace netCoreNew.Migrations
                     b.ToTable("Usuario");
                 });
 
-            modelBuilder.Entity("netCoreNew.Models.CodigoProveedor", b =>
-                {
-                    b.HasOne("netCoreNew.Models.Articulo", "Articulo")
-                        .WithMany()
-                        .HasForeignKey("IdArticulo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("netCoreNew.Models.Proveedor", "Proveedor")
-                        .WithMany()
-                        .HasForeignKey("IdProveedor")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Articulo");
-
-                    b.Navigation("Proveedor");
-                });
-
             modelBuilder.Entity("netCoreNew.Models.DetalleRecuento", b =>
                 {
                     b.HasOne("netCoreNew.Models.Articulo", "Articulo")
@@ -336,7 +276,7 @@ namespace netCoreNew.Migrations
                         .IsRequired();
 
                     b.HasOne("netCoreNew.Models.Recuento", "Recuento")
-                        .WithMany("Detalles")
+                        .WithMany()
                         .HasForeignKey("IdRecuento")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -362,7 +302,8 @@ namespace netCoreNew.Migrations
                     b.HasOne("netCoreNew.Models.Proyecto", "Proyecto")
                         .WithMany()
                         .HasForeignKey("IdProyecto")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("netCoreNew.Models.Usuario", "Usuario")
                         .WithMany()
@@ -384,11 +325,6 @@ namespace netCoreNew.Migrations
                         .IsRequired();
 
                     b.Navigation("Rol");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.Recuento", b =>
-                {
-                    b.Navigation("Detalles");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.Rol", b =>

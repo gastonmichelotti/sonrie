@@ -20,7 +20,31 @@ namespace netCoreNew.Data
                 }
             }
 
+            foreach (var item in Negocios)
+            {
+                var existeNegocio = context.Negocio.Any();
+
+                if (!existeNegocio)
+                {
+                    context.Negocio.Add(item);
+                }
+            }
+
             context.SaveChanges();
+        }
+
+        public static List<Negocio> Negocios
+        {
+            get
+            {
+                return new List<Negocio>()
+                {
+                    new Negocio
+                    {
+                
+                    }
+                };
+            }
         }
 
         public static List<Rol> Roles

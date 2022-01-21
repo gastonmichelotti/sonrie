@@ -1,0 +1,143 @@
+﻿@{
+    var model = new netCoreNew.ViewModels.BreadcrumVM
+    {
+        Back = "",
+        UrlBack = "",
+        Current = "Listado",
+        UrlCurrent = "/Admin/Proyectos"
+    };
+}
+
+<partial name="~/Views/Shared/Admin/_SubHeader.cshtml" model="model" />
+
+<div class="kt-content  kt-grid__item kt-grid__item--fluid" id="kt_content">
+
+    <div class="kt-portlet">
+
+        <div class="kt-portlet__head kt-portlet__head--lg">
+            <div class="kt-portlet__head-label">
+                <h3 class="kt-portlet__head-title">
+                    @ViewBag.Title
+                </h3>
+            </div>
+            <div class="kt-portlet__head-toolbar">
+                <div class="kt-portlet__head-wrapper">
+                    @*<div class="dropdown">
+                        <a href="#" class="btn btn-label-brand btn-bold dropdown-toggle" data-toggle="dropdown">
+                            Acciones
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-sm" aria-labelledby="dropdownMenuButton">
+
+                            <ul class="kt-nav">
+                                <li class="kt-nav__item">
+                                    <a href="#" class="kt-nav__link" data-toggle="modal" data-target="#modal_nuevo" id="btn_importar">
+                                        <i class="kt-nav__link-icon flaticon-upload"></i>
+                                        <span class="kt-nav__link-text">Importar</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>*@
+                    &nbsp;
+                    <div class="dropdown dropdown-inline">
+                        <button type="button" class="btn btn-brand btn-icon-sm ml-2" data-toggle="modal" data-target="#modal_nuevo" id="btn_crear">
+                            <i class="fa fa-plus"></i> Nuevo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kt-portlet__body">
+
+            <table class="table table-striped table-bordered table-hover" id="kt_table_1">
+                <thead>
+                    <tr>
+                        <th class="all">Id</th>
+                        <th class="all">Nombre</th>
+                        <th class="all">Creador</th>
+                        <th class="">Fecha creacion</th>
+                        <th class="all">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tabla-partial"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles{
+
+}
+
+@section Scripts{
+
+    <script src="~/admin/js/InitDatatable.js"></script>
+
+    <script>
+
+        $("#menu_proyectos").addClass("kt-menu__item--active");
+
+        "use strict";
+
+        var tabla;
+        var columns = [
+            { "data": "id" },
+            { "data": "nombre" },
+            { "data": "usuario" },
+            { "data": "fecha" },
+            { "data": "" }
+        ];
+
+        var columnDefs = [{
+            "defaultContent": "-",
+            "targets": "_all"
+        },
+        {
+            targets: -1,
+            orderable: false,
+            render: function (data, type, full, meta) {
+                var acciones = "";
+
+                acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
+
+                return acciones
+            }
+        }];
+
+        function initAcciones() {
+
+        }
+
+        var DataTable = function () {
+
+            return {
+
+                init: function () {
+                    initTable("/Admin/CargarTablaProyectos");
+                    initMetodos(
+                        "/Admin/CreateProyecto",
+                        "/Admin/EditProyecto",
+                        "",
+                        ""
+                    );
+                    initAcciones();
+                },
+
+            };
+
+        }();
+
+        jQuery(document).ready(function () {
+            DataTable.init();
+        });
+
+    </script>
+
+}

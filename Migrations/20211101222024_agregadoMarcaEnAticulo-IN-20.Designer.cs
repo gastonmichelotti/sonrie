@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using netCoreNew.Data;
 
 namespace netCoreNew.Migrations
 {
     [DbContext(typeof(NetCoreNewContext))]
-    partial class NetCoreNewContextModelSnapshot : ModelSnapshot
+    [Migration("20211101222024_agregadoMarcaEnAticulo-IN-20")]
+    partial class agregadoMarcaEnAticuloIN20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,34 +62,6 @@ namespace netCoreNew.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Articulo");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.CodigoProveedor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Codigo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IdArticulo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdProveedor")
-                        .HasColumnType("int");
-
-                    b.Property<double>("PrecioProveedor")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdArticulo");
-
-                    b.HasIndex("IdProveedor");
-
-                    b.ToTable("CodigoProveedor");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.DetalleRecuento", b =>
@@ -306,25 +280,6 @@ namespace netCoreNew.Migrations
                     b.HasIndex("IdRol");
 
                     b.ToTable("Usuario");
-                });
-
-            modelBuilder.Entity("netCoreNew.Models.CodigoProveedor", b =>
-                {
-                    b.HasOne("netCoreNew.Models.Articulo", "Articulo")
-                        .WithMany()
-                        .HasForeignKey("IdArticulo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("netCoreNew.Models.Proveedor", "Proveedor")
-                        .WithMany()
-                        .HasForeignKey("IdProveedor")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Articulo");
-
-                    b.Navigation("Proveedor");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.DetalleRecuento", b =>

@@ -1,0 +1,51 @@
+﻿@model netCoreNew.Models.CodigoProveedor
+
+<input asp-for="@Model.Id" type="hidden">
+
+@*<div class="row">
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.Nombre" class=""></label>
+        <input asp-for="@Model.Nombre" class="form-control">
+        <span asp-validation-for="@Model.Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.Telefono" class=""></label>
+        <input asp-for="@Model.Telefono" class="form-control">
+        <span asp-validation-for="@Model.Telefono" class="text-danger"></span>
+    </div>
+
+</div>
+
+<div class="kt-separator kt-separator--border-dashed kt-separator--space-lg kt-separator--portlet-fit"></div>*@
+
+<div class="row">
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.IdProveedor" class="">Proveedor</label>
+        <select asp-for="@Model.IdProveedor" asp-items="@ViewBag.IdProveedor" class="form-control select2Simple">
+        </select>
+        <span asp-validation-for="@Model.IdProveedor" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.IdArticulo" class="">Artículo</label>
+        <select asp-for="@Model.IdArticulo" asp-items="@ViewBag.IdArticulo" class="form-control select2Simple">
+        </select>
+        <span asp-validation-for="@Model.IdArticulo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.Codigo" class=""></label>
+        <input asp-for="@Model.Codigo" class="form-control">
+        <span asp-validation-for="@Model.Codigo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.PrecioProveedor" class=""></label>
+        <input asp-for="@Model.PrecioProveedor" class="form-control">
+        <span asp-validation-for="@Model.PrecioProveedor" class="text-danger"></span>
+    </div>
+
+</div>

@@ -88,14 +88,21 @@ namespace netCoreNew
 
             services.AddDbContext<NetCoreNewContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("cs"));
             });
 
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<IRolService, RolService>();
+            services.AddScoped<IProveedorService, ProveedorService>();
             services.AddScoped<IArticuloService, ArticuloService>();
+            services.AddScoped<INegocioService, NegocioService>();
+            services.AddScoped<IDetalleRecuentoService, DetalleRecuentoService>();
+            services.AddScoped<IProyectoService, ProyectoService>();
+            services.AddScoped<IRecuentoService, RecuentoService>();
+            services.AddScoped<ICodigoProveedorService, CodigoProveedorService>();
 
             services.AddScoped<IEntidadesLogicService, EntidadesLogicService>();
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
     }

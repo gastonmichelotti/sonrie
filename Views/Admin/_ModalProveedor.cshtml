@@ -1,0 +1,75 @@
+﻿@model netCoreNew.Models.Proveedor
+
+<input asp-for="@Model.Id" type="hidden">
+
+<div class="kt-portlet__body">
+
+    <ul class="nav nav-pills nav-fill" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#kt_tabs_1">Datos</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <div class="tab-pane active" id="kt_tabs_1" role="tabpanel">
+
+            <div class="row">
+
+                <div class="form-group col-md-6">
+                    <label asp-for="@Model.Alias" class=""></label>
+                    <input asp-for="@Model.Alias" class="form-control">
+                    <span asp-validation-for="@Model.Alias" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="@Model.Telefono" class=""></label>
+                    <input asp-for="@Model.Telefono" class="form-control">
+                    <span asp-validation-for="@Model.Telefono" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="@Model.Email" class=""></label>
+                    <input asp-for="@Model.Email" class="form-control">
+                    <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="@Model.NombreContacto" class=""></label>
+                    <input asp-for="@Model.NombreContacto" class="form-control">
+                    <span asp-validation-for="@Model.NombreContacto" class="text-danger"></span>
+                </div>
+
+                <div class="kt-separator kt-separator--border-dashed kt-separator--space-lg kt-separator--portlet-fit"></div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="@Model.Domicilio" class=""></label>
+                    <input asp-for="@Model.Domicilio" class="form-control">
+                    <span asp-validation-for="@Model.Domicilio" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="@Model.Localidad" class=""></label>
+                    <input asp-for="@Model.Localidad" class="form-control">
+                    <span asp-validation-for="@Model.Localidad" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label asp-for="@Model.Etiquetas" class=""></label>
+                    <input asp-for="@Model.Etiquetas" class="form-control tags">
+                    <span asp-validation-for="@Model.Etiquetas" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label asp-for="@Model.Observaciones" class=""></label>
+                    <textarea asp-for="@Model.Observaciones" class="form-control"></textarea>
+                    <span asp-validation-for="@Model.Observaciones" class="text-danger"></span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

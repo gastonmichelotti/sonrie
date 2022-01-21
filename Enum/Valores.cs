@@ -19,6 +19,12 @@ namespace netCoreNew.Enum
             Incorrectos = "Algunos datos no son correctos",
             Error = "Ups! Surgió un error inesperado";
     }
+
+    public enum ProveedoresEnum
+    {
+        Richetta = 3,
+        Schneider = 4,
+    }
 }
 
 

@@ -26,20 +26,39 @@ namespace netCoreNew.Controllers
     public class AdminController : BaseController
     {
         private readonly IUsuarioService usuarioService;
+        private readonly IProveedorService proveedorService;
         private readonly IArticuloService articuloService;
         private readonly IRolService rolService;
+        private readonly INegocioService negocioService;
+        private readonly IProyectoService proyectoService;
+        private readonly IRecuentoService recuentoService;
+        private readonly IDetalleRecuentoService detalleRecuentoService;
+        private readonly ICodigoProveedorService codigoProveedorService;
         private readonly IWebHostEnvironment hostingEnvironment;
 
 
         public AdminController(
             IUsuarioService usuarioService,
+            IProveedorService proveedorService,
             IArticuloService articuloService,
             IRolService rolService,
+            INegocioService negocioService,
+            IProyectoService proyectoService,
+            IRecuentoService recuentoService,
+            IDetalleRecuentoService detalleRecuentoService,
+            ICodigoProveedorService codigoProveedorService,
+
             IWebHostEnvironment hostingEnvironment)
         {
             this.usuarioService = usuarioService;
+            this.proveedorService = proveedorService;
             this.articuloService = articuloService;
             this.rolService = rolService;
+            this.negocioService = negocioService;
+            this.proyectoService = proyectoService;
+            this.recuentoService = recuentoService;
+            this.detalleRecuentoService = detalleRecuentoService;
+            this.codigoProveedorService = codigoProveedorService;
             this.hostingEnvironment = hostingEnvironment;
         }
 
@@ -160,6 +179,229 @@ namespace netCoreNew.Controllers
             usuarioService.Edit(model);
 
             return Json(new { success = true, message = Enum.Valores.Eliminacion });
+        }
+        #endregion
+
+        #region PROVEEDORES
+        [HttpGet]
+        public IActionResult Proveedores()
+        {
+            ViewData["Title"] = "Proveedores";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaProveedores()
+        {
+            var final = CargarProveedores(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarProveedores(int? id)
+        {
+            return proveedorService.GetList(c => (id == null ? !c.Eliminado : c.Id == id))
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Alias,
+                    email = c.Email,
+                    telefono = c.Telefono,
+                    activo = c.Activo,
+                    etiqueta = c.Etiquetas
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateProveedor(int id)
+        {
+            return PartialView("_ModalProveedor", new Proveedor
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateProveedor(Proveedor model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            proveedorService.Add(model);
+
+            var final = CargarProveedores(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditProveedor(int id)
+        {
+            var result = proveedorService.GetById(id);
+
+            return PartialView("_ModalProveedor", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditProveedor(Proveedor model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var proveedor = proveedorService.GetById(model.Id);
+
+            proveedor.Alias = model.Alias;
+            proveedor.Telefono = model.Telefono;
+            proveedor.Email = model.Email;
+            proveedor.Domicilio = model.Domicilio;
+            proveedor.Localidad = model.Localidad;
+            proveedor.Etiquetas = model.Etiquetas;
+
+            proveedorService.Edit(proveedor);
+
+            var final = CargarProveedores(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        public IActionResult ActivarProveedor(int id)
+        {
+            var model = proveedorService.GetById(id);
+
+            model.Activo = !model.Activo;
+
+            proveedorService.Edit(model);
+
+            var final = CargarProveedores(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
+
+        [HttpGet]
+        public IActionResult ImportarProveedor()
+        {
+            var model = new ExcelVM
+            {
+                Url = "/files/ExcelModeloProveedores.xlsx"
+            };
+
+            return PartialView("_ImportarProveedor", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarProveedor(ExcelVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Json(new { success = false, message = Valores.Incorrectos });
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return Json(new { success = false, message = "Debes seleccionar un archivo primero" });
+                }
+
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+                var nombre = Path.GetRandomFileName() + ".xlsx";
+
+                var filePath = Path.Combine(uploads, nombre);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                var file = new FileInfo(filePath);
+
+                var exitos = new List<string>();
+                var errores = new List<string>();
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    var sb = new StringBuilder();
+                    var worksheet = package.Workbook.Worksheets[0];
+                    var rowCount = worksheet.Dimension.Rows;
+                    var colCount = worksheet.Dimension.Columns;
+
+                    if (rowCount == 1)
+                    {
+                        var version = worksheet.Cells[1, 1].Value.ToString();
+
+                        if (version != "1")
+                        {
+                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
+                        }
+                    }
+
+                    var validadRepetidos = new List<string>();
+
+                    for (int row = 3; row <= rowCount; row++)
+                    {
+                        try
+                        {
+                            if (worksheet.Cells[row, 1]?.Value?.ToString() == null)
+                            {
+                                continue;
+                            }
+
+                            var nuevo = new Proveedor
+                            {
+                                Alias = worksheet.Cells[row, 1]?.Value.ToString(),
+                                Email = worksheet.Cells[row, 2]?.Value.ToString(),
+                                Telefono = worksheet.Cells[row, 3]?.Value.ToString(),
+                                Domicilio = worksheet.Cells[row, 4]?.Value.ToString(),
+                                Localidad = worksheet.Cells[row, 5]?.Value.ToString(),
+                                NombreContacto = worksheet.Cells[row, 6]?.Value.ToString()
+                            };
+
+                            try
+                            {
+                                proveedorService.Add(nuevo);
+                            }
+                            catch (Exception e)
+                            {
+                                errores.Add($"{e.Message} en la fila {row}");
+                                continue;
+                            }
+
+                            exitos.Add(nuevo.Alias);
+                        }
+                        catch (Exception e)
+                        {
+                            errores.Add($"Algunos valores en la fila {row} son incorrectos");
+                            continue;
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = Valores.Edicion, exitos = exitos.ToArray(), errores = errores.ToArray() });
+            }
+            catch (System.Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+        }
+
+        public IActionResult EliminarProveedor(int id)
+        {
+            var model = proveedorService.GetById(id);
+
+            model.Eliminado = true;
+
+            proveedorService.Edit(model);
+
+            var final = CargarProveedores(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
         }
         #endregion
 
@@ -285,6 +527,1045 @@ namespace netCoreNew.Controllers
 
             return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
         }
+
+        [HttpGet]
+        public IActionResult ImportarArticulo()
+        {
+            var model = new ExcelVM
+            {
+                Url = ExcelArticulos()
+            };
+
+            return PartialView("_ImportarArticulo", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarArticulo(ExcelVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Json(new { success = false, message = Valores.Incorrectos });
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return Json(new { success = false, message = "Debes seleccionar un archivo primero" });
+                }
+
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+                var nombre = Path.GetRandomFileName() + ".xlsx";
+
+                var filePath = Path.Combine(uploads, nombre);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                var file = new FileInfo(filePath);
+
+                var exitos = new List<string>();
+                var errores = new List<string>();
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    var sb = new StringBuilder();
+                    var worksheet = package.Workbook.Worksheets[0];
+                    var rowCount = worksheet.Dimension.Rows;
+                    var colCount = worksheet.Dimension.Columns;
+
+                    //if (rowCount == 1)
+                    //{
+                    //    var version = worksheet.Cells[1, 1].Value.ToString();
+
+                    //    if (version != "2")
+                    //    {
+                    //        return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
+                    //    }
+                    //}
+
+                    var validadRepetidos = new List<string>();
+
+                    for (int row = 3; row <= rowCount; row++)
+                    {
+                        try
+                        {
+                            if (worksheet.Cells[row, 1]?.Value?.ToString() != null)
+                            {
+                                var id = int.Parse(worksheet.Cells[row, 1].Value.ToString());
+
+                                var articulo = articuloService.GetById(id);
+
+                                //TODO-GASTON: MAPEAR LA PROPIEDAD CON LA COLUMNA DEFINIDA ARRIBA
+
+                                articuloService.Edit(articulo);
+
+                                continue;
+                            }
+
+                            if (worksheet.Cells[row, 2]?.Value?.ToString() != null)
+                            {
+                                //nada mas
+                                break;
+                            }
+
+                            //TODO-GASTON: MAPEAR LA PROPIEDAD CON LA COLUMNA DEFINIDA ARRIBA
+                            var nuevo = new Articulo
+                            {
+                                Nombre = worksheet.Cells[row, 2]?.Value.ToString(),
+                                Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
+                                Descripcion = worksheet.Cells[row, 4]?.Value.ToString(),
+                                Marca = worksheet.Cells[row, 5]?.Value.ToString(),
+                                UnidMedida = worksheet.Cells[row, 6]?.Value.ToString(),
+                                Precio = Convert.ToDouble(worksheet.Cells[row, 7]?.Value),
+                                Observaciones = worksheet.Cells[row, 8]?.Value.ToString(),
+                                Etiquetas = worksheet.Cells[row, 9]?.Value.ToString(),
+                                Activo = true,
+                                Eliminado = false,
+                            };
+
+                            try
+                            {
+                                articuloService.Add(nuevo);
+                            }
+                            catch (Exception e)
+                            {
+                                errores.Add($"{e.Message} en la fila {row}");
+                                continue;
+                            }
+
+                            exitos.Add(nuevo.Nombre);
+                        }
+                        catch (Exception e)
+                        {
+                            errores.Add($"Algunos valores en la fila {row} son incorrectos");
+                            continue;
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = Valores.Edicion, exitos = exitos.ToArray(), errores = errores.ToArray() });
+            }
+            catch (System.Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+        }
+
+        public string ExcelArticulos()
+        {
+            var folder = "files";
+
+            var uploads = Path.Combine(hostingEnvironment.WebRootPath, folder);
+
+            var nombre = Path.GetRandomFileName() + ".xlsx";
+
+            var filePath = Path.Combine(uploads, nombre);
+
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    await model.File.CopyToAsync(stream);
+            //}
+
+            var file = new FileInfo(filePath);
+
+            using (ExcelPackage package = new ExcelPackage(file))
+            {
+                var worksheet = package.Workbook.Worksheets.Add("MIS ARTICULOS");
+
+                var column = 1;
+
+                worksheet.Cells[1, column++].Value = "Id (NO TOCAR)";
+                worksheet.Cells[1, column++].Value = "Artículo";
+                worksheet.Cells[1, column++].Value = "Codigo General";
+                worksheet.Cells[1, column++].Value = "Descripción";
+                worksheet.Cells[1, column++].Value = "Marca";
+                worksheet.Cells[1, column++].Value = "Precio";
+                worksheet.Cells[1, column++].Value = "Observaciones";
+                worksheet.Cells[1, column++].Value = "Un. Medida";
+                worksheet.Cells[1, column++].Value = "Activo (si o no)";
+                worksheet.Cells[1, column++].Value = "Etiquetas (separadas por comas)";
+                worksheet.Cells[1, column++].Value = "Codigo Richetta";
+                worksheet.Cells[1, column++].Value = "Precio Richetta ";
+                worksheet.Cells[1, column++].Value = "Código Schneider";
+                worksheet.Cells[1, column++].Value = "PrecioSchenider";
+
+                var _codigoproveedor = codigoProveedorService.GetAll()
+                    .ToList();
+
+                var _articulos = articuloService.GetList(c => !c.Eliminado)
+                .AsEnumerable()
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Nombre,
+                    c.Codigo,
+                    c.Descripcion,
+                    c.Marca,
+                    c.Precio,
+                    c.Observaciones,
+                    c.UnidMedida,
+                    c.Activo,
+                    c.Etiquetas,
+                    codigoRichetta = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Richetta)?.Codigo,
+                    precioRichetta = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Richetta)?.PrecioProveedor,
+                    codigoSchneider = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Schneider)?.Codigo,
+                    precioSchneider = _codigoproveedor.FirstOrDefault(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Schneider)?.PrecioProveedor
+                })
+                .OrderBy(c => c.Nombre);
+
+                var _rowPublicaciones = 2;
+                var totalArticulos = 0;
+
+                foreach (var item in _articulos)
+                {
+                    column = 1;
+
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Id;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Nombre;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Codigo;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Descripcion;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Marca;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Precio;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Observaciones;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.UnidMedida;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Activo ? "si" : "no";
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.Etiquetas;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.codigoRichetta;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.precioRichetta;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.codigoSchneider;
+                    worksheet.Cells[_rowPublicaciones, column++].Value = item.precioSchneider;
+
+                    _rowPublicaciones++;
+                }
+
+                totalArticulos = _rowPublicaciones;
+
+                //var _categorias = categoriaService.GetList(c => c.IdNegocio == NegocioHelper.GetCurrentNegocioId)
+                //.Select(c => new
+                //{
+                //    c.Id,
+                //    c.Nombre
+                //})
+                // .OrderBy(c => c.Nombre);
+                //_rowPublicaciones = 2;
+                //foreach (var item in _categorias)
+                //{
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.IdCategoria].Value = item.Id;
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.CategoriaNombre].Value = item.Nombre;
+                //    _rowPublicaciones++;
+                //}
+
+                //var _subcategorias = subCategoriaService.GetList(c => c.Categoria.IdNegocio == NegocioHelper.GetCurrentNegocioId, c => c.Categoria)
+                //.Select(c => new
+                //{
+                //    c.Id,
+                //    Nombre = c.Categoria.Nombre + " | " + c.Nombre
+                //})
+                //.OrderBy(c => c.Nombre);
+                //_rowPublicaciones = 2;
+                //foreach (var item in _subcategorias)
+                //{
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.IdSubcategoria].Value = item.Id;
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.SubcategoriaNombre].Value = item.Nombre;
+                //    _rowPublicaciones++;
+                //}
+
+                //var _marcas = marcaService.GetList(c => c.IdNegocio == NegocioHelper.GetCurrentNegocioId)
+                //.Select(c => new
+                //{
+                //    c.Id,
+                //    c.Nombre
+                //})
+                //.OrderBy(c => c.Nombre);
+                //_rowPublicaciones = 2;
+                //foreach (var item in _marcas)
+                //{
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.IdMarca].Value = item.Id;
+                //    worksheet.Cells[_rowPublicaciones, (int)Valores.ColumnaExcel.MarcaNombre].Value = item.Nombre;
+                //    _rowPublicaciones++;
+                //}
+
+                using (var range = worksheet.Cells[1, 1, 1, column])
+                {
+                    range.Style.Font.Bold = true;
+                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                    range.Style.Font.Size = 11;
+                }
+
+                //using (var range = worksheet.Cells[1, (int)Valores.ColumnaExcel.IdCategoria, 1, (int)Valores.ColumnaExcel.CategoriaNombre])
+                //{
+                //    range.Style.Font.Bold = true;
+                //    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                //    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                //    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                //    range.Style.Font.Size = 11;
+                //}
+
+                //using (var range = worksheet.Cells[1, (int)Valores.ColumnaExcel.IdSubcategoria, 1, (int)Valores.ColumnaExcel.SubcategoriaNombre])
+                //{
+                //    range.Style.Font.Bold = true;
+                //    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                //    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                //    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                //    range.Style.Font.Size = 11;
+                //}
+
+                //using (var range = worksheet.Cells[1, (int)Valores.ColumnaExcel.IdMarca, 1, (int)Valores.ColumnaExcel.MarcaNombre])
+                //{
+                //    range.Style.Font.Bold = true;
+                //    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                //    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                //    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                //    range.Style.Font.Size = 11;
+                //}
+
+                worksheet.Cells.AutoFitColumns(10, 100);  //Autofit columns for all cells
+
+                //using (var range = worksheet.Cells[2, 1, totalArticulos, (int)Valores.ColumnaExcel.UltimoProducto])
+                //{
+                //    range.Style.Font.Size = 9;
+                //    range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //    range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                //    range.Style.WrapText = true;
+                //}
+
+                //for (int i = 1; i <= (int)Valores.ColumnaExcel.MarcaNombre; i++)
+                //{
+                //    worksheet.Column(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //    worksheet.Column(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                //    worksheet.Column(i).Style.WrapText = false;
+                //}
+
+                package.Save();
+            }
+
+            return Path.Combine("../" + folder, nombre);
+        }
+
         #endregion
+
+        #region PROYECTOS
+        [HttpGet]
+        public IActionResult Proyectos()
+        {
+            ViewData["Title"] = "Proyectos";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaProyectos()
+        {
+            var final = CargarProyectos(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarProyectos(int? id)
+        {
+            return proyectoService.GetList(c => (id == null ? true : c.Id == id), c => c.Usuario)
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,
+                    usuario = c.Usuario.Nombre,
+                    fecha = c.FechaCreacion.ToString("dd/MM/yyyy")
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateProyecto(int id)
+        {
+            return PartialView("_ModalProyecto", new Proyecto
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateProyecto(Proyecto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.FechaCreacion = CurrentDate;
+            model.IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id;
+
+            proyectoService.Add(model);
+
+            var final = CargarProyectos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditProyecto(int id)
+        {
+            var result = proyectoService.GetById(id);
+
+            return PartialView("_ModalProyecto", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditProyecto(Proyecto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var proyecto = proyectoService.GetById(model.Id);
+
+            proyecto.Nombre = model.Nombre;
+            proyecto.FechaModificacion = CurrentDate;
+
+            proyectoService.Edit(proyecto);
+
+            var final = CargarProyectos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+        #endregion
+
+        #region RECUENTOS
+        [HttpGet]
+        public IActionResult Recuentos()
+        {
+            ViewData["Title"] = "Recuentos";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaRecuentos()
+        {
+            var final = CargarRecuentos(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarRecuentos(int? id)
+        {
+            return recuentoService.GetList(c => (id == null ? !c.Eliminado : c.Id == id), c => c.Usuario, c => c.Detalles)
+                .AsEnumerable()
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,
+                    usuario = c.Usuario.Nombre,
+                    fecha = c.FechaCreacion.ToString("dd/MM/yyyy"),
+                    total = c.Detalles.Sum(c => c.Subtotal).ToString("C1") + " " + (c.Detalles.Any(x => x.Precio == 0) ? "💸" : ""),
+                    modificado = c.FechaModificacion?.ToString("dd/MM/yyyy"),
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateRecuento(int id)
+        {
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto");
+
+            return PartialView("_ModalRecuento", new Recuento
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateRecuento(Recuento model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.FechaCreacion = CurrentDate;
+            model.IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id;
+
+            foreach (var item in model.Items)
+            {
+                model.Detalles.Add(new DetalleRecuento
+                {
+                    IdArticulo = item.IdArticulo,
+                    Cantidad = item.Cantidad,
+                    Precio = item.Precio,
+                    UnidadMedida = item.UnidadMedida,
+                    Codigo = item.Codigo
+                });
+            }
+
+            recuentoService.Add(model);
+
+            var final = CargarRecuentos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditRecuento(int id)
+        {
+            var result = recuentoService.GetById(id);
+
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto", "Codigo");
+
+            var items = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).Select(c => new
+            {
+                Nombre = c.Codigo + "+" + c.IdArticulo + "+" + c.Cantidad + "+" + c.UnidadMedida + "+" + c.Precio
+            });
+
+            result.ItemsLoad = string.Join(';', items.Select(c => c.Nombre));
+
+            return PartialView("_ModalRecuento", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditRecuento(Recuento model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var recuento = recuentoService.GetById(model.Id);
+
+            var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == model.Id);
+
+            detalleRecuentoService.DeleteRange(detalles.ToArray());
+
+            foreach (var item in model.Items)
+            {
+                recuento.Detalles.Add(new DetalleRecuento
+                {
+                    IdArticulo = item.IdArticulo,
+                    Cantidad = item.Cantidad,
+                    Precio = item.Precio,
+                    UnidadMedida = item.UnidadMedida,
+                    Codigo = item.Codigo
+                });
+            }
+
+            recuento.Nombre = model.Nombre;
+            recuento.FechaModificacion = CurrentDate;
+            recuento.Etiquetas = model.Etiquetas;
+            recuento.Descripcion = model.Descripcion;
+            recuento.IdProyecto = model.IdProyecto;
+
+            recuentoService.Edit(recuento);
+
+            var final = CargarRecuentos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        public IActionResult EliminarRecuento(int id)
+        {
+            var model = recuentoService.GetById(id);
+
+            model.Eliminado = true;
+
+            recuentoService.Edit(model);
+
+            var final = CargarRecuentos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
+
+        [HttpGet]
+        public IActionResult VerRecuento(int id)
+        {
+            var result = recuentoService.GetSingle(c => c.Id == id, c => c.Usuario);
+            var detalle = detalleRecuentoService.GetList(c => c.IdRecuento == result.Id, c => c.Articulo);
+
+            var final = new VerRecuentoVM
+            {
+                FechaCreacion = result.FechaCreacion.ToString("dd/MM/yyyy"),
+                FechaModificacion = result.FechaModificacion?.ToString("dd/MM/yyyy"),
+                Nombre = result.Nombre,
+                CreadoPor = result.Usuario.Nombre,
+                Descripcion = result.Descripcion,
+                Total = detalle.Sum(c => c.Subtotal).ToString("C0"),
+                Detalles = detalle.Select(x => new VerRecuentoDetalleVM
+                {
+                    Nombre = x.Articulo.NombreCompleto,
+                    Cantidad = x.Cantidad + "",
+                    Precio = x.Precio.ToString("C0"),
+                    Subtotal = x.Subtotal.ToString("C0"),
+                    Id = x.IdArticulo,
+                    Codigo = x.Codigo
+                }).ToList()
+            };
+
+            return PartialView("_ModalVerRecuento", final);
+        }
+
+        [HttpGet]
+        public IActionResult ImportarRecuento()
+        {
+            var model = new ExcelVM
+            {
+                Url = "/files/ExcelModeloRecuento.xlsx"
+            };
+
+            return PartialView("_ImportarRecuento", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarRecuento(ExcelVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Json(new { success = false, message = Valores.Incorrectos });
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return Json(new { success = false, message = "Debes seleccionar un archivo primero" });
+                }
+
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+                var nombre = Path.GetRandomFileName() + ".xlsx";
+
+                var filePath = Path.Combine(uploads, nombre);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                var file = new FileInfo(filePath);
+
+                var exitos = new List<string>();
+                var errores = new List<string>();
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    var sb = new StringBuilder();
+                    var worksheet = package.Workbook.Worksheets[0];
+                    var rowCount = worksheet.Dimension.Rows;
+                    var colCount = worksheet.Dimension.Columns;
+
+                    if (rowCount == 1)
+                    {
+                        var version = worksheet.Cells[1, 1].Value.ToString();
+
+                        if (version != "2")
+                        {
+                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
+                        }
+                    }
+
+                    var validadRepetidos = new List<string>();
+
+                    for (int row = 3; row <= rowCount; row++)
+                    {
+                        try
+                        {
+                            if (worksheet.Cells[row, 1]?.Value?.ToString() == null)
+                            {
+                                continue;
+                            }
+
+                            var nuevo = new DetalleRecuento
+                            {
+                                IdArticulo = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).Id,
+                                Cantidad = (int)worksheet.Cells[row, 2]?.Value,
+                                IdRecuento = recuentoService.GetAll().LastOrDefault().Id + 1,
+                                Codigo = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).Codigo,
+                                Precio = (double)worksheet.Cells[row, 3].Value,
+                                UnidadMedida = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).UnidMedida,
+                            };
+
+                            try
+                            {
+                                detalleRecuentoService.Add(nuevo);
+                            }
+                            catch (Exception e)
+                            {
+                                errores.Add($"{e.Message} en la fila {row}");
+                                continue;
+                            }
+
+                            exitos.Add(nuevo.IdArticulo.ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            errores.Add($"Algunos valores en la fila {row} son incorrectos");
+                            continue;
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = Valores.Edicion, exitos = exitos.ToArray(), errores = errores.ToArray() });
+            }
+            catch (System.Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CargarDatosArticulo(int id)
+        {
+            var final = articuloService.GetById(id);
+
+            return Json(new
+            {
+                success = true,
+                data = new
+                {
+                    final.Codigo,
+                    final.Precio,
+                    final.UnidMedida
+                }
+            });
+        }
+        #endregion
+
+        #region CODIGOS
+        [HttpGet]
+        public IActionResult CodigoProveedor()
+        {
+            ViewData["Title"] = "CodigoProveedor";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaCodigoProveedor()
+        {
+            var final = CargarCodigoProveedor(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarCodigoProveedor(int? id)
+        {
+            return codigoProveedorService.GetList(c => (id == null ? true : c.Id == id), c => c.Proveedor, c => c.Articulo).
+                AsEnumerable().Select(c => new
+                {
+                    id = c.Id,
+                    idProveedor = c.IdProveedor,
+                    proveedor = c.Proveedor.Alias,
+                    idArticulo = c.IdArticulo,
+                    articulo = c.Articulo.Nombre,
+                    codigoGeneral = c.Articulo.Codigo,
+                    codigo = c.Codigo,
+                    precio = c.PrecioProveedor.ToString("C1"),
+
+                })
+                .OrderBy(c => c.articulo);
+        }
+
+        //LO GUARDO PARA USARLO EN EL OTRO METODO
+        //private IEnumerable<object> CargarCodigoProveedor(int? idProveedor)
+        //{
+        //    return codigoProveedorService.GetList(c => (idProveedor == null ? true : c.IdProveedor == idProveedor), c => c.Proveedor, c => c.Articulo).
+        //        AsEnumerable().Select(c => new
+        //        {
+        //            id = c.Id,
+        //            //idProveedor = c.IdProveedor,
+        //            proveedor = c.Proveedor.Alias,
+        //            //idArticulo = c.IdArticulo,
+        //            articulo = c.Articulo.Nombre,
+        //            codigoGeneral = c.Articulo.Codigo,
+        //            codigo = c.Codigo,
+        //            precio = c.PrecioProveedor.ToString("C1"),
+
+        //        })
+        //        .OrderBy(c => c.articulo);
+        //}
+
+        [HttpGet]
+        public IActionResult CreateCodigoProveedor(int id)
+        {
+            ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias");
+
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto");
+
+            return PartialView("_ModalCodigoProveedor", new CodigoProveedor
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateCodigoProveedor(CodigoProveedor model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            codigoProveedorService.Add(model);
+
+            var final = CargarCodigoProveedor(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditCodigoProveedor(int id)
+        {
+            var result = codigoProveedorService.GetById(id);
+
+            ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias", result.IdProveedor);
+
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto", result.IdArticulo);
+
+            return PartialView("_ModalCodigoProveedor", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditCodigoProveedor(CodigoProveedor model)
+        {
+            ModelState.Remove("Id");
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var codigoProveedor = codigoProveedorService.GetById(model.Id);
+
+            codigoProveedor.IdProveedor = model.IdProveedor;
+            codigoProveedor.IdArticulo = model.IdArticulo;
+            codigoProveedor.Codigo = model.Codigo;
+            codigoProveedor.PrecioProveedor = model.PrecioProveedor;
+
+            codigoProveedorService.Edit(codigoProveedor);
+
+            var final = CargarCodigoProveedor(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        [HttpGet]
+        public IActionResult EditInlineCodigoProveedor(int id)
+        {
+            var result = codigoProveedorService.GetList(c => c.IdArticulo == id, c => c.Proveedor, c => c.Articulo)
+                .Select(c => new EditCodigoProveedorVM
+                {
+                    Id = c.Id,
+                    Articulo = c.Articulo.Nombre,
+                    Codigo = c.Articulo.Codigo,
+                    CodigoGral = c.Codigo,
+                    Precio = c.PrecioProveedor,
+                    Proveedor = c.Proveedor.Alias
+                });
+
+            return PartialView("_ModalCodigoProveedorInline", result);
+        }
+
+        public IActionResult EditInlineCodigo(int id, string valor, string campo)
+        {
+            var model = codigoProveedorService.GetById(id);
+
+            if (model == null)
+            {
+                return Json(new { Resultado = false, Mensaje = "Codigo Proveedor no encontrado" });
+            }
+
+            switch (campo)
+            {
+                case "codigo":
+                    model.Codigo = valor;
+                    codigoProveedorService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Éxito!",
+                    });
+                case "precio":
+                    model.PrecioProveedor = double.Parse(valor);
+                    codigoProveedorService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Exito!",
+                    });
+                default:
+                    break;
+            }
+
+            return Json(new
+            {
+                Resultado = false,
+                Mensaje = "Hubo un error al modificar el valor",
+            });
+        }
+
+        //public IActionResult ActivarArticulo(int id)
+        //{
+        //    var model = articuloService.GetById(id);
+
+        //    model.Activo = !model.Activo;
+
+        //    articuloService.Edit(model);
+
+        //    var final = CargarArticulos(model.Id).First();
+
+        //    return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        //}
+
+        public IActionResult EliminarCodigoProveedor(int id)
+        {
+            var model = codigoProveedorService.GetById(id);
+
+            codigoProveedorService.Edit(model);
+
+            var final = CargarCodigoProveedor(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
+
+        [HttpGet]
+        public IActionResult ImportarCodigoProveedor()
+        {
+            var model = new ExcelVM
+            {
+                Url = "/files/ExcelModeloCodigoProveedor.xlsx"
+            };
+
+            return PartialView("_ImportarCodigoProveedor", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarCodigoProveedor(ExcelVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Json(new { success = false, message = Valores.Incorrectos });
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return Json(new { success = false, message = "Debes seleccionar un archivo primero" });
+                }
+
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+                var nombre = Path.GetRandomFileName() + ".xlsx";
+
+                var filePath = Path.Combine(uploads, nombre);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                var file = new FileInfo(filePath);
+
+                var exitos = new List<string>();
+                var errores = new List<string>();
+
+                using (ExcelPackage package = new ExcelPackage(file))
+                {
+                    var sb = new StringBuilder();
+                    var worksheet = package.Workbook.Worksheets[0];
+                    var rowCount = worksheet.Dimension.Rows;
+                    var colCount = worksheet.Dimension.Columns;
+
+                    if (rowCount == 1)
+                    {
+                        var version = worksheet.Cells[1, 1].Value.ToString();
+
+                        if (version != "1")
+                        {
+                            return Json(new { success = false, message = $"La version de tu archivo Excel no es la última. Porfavor descargala." });
+                        }
+                    }
+
+                    var validadRepetidos = new List<string>();
+
+                    for (int row = 3; row <= rowCount; row++)
+                    {
+                        try
+                        {
+                            if (worksheet.Cells[row, 1]?.Value?.ToString() == null)
+                            {
+                                continue;
+                            }
+
+                            var nuevo = new CodigoProveedor
+                            {
+                                //IdProveedor = codigoProveedorService.GetList(c => c.Proveedor.Alias.Equals(worksheet.Cells[row, 1].Value), c => c.Proveedor).Select
+                                //(c => new
+                                //{
+                                //   Id
+                                //}).FirstOrDefault(),
+
+                                IdProveedor = codigoProveedorService.GetList(c => c.Proveedor.Alias.Equals(worksheet.Cells[row, 1].Value), c => c.Proveedor).FirstOrDefault().IdProveedor,
+                                //IdProveedor = (int) worksheet.Cells[row, 1]?.Value,
+                                IdArticulo = codigoProveedorService.GetList(c => c.Articulo.Nombre.Equals(worksheet.Cells[row, 2].Value), c => c.Articulo).FirstOrDefault().IdArticulo,
+                                //IdArticulo = (int) worksheet.Cells[row, 2]?.Value,
+                                Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
+                                PrecioProveedor = (double)worksheet.Cells[row, 4]?.Value,
+                            };
+
+                            try
+                            {
+                                codigoProveedorService.Add(nuevo);
+                            }
+                            catch (Exception e)
+                            {
+                                errores.Add($"{e.Message} en la fila {row}");
+                                continue;
+                            }
+
+                            exitos.Add(nuevo.IdArticulo.ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            errores.Add($"Algunos valores en la fila {row} son incorrectos");
+                            continue;
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = Valores.Edicion, exitos = exitos.ToArray(), errores = errores.ToArray() });
+            }
+            catch (System.Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+        }
+        #endregion
+
+        [HttpGet]
+        public IActionResult Negocio()
+        {
+            var result = negocioService.GetAll().First();
+
+            return PartialView("_ModalNegocio", result);
+        }
+
+        [HttpPost]
+        public IActionResult Negocio(Negocio model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var result = negocioService.GetById(model.Id);
+
+            negocioService.Edit(result);
+
+            return Json(new { success = true, message = Valores.Edicion });
+        }
     }
 }
