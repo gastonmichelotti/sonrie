@@ -93,6 +93,7 @@
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
                 acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Eliminar($(this))" title="Eliminar" data-id="' + full.id + '"><i class="la la-trash text-danger"></i></a>';
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Ver($(this))" title="Ver" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-eye"></i></a>';
+                acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Ver($(this))" title="Ver" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-eye"></i></a>';
 
                 return acciones
             }
@@ -173,6 +174,68 @@
             });
 
         }
+
+        //function GuardarComo(btn) {
+
+        //    debugger;
+        //    console.log("GuardarComo");
+
+        //    var current = btn.closest("tr");      
+
+        //    $.get(urlEdit, { id: btn.data("id") }, function (result) {
+                            
+        //        $('#btn_modal_nuevo_2').unbind('click').Onclick(function (e) {
+
+        //            e.preventDefault();
+
+        //            btn = $(this);
+
+        //            btn.attr('disabled', true);
+
+        //            var form = btn.closest("form");
+        //            $.validator.unobtrusive.parse(form[0]);
+        //            var _data = new FormData(form[0]);
+
+        //            debugger;
+
+        //            if (!form.valid()) {
+        //                formError(btn, "Algunos datos no son correctos");
+        //                return;
+        //            }
+
+        //            KTApp.block('.modal-body', {});
+
+        //            $.ajax({
+        //                url: "/Admin/GuardarComo",
+        //                type: "POST",
+        //                data: _data,
+        //                cache: false,
+        //                contentType: false,
+        //                processData: false,
+        //                success: function (result) {
+        //                    if (result.success) {
+        //                        $('#modal_nuevo').modal('toggle');
+        //                        successMessage(result.message);
+        //                        tabla.row(current).data(result.data);
+        //                    }
+        //                    else {
+        //                        formError(btn, result.message);
+        //                    }
+        //                    return;
+        //                },
+        //                error: function (xhr, textStatus) {
+        //                    formError(btn, "Algunos datos no son correctos");
+        //                    return;
+        //                }
+        //            });
+
+        //        });
+
+        //    }).fail(function (xhr, status, error) {
+        //        errorMessage("Ups.. Surgio un error inesperado");
+        //        return;
+        //    });
+        //}
 
     </script>
 

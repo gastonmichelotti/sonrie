@@ -2,11 +2,17 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
+
 
 namespace netCoreNew.Models
 {
     public class Articulo : IEntityBase
     {
+        public Articulo()
+        {
+            this.Detalles = new List<CodigoProveedor>();
+        }
         public int Id { get; set; }
         [Required]
         public string Nombre { get; set; }
@@ -20,6 +26,8 @@ namespace netCoreNew.Models
         public bool Activo { get; set; }
         public bool Eliminado { get; set; }
         public string Etiquetas { get; set; }
+        public ICollection<CodigoProveedor> Detalles { get; set; }
+
 
         //public string Marca { get; set; }
     }

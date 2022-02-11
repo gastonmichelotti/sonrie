@@ -589,7 +589,7 @@ namespace netCoreNew.Controllers
 
                     var validadRepetidos = new List<string>();
 
-                    for (int row = 3; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         try
                         {
@@ -599,9 +599,44 @@ namespace netCoreNew.Controllers
 
                                 var articulo = articuloService.GetById(id);
 
-                                //TODO-GASTON: MAPEAR LA PROPIEDAD CON LA COLUMNA DEFINIDA ARRIBA
+                                articulo.Id = Convert.ToInt32(worksheet.Cells[row, 1]?.Value);
+                                articulo.Nombre = worksheet.Cells[row, 2]?.Value.ToString();
+                                articulo.Codigo = worksheet.Cells[row, 3]?.Value.ToString();
+                                articulo.Descripcion = worksheet.Cells[row, 4]?.Value?.ToString();
+                                articulo.Marca = worksheet.Cells[row, 5]?.Value.ToString();
+                                articulo.Precio = Convert.ToDouble(worksheet.Cells[row, 6]?.Value);
+                                articulo.Observaciones = worksheet.Cells[row, 7]?.Value?.ToString();
+                                articulo.UnidMedida = worksheet.Cells[row, 8]?.Value.ToString();
+                                articulo.Activo = worksheet.Cells[row, 9]?.Value.ToString() == "si" ? true : false;
+                                articulo.Etiquetas = worksheet.Cells[row, 10]?.Value.ToString();
+                                articulo.Eliminado = false;
+
+                                var idDetalleRichetta = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Richetta);
+                                var idDetalleSchneijder = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Schneider);
+                                
+                                articulo.Detalles.Add(new CodigoProveedor
+                                {
+                                    IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
+                                    IdProveedor = (int)ProveedoresEnum.Richetta,
+                                    Codigo = worksheet.Cells[row, 11]?.Value?.ToString(),
+                                    PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,
+                                });
+
+                                articulo.Detalles.Add(new CodigoProveedor
+                                {
+                                    IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
+                                    IdProveedor = (int)ProveedoresEnum.Schneider,
+                                    Codigo = worksheet.Cells[row, 13]?.Value.ToString(),
+                                    PrecioProveedor = (Double)worksheet.Cells[row, 14]?.Value,
+                                });
+
 
                                 articuloService.Edit(articulo);
+
+                                foreach (var detalle in articulo.Detalles)
+                                {
+                                    codigoProveedorService.Edit(detalle);
+                                };
 
                                 continue;
                             }
@@ -612,24 +647,48 @@ namespace netCoreNew.Controllers
                                 break;
                             }
 
-                            //TODO-GASTON: MAPEAR LA PROPIEDAD CON LA COLUMNA DEFINIDA ARRIBA
                             var nuevo = new Articulo
                             {
+                                Id = (int)worksheet.Cells[row, 1]?.Value,
                                 Nombre = worksheet.Cells[row, 2]?.Value.ToString(),
                                 Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
                                 Descripcion = worksheet.Cells[row, 4]?.Value.ToString(),
                                 Marca = worksheet.Cells[row, 5]?.Value.ToString(),
-                                UnidMedida = worksheet.Cells[row, 6]?.Value.ToString(),
-                                Precio = Convert.ToDouble(worksheet.Cells[row, 7]?.Value),
-                                Observaciones = worksheet.Cells[row, 8]?.Value.ToString(),
-                                Etiquetas = worksheet.Cells[row, 9]?.Value.ToString(),
-                                Activo = true,
-                                Eliminado = false,
+                                Precio = Convert.ToDouble(worksheet.Cells[row, 6]?.Value),
+                                Observaciones = worksheet.Cells[row, 7]?.Value.ToString(),
+                                UnidMedida = worksheet.Cells[row, 8]?.Value.ToString(),
+                                Activo = worksheet.Cells[row, 9]?.Value.ToString() == "si"? true : false,
+                                Etiquetas = worksheet.Cells[row, 10]?.Value.ToString(),                                
+                                Eliminado = false,                                                   
                             };
+
+                            nuevo.Detalles.Add(new CodigoProveedor
+                            {
+                                IdArticulo = (int)worksheet.Cells[row, 1]?.Value,
+                                IdProveedor = (int)ProveedoresEnum.Richetta,
+                                Codigo = worksheet.Cells[row, 11]?.Value.ToString(),
+                                PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,                                
+                            });
+
+                            nuevo.Detalles.Add(new CodigoProveedor
+                            {
+                                IdArticulo = (int)worksheet.Cells[row, 1]?.Value,
+                                IdProveedor = (int)ProveedoresEnum.Schneider,
+                                Codigo = worksheet.Cells[row, 13]?.Value.ToString(),
+                                PrecioProveedor = (Double)worksheet.Cells[row, 14]?.Value,
+                            });
+
+
 
                             try
                             {
                                 articuloService.Add(nuevo);
+
+                                foreach (var detalle in nuevo.Detalles)
+                                {
+                                    codigoProveedorService.Add(detalle);
+                                };
+                                
                             }
                             catch (Exception e)
                             {
@@ -1066,6 +1125,46 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, data = final, message = Valores.Edicion });
         }
 
+        [HttpPost]
+        public IActionResult GuardarComo(Recuento model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var recuento = recuentoService.GetById(model.Id);
+
+            var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == model.Id);
+
+            detalleRecuentoService.DeleteRange(detalles.ToArray());
+
+            foreach (var item in model.Items)
+            {
+                recuento.Detalles.Add(new DetalleRecuento
+                {
+                    IdArticulo = item.IdArticulo,
+                    Cantidad = item.Cantidad,
+                    Precio = item.Precio,
+                    UnidadMedida = item.UnidadMedida,
+                    Codigo = item.Codigo
+                });
+            }
+
+            recuento.Nombre = model.Nombre + " 2";
+            recuento.FechaModificacion = CurrentDate;
+            recuento.Etiquetas = model.Etiquetas;
+            recuento.Descripcion = model.Descripcion;
+            recuento.IdProyecto = model.IdProyecto;
+            recuento.Id = 0;
+
+            recuentoService.Add(recuento);
+
+            var final = CargarRecuentos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
         public IActionResult EliminarRecuento(int id)
         {
             var model = recuentoService.GetById(id);
@@ -1423,11 +1522,11 @@ namespace netCoreNew.Controllers
         {
             var model = codigoProveedorService.GetById(id);
 
-            codigoProveedorService.Edit(model);
+            codigoProveedorService.Delete(model);
 
-            var final = CargarCodigoProveedor(model.Id).First();
+            var final = CargarCodigoProveedor(id);
 
-            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+            return Json(new { success = true, data = final, message = Enum.Valores.Eliminacion});
         }
 
         [HttpGet]
