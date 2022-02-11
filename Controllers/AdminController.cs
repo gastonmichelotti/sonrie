@@ -1137,8 +1137,6 @@ namespace netCoreNew.Controllers
 
             var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == model.Id);
 
-            detalleRecuentoService.DeleteRange(detalles.ToArray());
-
             foreach (var item in model.Items)
             {
                 recuento.Detalles.Add(new DetalleRecuento
@@ -1160,7 +1158,7 @@ namespace netCoreNew.Controllers
 
             recuentoService.Add(recuento);
 
-            var final = CargarRecuentos(model.Id).First();
+            var final = CargarRecuentos(recuento.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Creacion });
         }
