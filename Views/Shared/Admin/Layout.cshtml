@@ -285,12 +285,14 @@
             $("#title_modal_nuevo").html("Editar");
             $("#btn_modal_nuevo").show();
             $("#btn_modal_nuevo_2").show();
+            
+            
 
             $.get(urlEdit, { id: btn.data("id") }, function (result) {
 
                 $('#content_modal_nuevo').html(result);
 
-                InitModal();
+                InitModal();                
 
                 $('#btn_modal_nuevo').unbind('click').click(function (e) {
 
@@ -338,6 +340,7 @@
                 });
 
                 $('#btn_modal_nuevo_2').unbind('click').click(function (e) {
+                                      
 
                     e.preventDefault();
 
@@ -416,13 +419,15 @@
 
             $("#title_modal_nuevo").html("Nuevo");
             $("#btn_modal_nuevo").show();
-            $("#btn_modal_nuevo_2").hide();
+            
 
             $.get(urlCreate, {}, function (result) {
 
                 $('#content_modal_nuevo').html(result);
-
+                             
                 InitModal();
+
+                $("#btn_modal_nuevo_2").hide();
 
                 $('#btn_modal_nuevo').unbind('click').click(function (e) {
 
@@ -475,6 +480,7 @@
                     });
 
                 });
+            
 
             }).fail(function (xhr, status, error) {
                 errorMessage("Ups.. Surgio un error inesperado");
@@ -506,6 +512,7 @@
                     width: '100%'
                 });
             });
+            
 
             $('.dropify').each(function () {
                 var drEvent = $(this).dropify({

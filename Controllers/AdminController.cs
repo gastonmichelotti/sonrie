@@ -614,22 +614,27 @@ namespace netCoreNew.Controllers
                                 var idDetalleRichetta = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Richetta);
                                 var idDetalleSchneijder = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Schneider);
                                 
-                                articulo.Detalles.Add(new CodigoProveedor
+                                if(worksheet.Cells[row, 12]?.Value != null)
                                 {
-                                    IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
-                                    IdProveedor = (int)ProveedoresEnum.Richetta,
-                                    Codigo = worksheet.Cells[row, 11]?.Value?.ToString(),
-                                    PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,
-                                });
-
-                                articulo.Detalles.Add(new CodigoProveedor
+                                    articulo.Detalles.Add(new CodigoProveedor
+                                    {
+                                        IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
+                                        IdProveedor = (int)ProveedoresEnum.Richetta,
+                                        Codigo = worksheet.Cells[row, 11]?.Value?.ToString(),
+                                        PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,
+                                    });
+                                }
+                                
+                                if(worksheet.Cells[row, 14]?.Value != null)
                                 {
-                                    IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
-                                    IdProveedor = (int)ProveedoresEnum.Schneider,
-                                    Codigo = worksheet.Cells[row, 13]?.Value.ToString(),
-                                    PrecioProveedor = (Double)worksheet.Cells[row, 14]?.Value,
-                                });
-
+                                    articulo.Detalles.Add(new CodigoProveedor
+                                    {
+                                        IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
+                                        IdProveedor = (int)ProveedoresEnum.Schneider,
+                                        Codigo = worksheet.Cells[row, 13]?.Value.ToString(),
+                                        PrecioProveedor =  (Double)worksheet.Cells[row, 14]?.Value,
+                                    });
+                                }                              
 
                                 articuloService.Edit(articulo);
 
@@ -1123,6 +1128,7 @@ namespace netCoreNew.Controllers
             var final = CargarRecuentos(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Edicion });
+            
         }
 
         [HttpPost]
