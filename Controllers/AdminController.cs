@@ -1214,7 +1214,7 @@ namespace netCoreNew.Controllers
         {
             var model = new ExcelVM
             {
-                Url = "/files/ExcelModeloRecuento.xlsx"
+                Url = "/files/ExcelModeloRecuento2.xlsx"
             };
 
             return PartialView("_ImportarRecuento", model);
@@ -1270,36 +1270,56 @@ namespace netCoreNew.Controllers
 
                     var validadRepetidos = new List<string>();
 
+                    Recuento nuevoRecuento  = new Recuento();
+
+                    nuevoRecuento.Nombre = "Recuento Importado " + CurrentDate;
+                    nuevoRecuento.Etiquetas = "Importado";
+                    nuevoRecuento.IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id;
+                    nuevoRecuento.FechaCreacion = CurrentDate;
+
+                    
                     for (int row = 3; row <= rowCount; row++)
                     {
                         try
                         {
-                            if (worksheet.Cells[row, 1]?.Value?.ToString() == null)
+                            if (worksheet.Cells[row, 2]?.Value?.ToString() == null)
                             {
                                 continue;
                             }
 
-                            var nuevo = new DetalleRecuento
+                            
+                            nuevoRecuento.Detalles.Add(new DetalleRecuento
                             {
-                                IdArticulo = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).Id,
-                                Cantidad = (int)worksheet.Cells[row, 2]?.Value,
+                                IdArticulo = articuloService.GetSingle(c => c.Id == Convert.ToInt32(worksheet.Cells[row, 4].Value)).Id,
+                                Cantidad = Convert.ToInt32(worksheet.Cells[row, 2]?.Value),
                                 IdRecuento = recuentoService.GetAll().LastOrDefault().Id + 1,
-                                Codigo = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).Codigo,
-                                Precio = (double)worksheet.Cells[row, 3].Value,
-                                UnidadMedida = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).UnidMedida,
-                            };
+                                Codigo = articuloService.GetSingle(c => c.Id == Convert.ToInt32(worksheet.Cells[row, 4].Value)).Codigo,
+                                Precio = Convert.ToDouble(worksheet.Cells[row, 3].Value),
+                                UnidadMedida = articuloService.GetSingle(c => c.Id == Convert.ToInt32(worksheet.Cells[row, 4].Value)).UnidMedida,
+                            });
 
-                            try
-                            {
-                                detalleRecuentoService.Add(nuevo);
-                            }
-                            catch (Exception e)
-                            {
-                                errores.Add($"{e.Message} en la fila {row}");
-                                continue;
-                            }
+                            //var nuevo = new DetalleRecuento
+                            //{
+                            //    IdArticulo = articuloService.GetSingle(c => c.Id == (int) worksheet.Cells[row, 4].Value).Id,
+                            //    Cantidad = (int)worksheet.Cells[row, 2]?.Value,
+                            //    IdRecuento = recuentoService.GetAll().LastOrDefault().Id + 1,
+                            //    Codigo = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).Codigo,
+                            //    Precio = (double)worksheet.Cells[row, 3].Value,
+                            //    UnidadMedida = articuloService.GetSingle(c => c.Nombre == worksheet.Cells[row, 1].Value.ToString()).UnidMedida,
+                            //};
 
-                            exitos.Add(nuevo.IdArticulo.ToString());
+                            //try
+                            //{
+                            //    detalleRecuentoService.Add(nuevo);
+                            //}
+                            //catch (Exception e)
+                            //{
+                            //    errores.Add($"{e.Message} en la fila {row}");
+                            //    continue;
+                            //}
+
+                            
+                            //exitos.Add(.IdArticulo.ToString());
                         }
                         catch (Exception e)
                         {
@@ -1307,9 +1327,11 @@ namespace netCoreNew.Controllers
                             continue;
                         }
                     }
+
+                    recuentoService.Add(nuevoRecuento);
                 }
 
-                return Json(new { success = true, message = Valores.Edicion, exitos = exitos.ToArray(), errores = errores.ToArray() });
+                return Json(new { success = true, message = Valores.Creacion, exitos = exitos.ToArray(), errores = errores.ToArray() });
             }
             catch (System.Exception e)
             {

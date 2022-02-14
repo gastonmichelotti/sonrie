@@ -20,6 +20,36 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\admin\files\Resource.resx" />
+    <Content Remove="wwwroot\files\ExcelModeloRecuento.xlsx" />
+    <Content Remove="wwwroot\files\f0su44mh.pt0.xlsx" />
+    <Content Remove="wwwroot\files\ghcji5xf.4xx.xlsx" />
+    <Content Remove="wwwroot\files\gy0kcskb.qgu.xlsx" />
+    <Content Remove="wwwroot\files\hfndcwl4.qnl.xlsx" />
+    <Content Remove="wwwroot\files\hlber3ub.3kl.xlsx" />
+    <Content Remove="wwwroot\files\hwpwphr2.z2m.xlsx" />
+    <Content Remove="wwwroot\files\iqtsjovv.hg3.xlsx" />
+    <Content Remove="wwwroot\files\jn02hmyy.jxy.xlsx" />
+    <Content Remove="wwwroot\files\jnadn1w0.efy.xlsx" />
+    <Content Remove="wwwroot\files\nibbaw1v.w5w.xlsx" />
+    <Content Remove="wwwroot\files\nx2jswvh.12f.xlsx" />
+    <Content Remove="wwwroot\files\o1jlxpub.s5w.xlsx" />
+    <Content Remove="wwwroot\files\pdjpckmu.fab.xlsx" />
+    <Content Remove="wwwroot\files\q0053xpw.btz.xlsx" />
+    <Content Remove="wwwroot\files\qpl2l0gm.3t2.xlsx" />
+    <Content Remove="wwwroot\files\rbtgzxju.v23.xlsx" />
+    <Content Remove="wwwroot\files\rjxspxlx.u4x.xlsx" />
+    <Content Remove="wwwroot\files\t4nbpnzz.hn3.xlsx" />
+    <Content Remove="wwwroot\files\to4yelke.yym.xlsx" />
+    <Content Remove="wwwroot\files\u5einl4n.4uq.xlsx" />
+    <Content Remove="wwwroot\files\ua5gennq.5br.xlsx" />
+    <Content Remove="wwwroot\files\uhmdtp1q.epy.xlsx" />
+    <Content Remove="wwwroot\files\vy5e5i5v.eqv.xlsx" />
+    <Content Remove="wwwroot\files\x1oj4xrc.fdd.xlsx" />
+    <Content Remove="wwwroot\files\x3hzadtf.er3.xlsx" />
+    <Content Remove="wwwroot\files\xas2p1vz.4lp.xlsx" />
+    <Content Remove="wwwroot\files\xhugldee.xiz.xlsx" />
+    <Content Remove="wwwroot\files\xspccmtq.n4s.xlsx" />
+    <Content Remove="wwwroot\files\yicba2ht.l0r.xlsx" />
   </ItemGroup>
 
   <ItemGroup>
