@@ -56,7 +56,7 @@ namespace netCoreNew.ViewModels
         public string Proveedor { get; set; }
         public string CodigoGral { get; set; }
         public double Precio { get; set; }
-        public string Codigo { get; set; }
+        public string CodigoProveedor { get; set; }
         //public List<CodigoProveedorVM> Configuracion { get; set; }
     }
 }

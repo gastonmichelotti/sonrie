@@ -22,6 +22,23 @@
             </div>
             <div class="kt-portlet__head-toolbar">
                 <div class="kt-portlet__head-wrapper">
+                    <div class="dropdown">
+                        <a href="#" class="btn btn-label-brand btn-bold dropdown-toggle" data-toggle="dropdown">
+                            Acciones
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-sm" aria-labelledby="dropdownMenuButton">
+
+                            <ul class="kt-nav">
+                                <li class="kt-nav__item">
+                                    <a href="#" class="kt-nav__link" data-toggle="modal" data-target="#modal_nuevo" id="btn_importar">
+                                        <i class="kt-nav__link-icon flaticon-upload"></i>
+                                        <span class="kt-nav__link-text">Importar</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
                     &nbsp;
                     <div class="dropdown dropdown-inline">
                         <button type="button" class="btn btn-brand btn-icon-sm ml-2" data-toggle="modal" data-target="#modal_nuevo" id="btn_crear">
@@ -99,6 +116,87 @@
         }];
 
         function initAcciones() {
+
+            $('#btn_importar').on('click', function (e) {
+
+                KTApp.block('.modal-body', {});
+
+                $("#title_modal_nuevo").html("Importar");
+                $("#btn_modal_nuevo").show();
+
+                $.get("/Admin/ImportarRecuento", {}, function (result) {
+
+                    $('#content_modal_nuevo').html(result);
+
+                    InitModal();
+
+                    $('#btn_modal_nuevo').unbind('click').click(function (e) {
+
+                        e.preventDefault();
+
+                        var btn = $(this);
+                        btn.attr('disabled', true);
+
+                        var form = $(this).closest("form");
+                        $.validator.unobtrusive.parse(form[0]);
+                        var _data = new FormData(form[0]);
+
+                        if (!form.valid()) {
+                            formError(btn, "Algunos datos no son correctos");
+                            return;
+                        }
+
+                        KTApp.block('.modal-body', {});
+
+                        $.ajax({
+                            url: "/Admin/ImportarRecuento",
+                            type: "POST",
+                            data: _data,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function (result) {
+                                if (result.success) {
+
+                                    var acciones = "";
+                                    function Convertir(texto, color) {
+                                        return '<div class="kt-list-timeline__item">' +
+                                            '<span class="kt-list-timeline__badge kt-list-timeline__badge--' + color + '"></span>' +
+                                            '<span class="kt-list-timeline__text">' + texto + '</span>' +
+                                            '</div>';
+                                    }
+                                    for (var i = 0; i < result.exitos.length; i++) {
+                                        acciones += Convertir("Recuento nuevo | " + result.exitos[i], "success");
+                                    }
+                                    for (var i = 0; i < result.errores.length; i++) {
+                                        acciones += Convertir("Error | " + result.errores[i], "danger");
+                                    }
+                                    $("#divResultado").html(acciones);
+
+                                    KTApp.unblock('.modal-body');
+                                    btn.attr('disabled', true);
+                                    successMessage(result.message);
+                                    tabla.ajax.reload();
+                                }
+                                else {
+                                    formError(btn, result.message);
+                                }
+                                return;
+                            },
+                            error: function (xhr, textStatus) {
+                                formError(btn, "Algunos datos no son correctos");
+                                return;
+                            }
+                        });
+
+                    });
+
+                }).fail(function (xhr, status, error) {
+                    errorMessage("Ups.. Surgio un error inesperado");
+                    return;
+                });
+
+            });
 
         }
 

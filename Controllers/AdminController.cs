@@ -1155,8 +1155,7 @@ namespace netCoreNew.Controllers
                 });
             }
 
-            recuento.Nombre = model.Nombre + " 2";
-            recuento.FechaModificacion = CurrentDate;
+            recuento.Nombre = model.Nombre + " 2";            
             recuento.Etiquetas = model.Etiquetas;
             recuento.Descripcion = model.Descripcion;
             recuento.IdProyecto = model.IdProyecto;
@@ -1462,8 +1461,8 @@ namespace netCoreNew.Controllers
                 {
                     Id = c.Id,
                     Articulo = c.Articulo.Nombre,
-                    Codigo = c.Articulo.Codigo,
-                    CodigoGral = c.Codigo,
+                    CodigoGral = c.Articulo.Codigo,
+                    CodigoProveedor = c.Codigo,
                     Precio = c.PrecioProveedor,
                     Proveedor = c.Proveedor.Alias
                 });

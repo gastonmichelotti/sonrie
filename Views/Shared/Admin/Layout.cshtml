@@ -370,7 +370,7 @@
                             if (result.success) {
                                 $('#modal_nuevo').modal('toggle');
                                 successMessage(result.message);
-                                tabla.row(current).data(result.data);
+                                tabla.row.add(result.data).draw(false);;
                             }
                             else {
                                 formError(btn, result.message);
