@@ -22,10 +22,10 @@ namespace netCoreNew.Models
         [NotMapped]
         public string ItemsLoad { get; set; }
 
-        //[NotMapped]
-        //public ICollection<Recuento> Recuentos { get; set; }
+        [NotMapped]
+        public ICollection<Recuento> Recuentos { get; set; }
 
-        public Recuento[] Items { get; set; }
+        //public Recuento[] Items { get; set; }
 
 
 
