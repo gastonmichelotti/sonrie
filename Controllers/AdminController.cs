@@ -4,21 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using netCoreNew.Business;
 using netCoreNew.Enum;
-using netCoreNew.Helpers;
-using netCoreNew.Logic;
 using netCoreNew.Models;
 using netCoreNew.ViewModels;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
-using System.Web;
 
 namespace netCoreNew.Controllers
 {
@@ -613,8 +608,8 @@ namespace netCoreNew.Controllers
 
                                 var idDetalleRichetta = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Richetta);
                                 var idDetalleSchneijder = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Schneider);
-                                
-                                if(worksheet.Cells[row, 12]?.Value != null)
+
+                                if (worksheet.Cells[row, 12]?.Value != null)
                                 {
                                     articulo.Detalles.Add(new CodigoProveedor
                                     {
@@ -624,17 +619,17 @@ namespace netCoreNew.Controllers
                                         PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,
                                     });
                                 }
-                                
-                                if(worksheet.Cells[row, 14]?.Value != null)
+
+                                if (worksheet.Cells[row, 14]?.Value != null)
                                 {
                                     articulo.Detalles.Add(new CodigoProveedor
                                     {
                                         IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
                                         IdProveedor = (int)ProveedoresEnum.Schneider,
                                         Codigo = worksheet.Cells[row, 13]?.Value.ToString(),
-                                        PrecioProveedor =  (Double)worksheet.Cells[row, 14]?.Value,
+                                        PrecioProveedor = (Double)worksheet.Cells[row, 14]?.Value,
                                     });
-                                }                              
+                                }
 
                                 articuloService.Edit(articulo);
 
@@ -662,9 +657,9 @@ namespace netCoreNew.Controllers
                                 Precio = Convert.ToDouble(worksheet.Cells[row, 6]?.Value),
                                 Observaciones = worksheet.Cells[row, 7]?.Value.ToString(),
                                 UnidMedida = worksheet.Cells[row, 8]?.Value.ToString(),
-                                Activo = worksheet.Cells[row, 9]?.Value.ToString() == "si"? true : false,
-                                Etiquetas = worksheet.Cells[row, 10]?.Value.ToString(),                                
-                                Eliminado = false,                                                   
+                                Activo = worksheet.Cells[row, 9]?.Value.ToString() == "si" ? true : false,
+                                Etiquetas = worksheet.Cells[row, 10]?.Value.ToString(),
+                                Eliminado = false,
                             };
 
                             nuevo.Detalles.Add(new CodigoProveedor
@@ -672,7 +667,7 @@ namespace netCoreNew.Controllers
                                 IdArticulo = (int)worksheet.Cells[row, 1]?.Value,
                                 IdProveedor = (int)ProveedoresEnum.Richetta,
                                 Codigo = worksheet.Cells[row, 11]?.Value.ToString(),
-                                PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,                                
+                                PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,
                             });
 
                             nuevo.Detalles.Add(new CodigoProveedor
@@ -693,7 +688,7 @@ namespace netCoreNew.Controllers
                                 {
                                     codigoProveedorService.Add(detalle);
                                 };
-                                
+
                             }
                             catch (Exception e)
                             {
@@ -947,6 +942,8 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult CreateProyecto(int id)
         {
+            ViewBag.IdRecuento = new SelectList(recuentoService.GetAll(), "Id", "Nombre");
+
             return PartialView("_ModalProyecto", new Proyecto
             {
 
@@ -997,6 +994,36 @@ namespace netCoreNew.Controllers
             var final = CargarProyectos(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        public IActionResult CargarDatosRecuento(int id)
+        {
+            
+            var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == id, c=> c.Recuento);
+
+            Double total = 0;
+
+            foreach (var item in detalles)
+            {
+                total = total + item.Subtotal;
+            }
+            var final = new
+            {
+                fechaCreacion = detalles.FirstOrDefault().Recuento.FechaCreacion.ToString("dd/MM/yyyy"),
+                total = total.ToString("C0")
+
+            };            
+
+            return Json(new
+            {
+                success = true,
+                data = new
+                {
+                    final.fechaCreacion,
+                    final.total
+                    
+                }
+            });
         }
         #endregion
 
@@ -1128,7 +1155,7 @@ namespace netCoreNew.Controllers
             var final = CargarRecuentos(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Edicion });
-            
+
         }
 
         [HttpPost]
@@ -1155,7 +1182,7 @@ namespace netCoreNew.Controllers
                 });
             }
 
-            recuento.Nombre = model.Nombre + " 2";            
+            recuento.Nombre = model.Nombre + " 2";
             recuento.Etiquetas = model.Etiquetas;
             recuento.Descripcion = model.Descripcion;
             recuento.IdProyecto = model.IdProyecto;
@@ -1270,14 +1297,14 @@ namespace netCoreNew.Controllers
 
                     var validadRepetidos = new List<string>();
 
-                    Recuento nuevoRecuento  = new Recuento();
+                    Recuento nuevoRecuento = new Recuento();
 
                     nuevoRecuento.Nombre = "Recuento Importado " + CurrentDate;
                     nuevoRecuento.Etiquetas = "Importado";
                     nuevoRecuento.IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id;
                     nuevoRecuento.FechaCreacion = CurrentDate;
 
-                    
+
                     for (int row = 3; row <= rowCount; row++)
                     {
                         try
@@ -1287,7 +1314,7 @@ namespace netCoreNew.Controllers
                                 continue;
                             }
 
-                            
+
                             nuevoRecuento.Detalles.Add(new DetalleRecuento
                             {
                                 IdArticulo = articuloService.GetSingle(c => c.Id == Convert.ToInt32(worksheet.Cells[row, 4].Value)).Id,
@@ -1318,7 +1345,7 @@ namespace netCoreNew.Controllers
                             //    continue;
                             //}
 
-                            
+
                             //exitos.Add(.IdArticulo.ToString());
                         }
                         catch (Exception e)
@@ -1551,7 +1578,7 @@ namespace netCoreNew.Controllers
 
             var final = CargarCodigoProveedor(id);
 
-            return Json(new { success = true, data = final, message = Enum.Valores.Eliminacion});
+            return Json(new { success = true, data = final, message = Enum.Valores.Eliminacion });
         }
 
         [HttpGet]

@@ -138,6 +138,33 @@
             DataTable.init();
         });
 
+        function CargarDatosRecuento(item) {
+
+            var id = item.val();
+
+            $.get("/Admin/CargarDatosRecuento", { id: id }, function (result) {
+
+                $('.rowRepeater').each(function () {
+
+                    var existe = $(this).find("select")[0].value == id;
+
+                    if (existe) {
+
+                        $(this).find(".fechaCreacion")[0].value = result.data.fechaCreacion;
+                        $(this).find(".precio")[0].value = result.data.total;
+                        
+                    }
+
+                });
+
+
+            }).fail(function (xhr, status, error) {
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+
+        }
+
     </script>
 
 }

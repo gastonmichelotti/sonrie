@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Http;
-using netCoreNew.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace netCoreNew.Models
@@ -22,5 +18,8 @@ namespace netCoreNew.Models
         public int IdUsuario { get; set; }
         [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
+        public string ItemsLoad { get; set; }
+        
+
     }
 }
