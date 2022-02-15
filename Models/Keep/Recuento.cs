@@ -27,8 +27,6 @@ namespace netCoreNew.Models
         [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
 
-      
-
         public ICollection<DetalleRecuento> Detalles { get; set; }
 
         [NotMapped]
