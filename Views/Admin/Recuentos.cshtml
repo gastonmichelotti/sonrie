@@ -157,7 +157,7 @@
                             processData: false,
                             success: function (result) {
                                 if (result.success) {
-
+                                    $('#modal_nuevo').modal('toggle');
                                     var acciones = "";
                                     function Convertir(texto, color) {
                                         return '<div class="kt-list-timeline__item">' +

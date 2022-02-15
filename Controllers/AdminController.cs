@@ -1214,7 +1214,7 @@ namespace netCoreNew.Controllers
         {
             var model = new ExcelVM
             {
-                Url = "/files/ExcelModeloRecuento2.xlsx"
+                Url = "/files/ExcelModeloRecuento3.xlsx"
             };
 
             return PartialView("_ImportarRecuento", model);
@@ -1235,7 +1235,7 @@ namespace netCoreNew.Controllers
                     return Json(new { success = false, message = "Debes seleccionar un archivo primero" });
                 }
 
-                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files\\Recuentos");
 
                 var nombre = Path.GetRandomFileName() + ".xlsx";
 
@@ -1282,7 +1282,7 @@ namespace netCoreNew.Controllers
                     {
                         try
                         {
-                            if (worksheet.Cells[row, 2]?.Value?.ToString() == null)
+                            if (Convert.ToInt32(worksheet.Cells[row, 4]?.Value) == 0)
                             {
                                 continue;
                             }

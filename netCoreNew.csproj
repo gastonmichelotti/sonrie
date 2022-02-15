@@ -74,6 +74,7 @@
 
   <ItemGroup>
     <Folder Include="Content\vendors\" />
+    <Folder Include="wwwroot\files\Recuentos\" />
     <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\vendors\" />
   </ItemGroup>
