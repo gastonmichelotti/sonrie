@@ -649,7 +649,7 @@ namespace netCoreNew.Controllers
 
                             var nuevo = new Articulo
                             {
-                                Id = (int)worksheet.Cells[row, 1]?.Value,
+                                
                                 Nombre = worksheet.Cells[row, 2]?.Value.ToString(),
                                 Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
                                 Descripcion = worksheet.Cells[row, 4]?.Value.ToString(),
@@ -1240,7 +1240,7 @@ namespace netCoreNew.Controllers
         {
             var model = new ExcelVM
             {
-                Url = "/files/ExcelModeloRecuento3.xlsx"
+                Url = "/files/ExcelModeloRecuento4.xlsx"
             };
 
             return PartialView("_ImportarRecuento", model);
