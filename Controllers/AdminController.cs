@@ -1056,6 +1056,7 @@ namespace netCoreNew.Controllers
                     fecha = c.FechaCreacion.ToString("dd/MM/yyyy"),
                     total = c.Detalles.Sum(c => c.Subtotal).ToString("C1") + " " + (c.Detalles.Any(x => x.Precio == 0) ? "💸" : ""),
                     modificado = c.FechaModificacion?.ToString("dd/MM/yyyy"),
+                    etiquetas = c.Etiquetas,
                 })
                 .OrderBy(c => c.nombre);
         }
