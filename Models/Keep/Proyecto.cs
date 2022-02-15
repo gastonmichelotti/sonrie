@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace netCoreNew.Models
 {
@@ -19,7 +20,9 @@ namespace netCoreNew.Models
         [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
         public string ItemsLoad { get; set; }
-        
+
+        public ICollection<Recuento> Recuentos { get; set; }
+
 
     }
 }

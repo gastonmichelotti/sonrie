@@ -26,9 +26,8 @@ namespace netCoreNew.Models
         public int IdUsuario { get; set; }
         [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
-        public int? IdProyecto { get; set; }
-        [ForeignKey("IdProyecto")]
-        public Proyecto Proyecto { get; set; }
+
+      
 
         public ICollection<DetalleRecuento> Detalles { get; set; }
 

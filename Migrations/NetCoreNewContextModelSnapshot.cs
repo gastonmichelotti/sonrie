@@ -233,20 +233,20 @@ namespace netCoreNew.Migrations
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("IdProyecto")
-                        .HasColumnType("int");
-
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ProyectoId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IdProyecto");
-
                     b.HasIndex("IdUsuario");
+
+                    b.HasIndex("ProyectoId");
 
                     b.ToTable("Recuento");
                 });
@@ -362,18 +362,16 @@ namespace netCoreNew.Migrations
 
             modelBuilder.Entity("netCoreNew.Models.Recuento", b =>
                 {
-                    b.HasOne("netCoreNew.Models.Proyecto", "Proyecto")
-                        .WithMany()
-                        .HasForeignKey("IdProyecto")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("netCoreNew.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("IdUsuario")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Proyecto");
+                    b.HasOne("netCoreNew.Models.Proyecto", null)
+                        .WithMany("Recuentos")
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Usuario");
                 });
@@ -392,6 +390,11 @@ namespace netCoreNew.Migrations
             modelBuilder.Entity("netCoreNew.Models.Articulo", b =>
                 {
                     b.Navigation("Detalles");
+                });
+
+            modelBuilder.Entity("netCoreNew.Models.Proyecto", b =>
+                {
+                    b.Navigation("Recuentos");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.Recuento", b =>

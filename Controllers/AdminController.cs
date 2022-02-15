@@ -1148,7 +1148,7 @@ namespace netCoreNew.Controllers
             recuento.FechaModificacion = CurrentDate;
             recuento.Etiquetas = model.Etiquetas;
             recuento.Descripcion = model.Descripcion;
-            recuento.IdProyecto = model.IdProyecto;
+           
 
             recuentoService.Edit(recuento);
 
@@ -1185,7 +1185,6 @@ namespace netCoreNew.Controllers
             recuento.Nombre = model.Nombre + " 2";
             recuento.Etiquetas = model.Etiquetas;
             recuento.Descripcion = model.Descripcion;
-            recuento.IdProyecto = model.IdProyecto;
             recuento.Id = 0;
 
             recuentoService.Add(recuento);
