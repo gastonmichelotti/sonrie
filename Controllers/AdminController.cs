@@ -1120,7 +1120,7 @@ namespace netCoreNew.Controllers
         {
             var result = recuentoService.GetById(id);
 
-            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto", "Codigo");
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreMarcaEtiquetas", "Codigo");
 
             var items = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).Select(c => new
             {
