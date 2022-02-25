@@ -1077,7 +1077,7 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult CreateRecuento(int id)
         {
-            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreCompleto");
+            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreMarcaEtiquetas");          
 
             return PartialView("_ModalRecuento", new Recuento
             {
@@ -1104,7 +1104,7 @@ namespace netCoreNew.Controllers
                     Cantidad = item.Cantidad,
                     Precio = item.Precio,
                     UnidadMedida = item.UnidadMedida,
-                    Codigo = item.Codigo
+                    Codigo = item.Codigo                 
                 });
             }
 
