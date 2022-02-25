@@ -584,7 +584,7 @@ namespace netCoreNew.Controllers
 
                     var validadRepetidos = new List<string>();
 
-                    for (int row = 2; row <= rowCount; row++)
+                    for (int row = 1029; row <= rowCount; row++)
                     {
                         try
                         {
@@ -641,7 +641,7 @@ namespace netCoreNew.Controllers
                                 continue;
                             }
 
-                            if (worksheet.Cells[row, 2]?.Value?.ToString() != null)
+                            if (worksheet.Cells[row, 2]?.Value?.ToString() == null)
                             {
                                 //nada mas
                                 break;
@@ -652,40 +652,52 @@ namespace netCoreNew.Controllers
                                 
                                 Nombre = worksheet.Cells[row, 2]?.Value.ToString(),
                                 Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
-                                Descripcion = worksheet.Cells[row, 4]?.Value.ToString(),
-                                Marca = worksheet.Cells[row, 5]?.Value.ToString(),
-                                Precio = Convert.ToDouble(worksheet.Cells[row, 6]?.Value),
-                                Observaciones = worksheet.Cells[row, 7]?.Value.ToString(),
-                                UnidMedida = worksheet.Cells[row, 8]?.Value.ToString(),
-                                Activo = worksheet.Cells[row, 9]?.Value.ToString() == "si" ? true : false,
-                                Etiquetas = worksheet.Cells[row, 10]?.Value.ToString(),
+                                Descripcion = worksheet.Cells[row, 4]?.Value?.ToString(),
+                                Marca = worksheet.Cells[row, 5]?.Value?.ToString(),
+                                Precio = worksheet.Cells[row, 6]?.Value == null? 0 : Convert.ToDouble(worksheet.Cells[row, 6]?.Value),
+                                Observaciones = worksheet.Cells[row, 7]?.Value?.ToString(),
+                                UnidMedida = worksheet.Cells[row, 8]?.Value?.ToString(),
+                                Activo = worksheet.Cells[row, 9]?.Value?.ToString() == "si" ? true : false,
+                                Etiquetas = worksheet.Cells[row, 10]?.Value?.ToString(),
                                 Eliminado = false,
                             };
+                            
+                            try
+                            {
+                                articuloService.Add(nuevo);                            
+                            }
+                            catch (Exception e)
+                            {
+                                errores.Add($"{e.Message} en la fila {row}");
+                                continue;
+                            }
+
+                            nuevo.Id = articuloService.GetSingle(c => c.Codigo == nuevo.Codigo).Id;
 
                             nuevo.Detalles.Add(new CodigoProveedor
                             {
-                                IdArticulo = (int)worksheet.Cells[row, 1]?.Value,
+                                IdArticulo = nuevo.Id,
                                 IdProveedor = (int)ProveedoresEnum.Richetta,
-                                Codigo = worksheet.Cells[row, 11]?.Value.ToString(),
-                                PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,
+                                Codigo = worksheet.Cells[row, 11]?.Value?.ToString(),
+                                PrecioProveedor = worksheet.Cells[row, 12]?.Value == null? 0 :Convert.ToDouble(worksheet.Cells[row, 12]?.Value),
                             });
 
                             nuevo.Detalles.Add(new CodigoProveedor
                             {
-                                IdArticulo = (int)worksheet.Cells[row, 1]?.Value,
+                                IdArticulo = nuevo.Id,
                                 IdProveedor = (int)ProveedoresEnum.Schneider,
                                 Codigo = worksheet.Cells[row, 13]?.Value.ToString(),
                                 PrecioProveedor = (Double)worksheet.Cells[row, 14]?.Value,
                             });
 
 
-
                             try
                             {
-                                articuloService.Add(nuevo);
+                                //articuloService.Add(nuevo);
 
                                 foreach (var detalle in nuevo.Detalles)
                                 {
+                                    detalle.Id = 0;
                                     codigoProveedorService.Add(detalle);
                                 };
 
@@ -696,7 +708,7 @@ namespace netCoreNew.Controllers
                                 continue;
                             }
 
-                            exitos.Add(nuevo.Nombre);
+                            //exitos.Add(nuevo.Nombre);
                         }
                         catch (Exception e)
                         {
