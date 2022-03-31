@@ -584,7 +584,7 @@ namespace netCoreNew.Controllers
 
                     var validadRepetidos = new List<string>();
 
-                    for (int row = 1029; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         try
                         {
@@ -605,18 +605,19 @@ namespace netCoreNew.Controllers
                                 articulo.Activo = worksheet.Cells[row, 9]?.Value.ToString() == "si" ? true : false;
                                 articulo.Etiquetas = worksheet.Cells[row, 10]?.Value.ToString();
                                 articulo.Eliminado = false;
+                                
+                                //aca falta un firstOrdefault?
+                                //var idDetalleRichetta = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Richetta);
+                                //var idDetalleSchneijder = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Schneider);
 
-                                var idDetalleRichetta = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Richetta);
-                                var idDetalleSchneijder = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Schneider);
-
-                                if (worksheet.Cells[row, 12]?.Value != null)
+                                if (worksheet.Cells[row, 11]?.Value != null)
                                 {
                                     articulo.Detalles.Add(new CodigoProveedor
                                     {
                                         IdArticulo = Convert.ToInt32(worksheet.Cells[row, 1]?.Value),
                                         IdProveedor = (int)ProveedoresEnum.Richetta,
                                         Codigo = worksheet.Cells[row, 11]?.Value?.ToString(),
-                                        PrecioProveedor = (Double)worksheet.Cells[row, 12]?.Value,
+                                        PrecioProveedor = Convert.ToDouble(worksheet.Cells[row, 12]?.Value),
                                     });
                                 }
 
@@ -1043,7 +1044,7 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult Recuentos()
         {
-            ViewData["Title"] = "Recuentos";
+            ViewData["Title"] = "Cómputos";
 
             return View();
         }
