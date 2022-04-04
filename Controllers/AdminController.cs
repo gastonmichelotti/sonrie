@@ -1396,6 +1396,133 @@ namespace netCoreNew.Controllers
                 }
             });
         }
+
+        [HttpGet]
+        public IActionResult ExportarExcelRecuento(int id)
+        {
+            var nombre = $"computo_{Guid.NewGuid().ToString().Substring(0, 6)}.xlsx";
+
+            var final = Path.Combine("../../files/", nombre);
+
+            var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+            var filePath = Path.Combine(uploads, nombre);
+
+            var newFile = new FileInfo(filePath);
+
+            if (newFile.Exists)
+            {
+                newFile.Delete();
+
+                newFile = new FileInfo(filePath);
+            }            
+
+            var row = 9;
+            var originalRow = row;
+
+            using (var package = new ExcelPackage(newFile))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Computo");
+
+
+
+                //TODO ARMAR EL ENCABEZADO DEL RECUENTO CON LOS DATOS DE EL RECUENTO (NOMBRE; CREACIÖN; TAGS ETC)
+                worksheet.Cells[row, 1].Value = "Ítem";
+                worksheet.Cells[row, 2].Value = "Código";
+                worksheet.Cells[row, 3].Value = "Descripción";
+                worksheet.Cells[row, 4].Value = "Marca";
+                worksheet.Cells[row, 5].Value = "Unidad de medida";
+                worksheet.Cells[row, 6].Value = "Cantidad";
+                worksheet.Cells[row, 7].Value = "Observaciones";
+                                
+                row++;
+
+                var computo = recuentoService.GetSingle(c => c.Id == id, c => c.Usuario);
+                var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo);
+
+                worksheet.Cells[1, 1].Value = "INTELMEC";
+                worksheet.Cells[1, 1].Style.Font.Size = 22;
+                worksheet.Cells[1, 1].Style.Font.Bold = true;
+
+                worksheet.Cells[3, 1].Value = "Computo: ";
+                worksheet.Cells[3, 2].Value = computo.Nombre;
+                worksheet.Cells[4, 1].Value = "Tags/Proyecto: ";
+                worksheet.Cells[4, 2].Value = computo.Etiquetas;
+                worksheet.Cells[5, 1].Value = "Creado por: ";
+                worksheet.Cells[5, 2].Value = computo.Usuario.Nombre;
+                worksheet.Cells[6, 1].Value = "Creación: ";
+                worksheet.Cells[6, 2].Value = computo.FechaCreacion.ToString("dd/MM/yyyy");
+                worksheet.Cells[7, 1].Value = "Modificación: ";
+                worksheet.Cells[7, 2].Value = computo.FechaCreacion.ToString("dd/MM/yyyy");
+
+
+
+                foreach (var item in detalles)
+                {                                    
+                    worksheet.Cells[row, 1].Value = row - originalRow;
+                    worksheet.Cells[row, 2].Value = item?.Codigo;
+                    worksheet.Cells[row, 3].Value = item?.Articulo.NombreCompleto;
+                    worksheet.Cells[row, 4].Value = item?.Articulo.Marca;
+                    worksheet.Cells[row, 5].Value = item?.UnidadMedida;
+                    worksheet.Cells[row, 6].Value = item?.Cantidad;
+                    worksheet.Cells[row, 7].Value = null;
+
+                    row++;
+                }
+
+                for (int i = 1; i <= 7; i++)
+                {
+                    worksheet.Column(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    worksheet.Column(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[originalRow, i].Style.Border.BorderAround(ExcelBorderStyle.Thick);
+                    worksheet.Cells[originalRow, i].Style.Font.Bold = true;
+                    worksheet.Cells[originalRow, i].Style.Fill.SetBackground(OfficeOpenXml.Drawing.eThemeSchemeColor.Background2);
+
+                    for (int j = originalRow; j <= originalRow + detalles.Count(); j++)
+                    {
+                        worksheet.Cells[j, i].Style.Border.Left.Style = ExcelBorderStyle.Medium;
+                        worksheet.Cells[j, i].Style.Border.Right.Style = ExcelBorderStyle.Medium;
+
+                        if (j == originalRow + detalles.Count())
+                        {
+                            worksheet.Cells[j, i].Style.Border.Bottom.Style = ExcelBorderStyle.Medium;
+                        }
+                    }
+                }
+
+
+
+                //for (int i = 1; i <= originalRow; i++)
+                //{
+                //    worksheet.Row(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //    worksheet.Row(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                //}
+
+                for (int i = 3; i <= 7; i++)
+                {
+                    for (int j = 1; j <= 2; j++)
+                    {
+                        worksheet.Cells[i, j].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        worksheet.Cells[i, j].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                        worksheet.Cells[i, j].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+
+                        if (j == 1)
+                        {
+                            worksheet.Cells[i, j].Style.Font.Bold = true;
+                        }
+                    }
+
+                }
+
+                
+
+                worksheet.Cells.AutoFitColumns(20, 100);
+
+                package.Save();
+            }
+
+           return Json(new { success = true, file = final.Replace("../..", "") });
+        }
         #endregion
 
         #region CODIGOS
