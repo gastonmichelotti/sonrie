@@ -9,6 +9,16 @@ namespace netCoreNew.Helpers
 {
     public static class StringHelpers
     {
+        public static string TryTrim(this string texto)
+        {
+            if(texto.Length <= 50)
+            {
+                return texto;
+            }
+
+            return texto.Substring(0, 50);
+        }
+
         public static bool IsValidEmail(this string email)
         {
             try

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using netCoreNew.Business;
 using netCoreNew.Enum;
+using netCoreNew.Helpers;
 using netCoreNew.Models;
 using netCoreNew.ViewModels;
 using OfficeOpenXml;
@@ -1082,7 +1083,15 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult CreateRecuento(int id)
         {
-            ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreMarcaEtiquetas");          
+            var lista = articuloService.GetAll()
+                .AsEnumerable()
+                .Select(c => new
+                {
+                    c.Id,
+                    Nombre = c.Nombre.TryTrim() + " - " + c.Marca + " - " + c.Etiquetas
+                });
+
+            ViewBag.IdArticulo = new SelectList(lista, "Id", "Nombre");          
 
             return PartialView("_ModalRecuento", new Recuento
             {

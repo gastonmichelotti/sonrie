@@ -93,7 +93,9 @@
                                     </div>
 
                                     <div class="col-md-5">
-                                        <select name="IdArticulo" asp-items="@ViewBag.IdArticulo" class="form-control kt-selectpicker idArticulo" data-live-search="true" title="== Articulo ==" onchange="CargarDatosArticulo($(this))">
+                                        <select name="IdArticulo" asp-items="@ViewBag.IdArticulo" 
+                                            data-container=".modal-body"
+                                            class="form-control kt-selectpicker idArticulo" data-live-search="true" title="== Articulo ==" onchange="CargarDatosArticulo($(this))">
                                         </select>
                                     </div>
 
