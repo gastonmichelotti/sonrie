@@ -420,6 +420,8 @@ namespace netCoreNew.Controllers
 
         private IEnumerable<object> CargarArticulos(int? id)
         {
+            var codigos = codigoProveedorService.GetAll().ToArray();
+
             return articuloService.GetList(c => (id == null ? !c.Eliminado : c.Id == id))
                 .Select(c => new
                 {
@@ -427,6 +429,8 @@ namespace netCoreNew.Controllers
                     nombre = c.Nombre,
                     activo = c.Activo,
                     codigo = c.Codigo,
+                    codigoRichetta = (codigos.Where(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Richetta).FirstOrDefault()?.Codigo)?? "-", 
+                    codigoSchneider = codigos.Where(x => x.IdArticulo == c.Id && x.IdProveedor == (int)ProveedoresEnum.Schneider).FirstOrDefault()?.Codigo?? "-", 
                     marca = c.Marca,
                     unidad = c.UnidMedida,
                     etiqueta = c.Etiquetas,
@@ -1433,9 +1437,6 @@ namespace netCoreNew.Controllers
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Computo");
 
-
-
-                //TODO ARMAR EL ENCABEZADO DEL RECUENTO CON LOS DATOS DE EL RECUENTO (NOMBRE; CREACIÖN; TAGS ETC)
                 worksheet.Cells[row, 1].Value = "Ítem";
                 worksheet.Cells[row, 2].Value = "Código";
                 worksheet.Cells[row, 3].Value = "Descripción";
@@ -1463,8 +1464,6 @@ namespace netCoreNew.Controllers
                 worksheet.Cells[6, 2].Value = computo.FechaCreacion.ToString("dd/MM/yyyy");
                 worksheet.Cells[7, 1].Value = "Modificación: ";
                 worksheet.Cells[7, 2].Value = computo.FechaCreacion.ToString("dd/MM/yyyy");
-
-
 
                 foreach (var item in detalles)
                 {                                    
