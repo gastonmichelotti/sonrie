@@ -124,9 +124,7 @@
                     <div class="modal-body">
                         <div class="kt-scroll" data-scroll="true" data-height="550">
 
-                            <div id="content_modal_nuevo" class="col-md-12" style="position: relative; height: 100%" >
-
-
+                            <div id="content_modal_nuevo" class="col-md-12" style="position: relative; height: 100%">
                             </div>
 
                         </div>
@@ -285,14 +283,14 @@
             $("#title_modal_nuevo").html("Editar");
             $("#btn_modal_nuevo").show();
             $("#btn_modal_nuevo_2").show();
-            
-            
+
+
 
             $.get(urlEdit, { id: btn.data("id") }, function (result) {
 
                 $('#content_modal_nuevo').html(result);
 
-                InitModal();                
+                InitModal();
 
                 $('#btn_modal_nuevo').unbind('click').click(function (e) {
 
@@ -304,7 +302,7 @@
 
                     var form = btn.closest("form");
                     $.validator.unobtrusive.parse(form[0]);
-                    var _data = new FormData(form[0]);                 
+                    var _data = new FormData(form[0]);
 
                     if (!form.valid()) {
                         formError(btn, "Algunos datos no son correctos");
@@ -340,7 +338,7 @@
                 });
 
                 $('#btn_modal_nuevo_2').unbind('click').click(function (e) {
-                                      
+
 
                     e.preventDefault();
 
@@ -350,7 +348,7 @@
 
                     var form = btn.closest("form");
                     $.validator.unobtrusive.parse(form[0]);
-                    var _data = new FormData(form[0]);                 
+                    var _data = new FormData(form[0]);
 
                     if (!form.valid()) {
                         formError(btn, "Algunos datos no son correctos");
@@ -391,7 +389,7 @@
             });
         }
 
-        
+
         function Cambiar(btn) {
 
             console.log("Cambiar");
@@ -419,12 +417,12 @@
 
             $("#title_modal_nuevo").html("Nuevo");
             $("#btn_modal_nuevo").show();
-            
+
 
             $.get(urlCreate, {}, function (result) {
 
                 $('#content_modal_nuevo').html(result);
-                             
+
                 InitModal();
 
                 $("#btn_modal_nuevo_2").hide();
@@ -480,7 +478,7 @@
                     });
 
                 });
-            
+
 
             }).fail(function (xhr, status, error) {
                 errorMessage("Ups.. Surgio un error inesperado");
@@ -509,10 +507,32 @@
 
             $('.select2Simple').each(function () {
                 $(this).select2({
-                    width: '100%'
+                    width: '100%',
+                    matcher: function (term, text) {
+                        if ($.trim(term.term) === '') {
+                            return text;
+                        }
+                        if (typeof text.text === 'undefined') {
+                            return null;
+                        }
+
+                        term = remove_accents(term.term.toUpperCase());
+
+                        var words = term.split(" ");
+
+                        for (var i = 0; i < words.length; i++) {
+
+                            var fix = remove_accents(text.text.toUpperCase());
+
+                            if (fix.indexOf(words[i]) < 0) {
+                                return null;
+                            }
+                        }
+                        return text;
+                    }
                 });
             });
-            
+
 
             $('.dropify').each(function () {
                 var drEvent = $(this).dropify({
