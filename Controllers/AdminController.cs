@@ -1465,14 +1465,18 @@ namespace netCoreNew.Controllers
                 worksheet.Cells[7, 1].Value = "Modificación: ";
                 worksheet.Cells[7, 2].Value = computo.FechaCreacion.ToString("dd/MM/yyyy");
 
-                foreach (var item in detalles)
-                {                                    
+                var idsArticulos = detalles.Select(c => c.IdArticulo).Distinct();
+
+                foreach (var item2 in idsArticulos)
+                {
+                    var detallesItem = detalles.Where(c => c.IdArticulo == item2);
+
                     worksheet.Cells[row, 1].Value = row - originalRow;
-                    worksheet.Cells[row, 2].Value = item?.Codigo;
-                    worksheet.Cells[row, 3].Value = item?.Articulo.NombreCompleto;
-                    worksheet.Cells[row, 4].Value = item?.Articulo.Marca;
-                    worksheet.Cells[row, 5].Value = item?.UnidadMedida;
-                    worksheet.Cells[row, 6].Value = item?.Cantidad;
+                    worksheet.Cells[row, 2].Value = detallesItem.FirstOrDefault()?.Codigo;
+                    worksheet.Cells[row, 3].Value = detallesItem.FirstOrDefault()?.Articulo.NombreCompleto;
+                    worksheet.Cells[row, 4].Value = detallesItem.FirstOrDefault()?.Articulo.Marca;
+                    worksheet.Cells[row, 5].Value = detallesItem.FirstOrDefault()?.UnidadMedida;
+                    worksheet.Cells[row, 6].Value = detallesItem.Sum(c => c.Cantidad);
                     worksheet.Cells[row, 7].Value = null;
 
                     row++;
@@ -1482,6 +1486,7 @@ namespace netCoreNew.Controllers
                 {
                     worksheet.Column(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     worksheet.Column(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
                     worksheet.Cells[originalRow, i].Style.Border.BorderAround(ExcelBorderStyle.Thick);
                     worksheet.Cells[originalRow, i].Style.Font.Bold = true;
                     worksheet.Cells[originalRow, i].Style.Fill.SetBackground(OfficeOpenXml.Drawing.eThemeSchemeColor.Background2);
@@ -1497,8 +1502,6 @@ namespace netCoreNew.Controllers
                         }
                     }
                 }
-
-
 
                 //for (int i = 1; i <= originalRow; i++)
                 //{
@@ -1521,8 +1524,6 @@ namespace netCoreNew.Controllers
                     }
 
                 }
-
-                
 
                 worksheet.Cells.AutoFitColumns(20, 100);
 
