@@ -15,6 +15,10 @@ namespace netCoreNew.Models
         }
 
         public int Id { get; set; }
+
+        [NotMapped]
+        public int IdDetalle { get; set; }
+
         public int Cantidad { get; set; }
         public double Precio { get; set; }
         public string UnidadMedida { get; set; }

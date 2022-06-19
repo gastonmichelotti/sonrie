@@ -1,11 +1,11 @@
 ﻿@{
     var model = new netCoreNew.ViewModels.BreadcrumVM
-            {
-                Back = "",
-                UrlBack = "",
-                Current = "Listado",
-                UrlCurrent = "/Admin/Recuentos"
-            };
+    {
+        Back = "",
+        UrlBack = "",
+        Current = "Listado",
+        UrlCurrent = "/Admin/Recuentos"
+    };
 }
 
 <partial name="~/Views/Shared/Admin/_SubHeader.cshtml" model="model" />
@@ -59,7 +59,7 @@
                         <th class="all">Fecha creacion</th>
                         <th class="all">Fecha modificacion</th>
                         <th class="">Etiquetas</th>
-                        <th class="all">Total</th>                        
+                        <th class="all">Total</th>
                         <th class="all">Acciones</th>
                     </tr>
                 </thead>
@@ -93,9 +93,9 @@
             { "data": "nombre" },
             { "data": "usuario" },
             { "data": "fecha" },
-            { "data": "modificado" },  
-            { "data": "etiquetas"},
-            { "data": "total" },            
+            { "data": "modificado" },
+            { "data": "etiquetas" },
+            { "data": "total" },
             { "data": "" }
         ];
 
@@ -113,7 +113,7 @@
                 acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Eliminar($(this))" title="Eliminar" data-id="' + full.id + '"><i class="la la-trash text-danger"></i></a>';
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Ver($(this))" title="Ver" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-eye"></i></a>';
                 acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Exportar($(this))" title="Exportar"  data-id="' + full.id + '"><i class="la la-download"></i></a>';
-               
+
                 return acciones
             }
         }];
@@ -268,7 +268,6 @@
 
                 });
 
-
             }).fail(function (xhr, status, error) {
                 errorMessage("Ups.. Surgio un error inesperado");
                 return;
@@ -276,14 +275,12 @@
 
         }
 
-        function Exportar(btn){
-
-            debugger;
+        function Exportar(btn) {
 
             console.log("Exportar");
-            
+
             var id = btn.data("id");
-            
+
             btn.attr('disabled', true);
 
             var url = "/Admin/ExportarExcelRecuento";
@@ -302,41 +299,80 @@
                 return;
             });
 
+        }
+
+        function BotonExportarSeleccion() {
+
+            var items = $(".seleccionExportar:checked");
+
+            if (items.length == 0) {
+                $("#btnExportarSeleccion").hide();
+            }
+            else {
+                $("#btnExportarSeleccion").show();
+            }
 
         }
 
+        function ExportarSeleccion(btn) {
 
+            var idDetalles = [];
 
+            debugger;
 
+            $(".seleccionExportar:checked").each(function () {
 
+                var row = $(this).closest(".rowRepeater")[0];
 
+                var valor = $(row).find(".idDetalle")[0].value;
 
-        //$('#btnExportar').on('click', function (e) {
+                idDetalles.push(valor);
 
-        //            var btn = $(this);
-        //            btn.attr('disabled', true);
+            });
 
-        //            var url = "/Admin/ExportarExcelRecuento";
+            console.log("Exportar");
 
-        //            $.get(url, { id: btn.data("id") }, function (result) {
+            var id = btn.data("id");
 
-        //                location.href = result.file;
+            btn.attr('disabled', true);
 
-        //                btn.attr('disabled', false);
+            var url = "/Admin/ExportarExcelRecuento";
 
-        //                ActualizarTabla()
+            $.get(url, { id: 0, idDetalle: idDetalles.join(',') }, function (result) {
 
-        //            }).fail(function (xhr, status, error) {
-        //                btn.attr('disabled', false);
-        //                errorMessage("Ups.. Surgio un error inesperado");
-        //                return;
-        //            });
+                location.href = result.file;
 
-        //            });
+                btn.attr('disabled', false);
 
+            }).fail(function (xhr, status, error) {
+                btn.attr('disabled', false);
+                errorMessage("Ups.. Surgio un error inesperado");
+                return;
+            });
+        }
 
+            //$('#btnExportar').on('click', function (e) {
 
+            //            var btn = $(this);
+            //            btn.attr('disabled', true);
 
+            //            var url = "/Admin/ExportarExcelRecuento";
+
+            //            $.get(url, { id: btn.data("id") }, function (result) {
+
+            //                location.href = result.file;
+
+            //                btn.attr('disabled', false);
+
+            //                ActualizarTabla()
+
+            //            }).fail(function (xhr, status, error) {
+            //                btn.attr('disabled', false);
+            //                errorMessage("Ups.. Surgio un error inesperado");
+            //                return;
+            //            });
+
+            //            });
 
     </script>
 

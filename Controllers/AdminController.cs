@@ -1138,7 +1138,7 @@ namespace netCoreNew.Controllers
 
             var items = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).Select(c => new
             {
-                Nombre = c.Codigo + "+" + c.IdArticulo + "+" + c.Cantidad + "+" + c.UnidadMedida + "+" + c.Precio
+                Nombre = c.Codigo + "+" + c.IdArticulo + "+" + c.Cantidad + "+" + c.UnidadMedida + "+" + c.Precio + "+" + c.Id
             });
 
             result.ItemsLoad = string.Join(';', items.Select(c => c.Nombre));
@@ -1411,7 +1411,7 @@ namespace netCoreNew.Controllers
         }
 
         [HttpGet]
-        public IActionResult ExportarExcelRecuento(int id)
+        public IActionResult ExportarExcelRecuento(int id, string idDetalle = "")
         {
             var nombre = $"computo_{Guid.NewGuid().ToString().Substring(0, 6)}.xlsx";
 
@@ -1447,8 +1447,22 @@ namespace netCoreNew.Controllers
                                 
                 row++;
 
+                var detalles = new List<DetalleRecuento>();
+
+                if(idDetalle != null)
+                {
+                    var idsArray = idDetalle.Split(',').Select(c => int.Parse(c));
+
+                    id = detalleRecuentoService.GetById(idsArray.First()).IdRecuento;
+
+                    detalles = detalleRecuentoService.GetList(c => idsArray.Contains(c.Id), c => c.Articulo).ToList();
+                }
+                else
+                {
+                    detalles = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).ToList();
+                }
+
                 var computo = recuentoService.GetSingle(c => c.Id == id, c => c.Usuario);
-                var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo);
 
                 worksheet.Cells[1, 1].Value = "INTELMEC";
                 worksheet.Cells[1, 1].Style.Font.Size = 22;
@@ -1491,12 +1505,12 @@ namespace netCoreNew.Controllers
                     worksheet.Cells[originalRow, i].Style.Font.Bold = true;
                     worksheet.Cells[originalRow, i].Style.Fill.SetBackground(OfficeOpenXml.Drawing.eThemeSchemeColor.Background2);
 
-                    for (int j = originalRow; j <= originalRow + detalles.Count(); j++)
+                    for (int j = originalRow; j <= originalRow + idsArticulos.Count(); j++)
                     {
                         worksheet.Cells[j, i].Style.Border.Left.Style = ExcelBorderStyle.Medium;
                         worksheet.Cells[j, i].Style.Border.Right.Style = ExcelBorderStyle.Medium;
 
-                        if (j == originalRow + detalles.Count())
+                        if (j == originalRow + idsArticulos.Count())
                         {
                             worksheet.Cells[j, i].Style.Border.Bottom.Style = ExcelBorderStyle.Medium;
                         }
