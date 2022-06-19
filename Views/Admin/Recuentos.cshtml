@@ -112,7 +112,7 @@
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Editar($(this))" title="Editar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-edit"></i></a>';
                 acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Eliminar($(this))" title="Eliminar" data-id="' + full.id + '"><i class="la la-trash text-danger"></i></a>';
                 acciones += '<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Ver($(this))" title="Ver" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-eye"></i></a>';
-                acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Exportar($(this))" title="Exportar"  data-id="' + full.id + '"><i class="la la-download"></i></a>';
+                acciones += '<a href="javascript:void(0);" class="btn btn-sm btn-clean btn-icon btn-icon-md" onclick="Exportar($(this))" title="Exportar" data-toggle="modal" data-target="#modal_nuevo" data-id="' + full.id + '"><i class="la la-download"></i></a>';
 
                 return acciones
             }
@@ -262,7 +262,6 @@
 
                         $(this).find(".codigo")[0].value = result.data.codigo;
                         $(this).find(".precio")[0].value = result.data.precio;
-                        debugger;
                         $(this).find(".unidadMedida")[0].value = result.data.unidMedida;
                     }
 
@@ -277,27 +276,97 @@
 
         function Exportar(btn) {
 
-            console.log("Exportar");
-
             var id = btn.data("id");
 
             btn.attr('disabled', true);
 
-            var url = "/Admin/ExportarExcelRecuento";
+            var url = "/Admin/ExportarNuevo";
+
+            KTApp.block('.modal-body', {});
+
+            $("#title_modal_nuevo").html("Exportar");
+            $("#btn_modal_nuevo").show();
 
             $.get(url, { id: id }, function (result) {
 
-                location.href = result.file;
+                $('#content_modal_nuevo').html(result);
 
-                btn.attr('disabled', false);
+                InitModal();
 
-                ActualizarTabla()
+                $('#btn_modal_nuevo').unbind('click').click(function (e) {
+
+                    e.preventDefault();
+
+                    var btn = $(this);
+                    btn.attr('disabled', true);
+
+                    var form = $(this).closest("form");
+                    $.validator.unobtrusive.parse(form[0]);
+                    var _data = new FormData(form[0]);
+
+                    if (!form.valid()) {
+                        formError(btn, "Algunos datos no son correctos");
+                        return;
+                    }
+
+                    KTApp.block('.modal-body', {});
+
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: _data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+                            if (result.success) {
+
+                                $('#modal_nuevo').modal('toggle');
+                                location.href = result.file;
+                                btn.attr('disabled', false);
+                                KTApp.unblock('.modal-body');
+
+                            }
+                            else {
+                                formError(btn, result.message);
+                            }
+                            return;
+                        },
+                        error: function (xhr, textStatus) {
+                            formError(btn, "Algunos datos no son correctos");
+                            return;
+                        }
+                    });
+
+                });
 
             }).fail(function (xhr, status, error) {
                 btn.attr('disabled', false);
                 errorMessage("Ups.. Surgio un error inesperado");
                 return;
             });
+
+            //console.log("Exportar");
+
+            //var id = btn.data("id");
+
+            //btn.attr('disabled', true);
+
+            //var url = "/Admin/ExportarExcelRecuento";
+
+            //$.get(url, { id: id }, function (result) {
+
+            //    location.href = result.file;
+
+            //    btn.attr('disabled', false);
+
+            //    ActualizarTabla()
+
+            //}).fail(function (xhr, status, error) {
+            //    btn.attr('disabled', false);
+            //    errorMessage("Ups.. Surgio un error inesperado");
+            //    return;
+            //});
 
         }
 
@@ -318,8 +387,6 @@
 
             var idDetalles = [];
 
-            debugger;
-
             $(".seleccionExportar:checked").each(function () {
 
                 var row = $(this).closest(".rowRepeater")[0];
@@ -336,13 +403,65 @@
 
             btn.attr('disabled', true);
 
-            var url = "/Admin/ExportarExcelRecuento";
+            var url = "/Admin/ExportarNuevo";
+
+            KTApp.block('.modal-body', {});
+
+            $("#title_modal_nuevo").html("Exportar");
+            $("#btn_modal_nuevo").show();
 
             $.get(url, { id: 0, idDetalle: idDetalles.join(',') }, function (result) {
 
-                location.href = result.file;
+                $('#content_modal_nuevo').html(result);
 
-                btn.attr('disabled', false);
+                InitModal();
+
+                $('#btn_modal_nuevo').unbind('click').click(function (e) {
+
+                    e.preventDefault();
+
+                    var btn = $(this);
+                    btn.attr('disabled', true);
+
+                    var form = $(this).closest("form");
+                    $.validator.unobtrusive.parse(form[0]);
+                    var _data = new FormData(form[0]);
+
+                    if (!form.valid()) {
+                        formError(btn, "Algunos datos no son correctos");
+                        return;
+                    }
+
+                    KTApp.block('.modal-body', {});
+
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: _data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+                            if (result.success) {
+
+                                $('#modal_nuevo').modal('toggle');
+                                location.href = result.file;
+                                btn.attr('disabled', false);
+                                KTApp.unblock('.modal-body');
+
+                            }
+                            else {
+                                formError(btn, result.message);
+                            }
+                            return;
+                        },
+                        error: function (xhr, textStatus) {
+                            formError(btn, "Algunos datos no son correctos");
+                            return;
+                        }
+                    });
+
+                });
 
             }).fail(function (xhr, status, error) {
                 btn.attr('disabled', false);
@@ -351,28 +470,28 @@
             });
         }
 
-            //$('#btnExportar').on('click', function (e) {
+                //$('#btnExportar').on('click', function (e) {
 
-            //            var btn = $(this);
-            //            btn.attr('disabled', true);
+                //            var btn = $(this);
+                //            btn.attr('disabled', true);
 
-            //            var url = "/Admin/ExportarExcelRecuento";
+                //            var url = "/Admin/ExportarExcelRecuento";
 
-            //            $.get(url, { id: btn.data("id") }, function (result) {
+                //            $.get(url, { id: btn.data("id") }, function (result) {
 
-            //                location.href = result.file;
+                //                location.href = result.file;
 
-            //                btn.attr('disabled', false);
+                //                btn.attr('disabled', false);
 
-            //                ActualizarTabla()
+                //                ActualizarTabla()
 
-            //            }).fail(function (xhr, status, error) {
-            //                btn.attr('disabled', false);
-            //                errorMessage("Ups.. Surgio un error inesperado");
-            //                return;
-            //            });
+                //            }).fail(function (xhr, status, error) {
+                //                btn.attr('disabled', false);
+                //                errorMessage("Ups.. Surgio un error inesperado");
+                //                return;
+                //            });
 
-            //            });
+                //            });
 
     </script>
 

@@ -1546,6 +1546,164 @@ namespace netCoreNew.Controllers
 
            return Json(new { success = true, file = final.Replace("../..", "") });
         }
+
+        [HttpGet]
+        public IActionResult ExportarNuevo(int id, string idDetalle = "")
+        {
+            return PartialView("_ModalExportar", new ExportarRecuentoVM
+            {
+                IdDetalles = idDetalle,
+                IdRecuento = id,
+                Coeficiente = 1,
+                CodigoProveedor = false
+            });
+        }
+
+        [HttpPost]
+        public IActionResult ExportarNuevo(ExportarRecuentoVM model)
+        {
+            var nombre = $"computo_{Guid.NewGuid().ToString().Substring(0, 6)}.xlsx";
+
+            var final = Path.Combine("../../files/", nombre);
+
+            var uploads = Path.Combine(hostingEnvironment.WebRootPath, "files");
+
+            var filePath = Path.Combine(uploads, nombre);
+
+            var newFile = new FileInfo(filePath);
+
+            if (newFile.Exists)
+            {
+                newFile.Delete();
+
+                newFile = new FileInfo(filePath);
+            }
+
+            var row = 9;
+            var originalRow = row;
+
+            var id = model.IdRecuento;
+            var idDetalle = model.IdDetalles;
+
+            using (var package = new ExcelPackage(newFile))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Computo");
+
+                worksheet.Cells[row, 1].Value = "Ítem";
+                worksheet.Cells[row, 2].Value = "Código";
+                worksheet.Cells[row, 3].Value = "Descripción";
+                worksheet.Cells[row, 4].Value = "Marca";
+                worksheet.Cells[row, 5].Value = "Unidad de medida";
+                worksheet.Cells[row, 6].Value = "Cantidad";
+                worksheet.Cells[row, 7].Value = "Observaciones";
+
+                row++;
+
+                var detalles = new List<DetalleRecuento>();
+
+                if (!string.IsNullOrEmpty(idDetalle))
+                {
+                    var idsArray = idDetalle.Split(',').Select(c => int.Parse(c));
+
+                    id = detalleRecuentoService.GetById(idsArray.First()).IdRecuento;
+
+                    detalles = detalleRecuentoService.GetList(c => idsArray.Contains(c.Id), c => c.Articulo).ToList();
+                }
+                else
+                {
+                    detalles = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).ToList();
+                }
+
+                var articulos = detalles.Select(c => c.IdArticulo).Distinct().ToArray();
+
+                var codigos = codigoProveedorService.GetList(c => c.IdProveedor == (int)ProveedoresEnum.Richetta && articulos.Contains(c.IdArticulo));
+
+                var computo = recuentoService.GetSingle(c => c.Id == id, c => c.Usuario);
+
+                worksheet.Cells[1, 1].Value = "INTELMEC";
+                worksheet.Cells[1, 1].Style.Font.Size = 22;
+                worksheet.Cells[1, 1].Style.Font.Bold = true;
+
+                worksheet.Cells[3, 1].Value = "Computo: ";
+                worksheet.Cells[3, 2].Value = computo.Nombre;
+                worksheet.Cells[4, 1].Value = "Tags/Proyecto: ";
+                worksheet.Cells[4, 2].Value = computo.Etiquetas;
+                worksheet.Cells[5, 1].Value = "Creado por: ";
+                worksheet.Cells[5, 2].Value = computo.Usuario.Nombre;
+                worksheet.Cells[6, 1].Value = "Creación: ";
+                worksheet.Cells[6, 2].Value = computo.FechaCreacion.ToString("dd/MM/yyyy");
+                worksheet.Cells[7, 1].Value = "Modificación: ";
+                worksheet.Cells[7, 2].Value = computo.FechaCreacion.ToString("dd/MM/yyyy");
+
+                var idsArticulos = detalles.Select(c => c.IdArticulo).Distinct();
+
+                foreach (var item2 in idsArticulos)
+                {
+                    var detallesItem = detalles.Where(c => c.IdArticulo == item2);
+
+                    worksheet.Cells[row, 1].Value = row - originalRow;
+                    worksheet.Cells[row, 2].Value = model.CodigoProveedor 
+                        ? (codigos.FirstOrDefault(c => c.IdArticulo == item2)?.Codigo ?? detallesItem.FirstOrDefault()?.Codigo)
+                        : detallesItem.FirstOrDefault()?.Codigo;
+                    worksheet.Cells[row, 3].Value = detallesItem.FirstOrDefault()?.Articulo.NombreCompleto;
+                    worksheet.Cells[row, 4].Value = detallesItem.FirstOrDefault()?.Articulo.Marca;
+                    worksheet.Cells[row, 5].Value = detallesItem.FirstOrDefault()?.UnidadMedida;
+                    worksheet.Cells[row, 6].Value = detallesItem.Sum(c => c.Cantidad) * model.Coeficiente;
+                    worksheet.Cells[row, 7].Value = null;
+
+                    row++;
+                }
+
+                for (int i = 1; i <= 7; i++)
+                {
+                    worksheet.Column(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    worksheet.Column(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                    worksheet.Cells[originalRow, i].Style.Border.BorderAround(ExcelBorderStyle.Thick);
+                    worksheet.Cells[originalRow, i].Style.Font.Bold = true;
+                    worksheet.Cells[originalRow, i].Style.Fill.SetBackground(OfficeOpenXml.Drawing.eThemeSchemeColor.Background2);
+
+                    for (int j = originalRow; j <= originalRow + idsArticulos.Count(); j++)
+                    {
+                        worksheet.Cells[j, i].Style.Border.Left.Style = ExcelBorderStyle.Medium;
+                        worksheet.Cells[j, i].Style.Border.Right.Style = ExcelBorderStyle.Medium;
+
+                        if (j == originalRow + idsArticulos.Count())
+                        {
+                            worksheet.Cells[j, i].Style.Border.Bottom.Style = ExcelBorderStyle.Medium;
+                        }
+                    }
+                }
+
+                //for (int i = 1; i <= originalRow; i++)
+                //{
+                //    worksheet.Row(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //    worksheet.Row(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                //}
+
+                for (int i = 3; i <= 7; i++)
+                {
+                    for (int j = 1; j <= 2; j++)
+                    {
+                        worksheet.Cells[i, j].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        worksheet.Cells[i, j].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                        worksheet.Cells[i, j].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+
+                        if (j == 1)
+                        {
+                            worksheet.Cells[i, j].Style.Font.Bold = true;
+                        }
+                    }
+
+                }
+
+                worksheet.Cells.AutoFitColumns(20, 100);
+
+                package.Save();
+            }
+
+            return Json(new { success = true, file = final.Replace("../..", "") });
+        }
         #endregion
 
         #region CODIGOS

@@ -12,6 +12,14 @@ namespace netCoreNew.ViewModels
         public IFormFile File { get; set; }
     }
 
+    public class ExportarRecuentoVM
+    {
+        public bool CodigoProveedor { get; set; }
+        public int Coeficiente { get; set; }
+        public int IdRecuento { get; set; }
+        public string IdDetalles { get; set; }
+    }
+
     public class VerRecuentoVM
     {
         public int Id { get; set; }
