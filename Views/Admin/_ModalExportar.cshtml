@@ -5,24 +5,24 @@
 
 <div class="form-group col-md-12">
 
-    <label>Tipo de codigo</label>
+    <label>Tipo de código</label>
 
     <div class="kt-checkbox-inline">
         <label class="kt-checkbox">
             <input asp-for="@Model.CodigoProveedor" class="form-control" type="radio" value="false">
-            Codigo de articulo
+            Código de fabricante
             <span></span>
         </label>
         <label class="kt-checkbox">
             <input asp-for="@Model.CodigoProveedor" class="form-control" type="radio" value="true">
-            Codigo de proveedor
+            Código de proveedor
             <span></span>
         </label>
     </div>
 </div>
 
 <div class="form-group col-md-6">
-    <label asp-for="@Model.Coeficiente" class=""></label>
+    <label asp-for="@Model.Coeficiente" class="">Multiplicar por...</label>
     <input asp-for="@Model.Coeficiente" class="form-control">
     <span asp-validation-for="@Model.Coeficiente" class="text-danger"></span>
 </div>
