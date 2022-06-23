@@ -11620,14 +11620,15 @@ body {
     outline: none !important; }
 
 body {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  color: #646c9a; }
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    color: #111111;    
+}
 
 router-outlet {
   display: none; }
@@ -23638,7 +23639,8 @@ select.select2 {
   border-color: #9aabff; }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: #6c7293; }
+    color: #111111;
+}
   .select2-container--default .select2-selection--single .select2-selection__rendered .select2-selection__clear {
     color: #a7abc3; }
 
@@ -23909,7 +23911,8 @@ body.swal2-height-auto {
   margin-left: 65px; }
 
 .dataTables_wrapper .dataTable th, .dataTables_wrapper .dataTable td {
-  color: #6c7293; }
+    color: #111111;
+}
 
 .dataTables_wrapper .dataTable .selected th, .dataTables_wrapper .dataTable .selected td {
   background-color: #f7f8fa;
