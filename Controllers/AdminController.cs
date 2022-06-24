@@ -1410,6 +1410,24 @@ namespace netCoreNew.Controllers
             });
         }
 
+        //TESTEAR ESTO PERRA
+        [HttpGet]
+        public IActionResult CargarDatosArticuloDesdeCodigo(int id)
+        {
+            var final = articuloService.GetById(id);
+
+            return Json(new
+            {
+                success = true,
+                data = new
+                {
+                    final.Id,
+                    final.Precio,
+                    final.UnidMedida
+                }
+            });
+        }
+
         [HttpGet]
         public IActionResult ExportarExcelRecuento(int id, string idDetalle = "")
         {

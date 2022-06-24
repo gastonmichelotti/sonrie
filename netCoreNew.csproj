@@ -14,6 +14,9 @@
     <RazorCompileOnPublish>false</RazorCompileOnPublish>-->
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Models\Producto.cs" />
   </ItemGroup>
