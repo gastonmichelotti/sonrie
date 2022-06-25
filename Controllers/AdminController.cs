@@ -1088,7 +1088,7 @@ namespace netCoreNew.Controllers
                 .Select(c => new
                 {
                     c.Id,
-                    Nombre = c.Nombre.TryTrim() + " - " + c.Marca + " - " + c.Etiquetas
+                    Nombre = c.Nombre + " - " + c.Marca + " - " + c.Etiquetas
                 });
 
             var listaCodigo = articuloService.GetAll()
