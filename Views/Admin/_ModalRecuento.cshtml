@@ -98,7 +98,10 @@
                                     </div>
 
                                     <div class="col-md-2">
-                                        <input name="Codigo" type="text" class="form-control text-center codigo"  onchange="CargarDatosArticuloDesdeCodigo($(this))">
+                                        <select name="Codigo" asp-items="@ViewBag.Codigo"
+                                                data-container=".modal-body" 
+                                                class="form-control select2 codigo" data-live-search="true" title="== Codigo ==" onchange="CargarDatosArticulo($(this))">
+                                        </select>                                        
                                     </div>
 
                                     <div class="col-md-5">

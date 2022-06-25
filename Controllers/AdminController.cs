@@ -1091,7 +1091,17 @@ namespace netCoreNew.Controllers
                     Nombre = c.Nombre.TryTrim() + " - " + c.Marca + " - " + c.Etiquetas
                 });
 
-            ViewBag.IdArticulo = new SelectList(lista, "Id", "Nombre");          
+            var listaCodigo = articuloService.GetAll()
+                .AsEnumerable()
+                .Select(c => new
+                {
+                    c.Id,
+                    Nombre = c.Codigo
+                });
+
+            ViewBag.IdArticulo = new SelectList(lista, "Id", "Nombre");        
+            ViewBag.Codigo = new SelectList(listaCodigo, "Id", "Nombre");        
+            
 
             return PartialView("_ModalRecuento", new Recuento
             {
@@ -1396,25 +1406,7 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult CargarDatosArticulo(int id)
         {
-            var final = articuloService.GetById(id);
-
-            return Json(new
-            {
-                success = true,
-                data = new
-                {
-                    final.Codigo,
-                    final.Precio,
-                    final.UnidMedida
-                }
-            });
-        }
-
-        //TESTEAR ESTO PERRA
-        [HttpGet]
-        public IActionResult CargarDatosArticuloDesdeCodigo(int id)
-        {
-            var final = articuloService.GetById(id);
+                var final = articuloService.GetById(id);
 
             return Json(new
             {
