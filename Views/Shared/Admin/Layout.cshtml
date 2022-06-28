@@ -123,15 +123,20 @@
                     </div>
                     <div class="modal-body">
                         <div class="kt-scroll" data-scroll="true" data-height="550">
-
                             <div id="content_modal_nuevo" class="col-md-12" style="position: relative; height: 100%">
                             </div>
-
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn_modal_cerrar">Cerrar</button>
-                        <button type="button" class="btn btn-primary" id="btn_modal_nuevo">Guardar</button>
+
+                        <button type="button" class="btn btn-success" href="#." id="btn_modal_nuevo_2">Guardar como</button>
+
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn_modal_cerrar">Cerrar</button>                      
+
+                            <button type="button" class="btn btn-primary" id="btn_modal_nuevo">Guardar</button>
+                        </div>
+                        
                     </div>
                 </div>
             </form>
@@ -284,13 +289,16 @@
             $("#btn_modal_nuevo").show();
             $("#btn_modal_nuevo_2").show();
 
-
-
             $.get(urlEdit, { id: btn.data("id") }, function (result) {
 
                 $('#content_modal_nuevo').html(result);
 
                 InitModal();
+
+                if (urlEdit == "/Admin/EditRecuento")
+                {
+                    $("#btn_modal_nuevo_2").show();
+                }
 
                 $('#btn_modal_nuevo').unbind('click').click(function (e) {
 
@@ -516,6 +524,8 @@
         function InitModal() {
 
             console.log("InitModal");
+
+            $("#btn_modal_nuevo_2").hide();
 
             $('.tags').each(function () {
 
