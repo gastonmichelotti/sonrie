@@ -1120,6 +1120,8 @@ namespace netCoreNew.Controllers
             model.FechaCreacion = CurrentDate;
             model.IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id;
 
+            var articulos = articuloService.GetAll().ToArray();
+
             foreach (var item in model.Items)
             {
                 model.Detalles.Add(new DetalleRecuento
@@ -1128,7 +1130,7 @@ namespace netCoreNew.Controllers
                     Cantidad = item.Cantidad,
                     Precio = item.Precio,
                     UnidadMedida = item.UnidadMedida,
-                    Codigo = item.Codigo                 
+                    Codigo = articulos.Where(c => c.Id == item.IdArticulo).FirstOrDefault()?.Codigo        
                 });
             }
 
@@ -1145,10 +1147,12 @@ namespace netCoreNew.Controllers
             var result = recuentoService.GetById(id);
 
             ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreMarcaEtiquetas", "Codigo");
+            ViewBag.Codigo = new SelectList(articuloService.GetAll(), "Id", "Codigo", "Codigo");
+            
 
             var items = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).Select(c => new
             {
-                Nombre = c.Codigo + "+" + c.IdArticulo + "+" + c.Cantidad + "+" + c.UnidadMedida + "+" + c.Precio + "+" + c.Id
+                Nombre = c.IdArticulo + "+" + c.IdArticulo + "+" + c.Cantidad + "+" + c.UnidadMedida + "+" + c.Precio + "+" + c.Id
             });
 
             result.ItemsLoad = string.Join(';', items.Select(c => c.Nombre));
@@ -1170,6 +1174,8 @@ namespace netCoreNew.Controllers
 
             detalleRecuentoService.DeleteRange(detalles.ToArray());
 
+            var articulos = articuloService.GetAll().ToArray();
+
             foreach (var item in model.Items)
             {
                 recuento.Detalles.Add(new DetalleRecuento
@@ -1178,7 +1184,7 @@ namespace netCoreNew.Controllers
                     Cantidad = item.Cantidad,
                     Precio = item.Precio,
                     UnidadMedida = item.UnidadMedida,
-                    Codigo = item.Codigo
+                    Codigo = articulos.Where(c => c.Id == item.IdArticulo).FirstOrDefault()?.Codigo
                 });
             }
 
