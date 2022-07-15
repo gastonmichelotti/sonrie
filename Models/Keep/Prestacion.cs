@@ -13,8 +13,11 @@ namespace netCoreNew.Models
         [Required]
         public string Codigo { get; set; }
         public string Nombre { get; set; }
-        public string Observaciones { get; set; }        
-        public int IdCategoria { get; set; }     
+        public string Observaciones { get; set; }     
+        
+        public int IdCategoriaPrestacion { get; set; }          
+        [ForeignKey("IdCategoriaPrestacion")]        
+        public CategoriaPestacion CategoriaPestacion { get; set; }
         
     }
 }
