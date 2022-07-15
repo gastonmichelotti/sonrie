@@ -14,6 +14,11 @@ namespace netCoreNew.Data
         public DbSet<Rol> Rol { get; set; }
         public DbSet<Usuario> Usuario { get; set; }        
         public DbSet<Articulo> Articulo { get; set; }        
+        public DbSet<Paciente> Paciente { get; set; }        
+        public DbSet<ObraSocial> ObraSocial { get; set; }        
+        public DbSet<Prestacion> Prestacion { get; set; }        
+        public DbSet<Atencion> Atencion { get; set; }        
+        public DbSet<PrestacionxAtencion> PrestacionxAtencion { get; set; }        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
