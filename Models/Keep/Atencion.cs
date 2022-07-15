@@ -20,7 +20,7 @@ namespace netCoreNew.Models
         public Paciente Paciente { get; set; }
 
         public int IdFormadePago { get; set; }
-        public int idEstadoAtencion { get; set; }
+        public int IdEstadoAtencion { get; set; }
 
         public ICollection<PrestacionxAtencion> Detalles { get; set; }
 
