@@ -38,6 +38,7 @@
     <Compile Remove="Business\ProveedorService.cs" />
     <Compile Remove="Business\ProyectoService.cs" />
     <Compile Remove="Business\RecuentoService.cs" />
+    <Compile Remove="Models\Keep\Articulo - Copy.cs" />
     <Compile Remove="Models\Keep\CodigoProveedor.cs" />
     <Compile Remove="Models\Keep\DetalleRecuento.cs" />
     <Compile Remove="Models\Keep\Negocio.cs" />

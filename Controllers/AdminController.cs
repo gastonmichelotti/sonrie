@@ -444,14 +444,14 @@ namespace netCoreNew.Controllers
         {
             //ViewBag.IdProveedor = new SelectList(proveedorService.GetAll(), "Id", "Alias");
 
-            return PartialView("_ModalArticulo", new Articulo
+            return PartialView("_ModalArticulo", new InsumoxCategoria
             {
 
             });
         }
 
         [HttpPost]
-        public IActionResult CreateArticulo(Articulo model)
+        public IActionResult CreateArticulo(InsumoxCategoria model)
         {
             if (!ModelState.IsValid)
             {
@@ -478,7 +478,7 @@ namespace netCoreNew.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditArticulo(Articulo model)
+        public IActionResult EditArticulo(InsumoxCategoria model)
         {
             if (!ModelState.IsValid)
             {
@@ -653,7 +653,7 @@ namespace netCoreNew.Controllers
                                 break;
                             }
 
-                            var nuevo = new Articulo
+                            var nuevo = new InsumoxCategoria
                             {
                                 
                                 Nombre = worksheet.Cells[row, 2]?.Value.ToString(),
