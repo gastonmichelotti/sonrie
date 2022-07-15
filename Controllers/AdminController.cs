@@ -23,7 +23,7 @@ namespace netCoreNew.Controllers
     {
         private readonly IUsuarioService usuarioService;
         private readonly IProveedorService proveedorService;
-        private readonly IArticuloService articuloService;
+        private readonly IInsumoxCategoriaService articuloService;
         private readonly IRolService rolService;
         private readonly INegocioService negocioService;
         private readonly IProyectoService proyectoService;
@@ -36,7 +36,7 @@ namespace netCoreNew.Controllers
         public AdminController(
             IUsuarioService usuarioService,
             IProveedorService proveedorService,
-            IArticuloService articuloService,
+            IInsumoxCategoriaService articuloService,
             IRolService rolService,
             INegocioService negocioService,
             IProyectoService proyectoService,

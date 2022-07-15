@@ -21,8 +21,5 @@ namespace netCoreNew.Models
 
         public float Cantidad { get; set; }
 
-
-
-        //public string Marca { get; set; }
     }
 }

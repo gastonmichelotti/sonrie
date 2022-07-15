@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace netCoreNew.Business
 {
-    public class ArticuloService : GenericRepository<InsumoxCategoria>, IArticuloService
+    public class InsumoxCategoriaService : GenericRepository<InsumoxCategoria>, IInsumoxCategoriaService
     {
-        public ArticuloService(NetCoreNewContext context) : base(context)
+        public InsumoxCategoriaService(NetCoreNewContext context) : base(context)
         {
             _context = context;
         }

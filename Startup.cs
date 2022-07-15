@@ -93,7 +93,7 @@ namespace netCoreNew
 
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<IRolService, RolService>();           
-            services.AddScoped<IArticuloService, ArticuloService>();
+            services.AddScoped<IInsumoxCategoriaService, InsumoxCategoriaService>();
             services.AddScoped<IPacienteService, PacienteService>();
             services.AddScoped<IObraSocialService, ObraSocialService>();
             services.AddScoped<IPrestacionService, PrestacionService>();
