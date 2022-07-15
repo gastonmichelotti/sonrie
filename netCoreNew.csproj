@@ -17,11 +17,41 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
   <ItemGroup>
+    <Compile Remove="wwwroot\files\Recuentos\**" />
+    <Content Remove="wwwroot\files\Recuentos\**" />
+    <EmbeddedResource Remove="wwwroot\files\Recuentos\**" />
+    <None Remove="wwwroot\files\Recuentos\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Business\CodigoProveedorService.cs" />
+    <Compile Remove="Business\DetalleRecuentoService.cs" />
+    <Compile Remove="Business\ICodigoProveedorService.cs" />
+    <Compile Remove="Business\IDetalleRecuentoService.cs" />
+    <Compile Remove="Business\INegocioService.cs" />
+    <Compile Remove="Business\IProveedorService.cs" />
+    <Compile Remove="Business\IProyectoService.cs" />
+    <Compile Remove="Business\IRecuentoService.cs" />
+    <Compile Remove="Business\NegocioService.cs" />
+    <Compile Remove="Business\ProductoService.cs" />
+    <Compile Remove="Business\ProveedorService.cs" />
+    <Compile Remove="Business\ProyectoService.cs" />
+    <Compile Remove="Business\RecuentoService.cs" />
+    <Compile Remove="Models\Keep\CodigoProveedor.cs" />
+    <Compile Remove="Models\Keep\DetalleRecuento.cs" />
+    <Compile Remove="Models\Keep\Negocio.cs" />
+    <Compile Remove="Models\Keep\Proveedor.cs" />
+    <Compile Remove="Models\Keep\Proyecto.cs" />
+    <Compile Remove="Models\Keep\Recuento.cs" />
     <Compile Remove="Models\Producto.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Admin\CodigoProveedor.cshtml" />
+    <Content Remove="Views\Admin\Proveedores.cshtml" />
+    <Content Remove="Views\Admin\Proyectos.cshtml" />
+    <Content Remove="Views\Admin\Recuentos.cshtml" />
     <Content Remove="wwwroot\admin\files\Resource.resx" />
     <Content Remove="wwwroot\files\ExcelModeloRecuento.xlsx" />
     <Content Remove="wwwroot\files\f0su44mh.pt0.xlsx" />
@@ -77,7 +107,7 @@
 
   <ItemGroup>
     <Folder Include="Content\vendors\" />
-    <Folder Include="wwwroot\files\Recuentos\" />
+    <Folder Include="wwwroot\files\" />
     <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\vendors\" />
   </ItemGroup>

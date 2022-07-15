@@ -12,59 +12,12 @@ namespace netCoreNew.ViewModels
         public IFormFile File { get; set; }
     }
 
-    public class ExportarRecuentoVM
-    {
-        public bool CodigoProveedor { get; set; }
-        public int Coeficiente { get; set; }
-        public int IdRecuento { get; set; }
-        public string IdDetalles { get; set; }
-    }
+    //public class ExportarRecuentoVM
+    //{
+    //    public bool CodigoProveedor { get; set; }
+    //    public int Coeficiente { get; set; }
+    //    public int IdRecuento { get; set; }
+    //    public string IdDetalles { get; set; }    //}
 
-    public class VerRecuentoVM
-    {
-        public int Id { get; set; }
-
-        public string CreadoPor { get; set; }
-        public string FechaCreacion { get; set; }
-        public string FechaModificacion { get; set; }
-        public string Nombre { get; set; }
-        public string Descripcion { get; set; }
-
-        public string Total { get; set; }
-
-        public IEnumerable<VerRecuentoDetalleVM> Detalles { get; set; }
-    }
-
-    public class VerRecuentoDetalleVM
-    {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        public string Precio { get; set; }
-        public string Subtotal { get; set; }
-        public string Cantidad { get; set; }
-        public string Unidad { get; set; }
-        public string Codigo { get; set; }
-    }
-
-    public class CodigoProveedorVM
-    {
-        public int Id { get; set; }
-        public int IdArticulo { get; set; }
-        public Articulo Articulo { get; set; }
-        public int IdProveedor { get; set; }
-        public Proveedor Proveedor { get; set; }
-        public string Codigo { get; set; }
-        public double PrecioProveedor { get; set; }
-    }
-
-    public class EditCodigoProveedorVM
-    {
-        public int Id { get; set; }
-        public string Articulo { get; set; }
-        public string Proveedor { get; set; }
-        public string CodigoGral { get; set; }
-        public double Precio { get; set; }
-        public string CodigoProveedor { get; set; }
-        //public List<CodigoProveedorVM> Configuracion { get; set; }
-    }
+    
 }
