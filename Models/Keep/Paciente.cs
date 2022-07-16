@@ -12,7 +12,8 @@ namespace netCoreNew.Models
         public int Id { get; set; }
         [Required]
         public string Dni { get; set; }
-        public string NombreApellido { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
         public string Telefono { get; set; }
         public string Mail { get; set; }
 
@@ -24,5 +25,7 @@ namespace netCoreNew.Models
         public string NumAfiliado { get; set; }
         public DateTime FechaAltaPaciente { get; set; }
         public string Observaciones { get; set; }
+
+        public bool Eliminado { get; set; }
     }
 }

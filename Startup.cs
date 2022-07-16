@@ -98,7 +98,7 @@ namespace netCoreNew
             services.AddScoped<IObraSocialService, ObraSocialService>();
             services.AddScoped<IPrestacionService, PrestacionService>();
             services.AddScoped<IAtencionService, AtencionService>();
-            services.AddScoped<IAtencionService, AtencionService>();
+            services.AddScoped<IPrestacionxAtencionService, PrestacionxAtencionService>();
             services.AddScoped<ICategoriaPrestacionService, CategoriaPrestacionService>();
             services.AddScoped<IInsumoService, InsumoService>();
             services.AddScoped<IPrecioService, PrecioService>();

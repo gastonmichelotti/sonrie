@@ -1,0 +1,70 @@
+﻿@model netCoreNew.Models.Paciente
+
+<input asp-for="@Model.Id" type="hidden">
+
+<div class="row">
+
+    <div class="form-group col-md-4">
+        <label asp-for="@Model.Nombre" class=""></label>
+        <input asp-for="@Model.Nombre" class="form-control">
+        <span asp-validation-for="@Model.Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-4">
+        <label asp-for="@Model.Apellido" class=""></label>
+        <input asp-for="@Model.Apellido" class="form-control">
+        <span asp-validation-for="@Model.Apellido" class="text-danger"></span>
+    </div>
+
+     <div class="form-group col-md-4">
+        <label asp-for="@Model.Dni" class=""></label>
+        <input asp-for="@Model.Dni" class="form-control">
+        <span asp-validation-for="@Model.Dni" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.Telefono" class=""></label>
+        <input asp-for="@Model.Telefono" class="form-control">
+        <span asp-validation-for="@Model.Telefono" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.Mail" class=""></label>
+        <input asp-for="@Model.Mail" class="form-control">
+        <span asp-validation-for="@Model.Mail" class="text-danger"></span>
+    </div>
+
+</div>
+
+<div class="kt-separator kt-separator--border-dashed kt-separator--space-lg kt-separator--portlet-fit"></div>
+
+<div class="row">
+
+    <div class="form-group col-md-4">
+        <label asp-for="@Model.IdObraSocial" class="">Obra Social</label>
+        <select asp-for="@Model.IdObraSocial" asp-items="@ViewBag.IdObraSocial" class="form-control select2Simple">
+        </select>
+        <span asp-validation-for="@Model.IdObraSocial" class="text-danger"></span>
+    </div>    
+
+    <div class="form-group col-md-4">
+        <label asp-for="@Model.OsPlan" class=""></label>
+        <input asp-for="@Model.OsPlan" class="form-control">
+        <span asp-validation-for="@Model.OsPlan" class="text-danger"></span>
+    </div>
+
+     <div class="form-group col-md-4">
+        <label asp-for="@Model.NumAfiliado" class=""></label>
+        <input asp-for="@Model.NumAfiliado" class="form-control">
+        <span asp-validation-for="@Model.NumAfiliado" class="text-danger"></span>
+    </div>
+
+     <div class="form-group col-md-12">
+        <label asp-for="@Model.Observaciones" class=""></label>
+        <input asp-for="@Model.Observaciones" class="form-control">
+        <span asp-validation-for="@Model.Observaciones" class="text-danger"></span>
+    </div>
+
+
+
+</div>

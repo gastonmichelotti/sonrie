@@ -183,6 +183,130 @@ namespace netCoreNew.Controllers
         }
         #endregion
 
+
+        #region PACIENTES
+        [HttpGet]
+        public IActionResult Pacientes()
+        {
+            ViewData["Title"] = "Pacientes";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaPacientes()
+        {
+            var final = CargarPacientes(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarPacientes(int? id)
+        {
+            return pacienteService.GetList(c => (id == null ? !c.Eliminado : c.Id == id), c => c.ObraSocial)
+                .Select(c => new
+                {   
+                    id = c.Id,
+                    nombre = c.Nombre,                    
+                    apellido = c.Apellido,                    
+                    telefono = c.Telefono,
+                    obraSocial = c.ObraSocial.Nombre,
+                    plan =  c.OsPlan,
+                    numAfiliado = c.NumAfiliado
+                })
+                .OrderBy(c => c.apellido);
+        }
+
+        [HttpGet]
+        public IActionResult CreatePaciente(int id)
+        {
+            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetAll(), "Id", "Nombre");
+
+            return PartialView("_ModalPaciente", new Paciente
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreatePaciente(Paciente model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.FechaAltaPaciente = CurrentDate;             
+
+            pacienteService.Add(model);
+
+            var final = CargarPacientes(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditPaciente(int id)
+        {
+            var result = pacienteService.GetById(id);
+
+            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetAll(), "Id", "Nombre", result.IdObraSocial);
+
+            return PartialView("_ModalPaciente", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditPaciente(Paciente model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var paciente = pacienteService.GetById(model.Id);
+
+            paciente.Nombre = model.Nombre;
+            paciente.Apellido = model.Nombre;
+            paciente.Telefono = model.Telefono;
+            paciente.Mail = model.Mail;
+            paciente.Dni = model.Dni;
+            paciente.IdObraSocial = model.IdObraSocial;
+            paciente.OsPlan = model.OsPlan;
+            paciente.NumAfiliado = model.NumAfiliado;
+            paciente.Eliminado = false;
+
+            pacienteService.Edit(paciente);
+
+            var final = CargarPacientes(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        //public IActionResult ActivarUsuario(int id)
+        //{
+        //    var model = usuarioService.GetById(id);
+
+        //    model.Activo = !model.Activo;
+
+        //    usuarioService.Edit(model);
+
+        //    var final = CargarUsuarios(model.Id).First();
+
+        //    return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        //}
+
+        public IActionResult EliminarPaciente(int id)
+        {
+            var model = pacienteService.GetById(id);     
+            
+            model.Eliminado = true;
+
+            pacienteService.Edit(model);
+
+            return Json(new { success = true, message = Enum.Valores.Eliminacion });
+        }
+        #endregion
+
         //#region PROVEEDORES
         //[HttpGet]
         //public IActionResult Proveedores()
@@ -615,7 +739,7 @@ namespace netCoreNew.Controllers
         //                        articulo.Activo = worksheet.Cells[row, 9]?.Value.ToString() == "si" ? true : false;
         //                        articulo.Etiquetas = worksheet.Cells[row, 10]?.Value.ToString();
         //                        articulo.Eliminado = false;
-                                
+
         //                        //aca falta un firstOrdefault?
         //                        //var idDetalleRichetta = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Richetta);
         //                        //var idDetalleSchneijder = codigoProveedorService.GetList(c => c.IdArticulo == articulo.Id && c.IdProveedor == (int)ProveedoresEnum.Schneider);
@@ -660,7 +784,7 @@ namespace netCoreNew.Controllers
 
         //                    var nuevo = new InsumoxCategoria
         //                    {
-                                
+
         //                        Nombre = worksheet.Cells[row, 2]?.Value.ToString(),
         //                        Codigo = worksheet.Cells[row, 3]?.Value.ToString(),
         //                        Descripcion = worksheet.Cells[row, 4]?.Value?.ToString(),
@@ -672,7 +796,7 @@ namespace netCoreNew.Controllers
         //                        Etiquetas = worksheet.Cells[row, 10]?.Value?.ToString(),
         //                        Eliminado = false,
         //                    };
-                            
+
         //                    try
         //                    {
         //                        articuloService.Add(nuevo);                            
@@ -1021,7 +1145,7 @@ namespace netCoreNew.Controllers
 
         //public IActionResult CargarDatosRecuento(int id)
         //{
-            
+
         //    var detalles = detalleRecuentoService.GetList(c => c.IdRecuento == id, c=> c.Recuento);
 
         //    Double total = 0;
@@ -1044,7 +1168,7 @@ namespace netCoreNew.Controllers
         //        {
         //            final.fechaCreacion,
         //            final.total
-                    
+
         //        }
         //    });
         //}
@@ -1080,7 +1204,7 @@ namespace netCoreNew.Controllers
         //            total = c.Detalles.Sum(c => c.Subtotal).ToString("C1") + " " + (c.Detalles.Any(x => x.Precio == 0) ? "💸" : ""),
         //            modificado = c.FechaModificacion?.ToString("dd/MM/yyyy"),
         //            etiquetas = c.Etiquetas
-                    
+
         //        })
         //        .OrderBy(c => c.nombre);
         //}
@@ -1106,7 +1230,7 @@ namespace netCoreNew.Controllers
 
         //    ViewBag.IdArticulo = new SelectList(lista, "Id", "Nombre");        
         //    ViewBag.Codigo = new SelectList(listaCodigo, "Id", "Nombre");        
-            
+
 
         //    return PartialView("_ModalRecuento", new Recuento
         //    {
@@ -1153,7 +1277,7 @@ namespace netCoreNew.Controllers
 
         //    ViewBag.IdArticulo = new SelectList(articuloService.GetAll(), "Id", "NombreMarcaEtiquetas", "Codigo");
         //    ViewBag.Codigo = new SelectList(articuloService.GetAll(), "Id", "Codigo", "Codigo");
-            
+
 
         //    var items = detalleRecuentoService.GetList(c => c.IdRecuento == id, c => c.Articulo).Select(c => new
         //    {
@@ -1197,7 +1321,7 @@ namespace netCoreNew.Controllers
         //    recuento.FechaModificacion = CurrentDate;
         //    recuento.Etiquetas = model.Etiquetas;
         //    recuento.Descripcion = model.Descripcion;
-           
+
 
         //    recuentoService.Edit(recuento);
 
@@ -1465,7 +1589,7 @@ namespace netCoreNew.Controllers
         //        worksheet.Cells[row, 5].Value = "Unidad de medida";
         //        worksheet.Cells[row, 6].Value = "Cantidad";
         //        worksheet.Cells[row, 7].Value = "Observaciones";
-                                
+
         //        row++;
 
         //        var detalles = new List<DetalleRecuento>();
