@@ -36,54 +36,32 @@
         <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
             <ul class="kt-menu__nav">
 
-                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" id="menu_articulos">
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" id="menu_configuraciones">
                     <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
                         <span class="kt-menu__link-icon">
                             <i class="fa fa-list"></i>
                         </span>
-                        <span class="kt-menu__link-text">Artículos y Proveedores</span><i class="kt-menu__ver-arrow la la-angle-right"></i>
+                        <span class="kt-menu__link-text">Configuraciones</span><i class="kt-menu__ver-arrow la la-angle-right"></i>
                     </a>
                     <div class="kt-menu__submenu">
                         <span class="kt-menu__arrow"></span>
                         <ul class="kt-menu__subnav">
-                            <li class="kt-menu__item" aria-haspopup="true" id="menu_listaArticulos">
+                            <li class="kt-menu__item" aria-haspopup="true" id="menu_obrasSociales">
                                 <a href="/Admin/Articulos" class="kt-menu__link">
-                                    <span class="kt-menu__link-text">Artículos</span>
+                                    <span class="kt-menu__link-text">Obras Sociales</span>
                                 </a>
                             </li>
-
-                            <li class="kt-menu__item" aria-haspopup="true" id="menu_proveedores">
-                                <a href="/Admin/Proveedores" class="kt-menu__link">
-                                    <span class="kt-menu__link-text">Proveedores</span>
-                                </a>
-                            </li>
-
-                            <li class="kt-menu__item" aria-haspopup="true" id="menu_codigos">
-                                <a href="/Admin/CodigoProveedor" class="kt-menu__link">
-                                    <span class="kt-menu__link-text">Códigos de Proveedor</span>
-                                </a>
-                            </li>
+                            
                         </ul>
                     </div>
-                </li>
+                </li>               
 
-               @* <li class="kt-menu__item" aria-haspopup="true" id="menu_proyectos">
-                    <a href="/Admin/Proyectos" class="kt-menu__link">
-                        <span class="kt-menu__link-text">Proyectos</span>
-                    </a>
-                </li>*@
-
-                <li class="kt-menu__item" aria-haspopup="true" id="menu_recuentos">
-                    <a href="/Admin/Recuentos" class="kt-menu__link">
-                        <span class="kt-menu__link-text">Cómputos</span>
+                <li class="kt-menu__item" aria-haspopup="true" id="menu_pacientes">
+                    <a href="/Admin/Pacientes" class="kt-menu__link">
+                        <span class="kt-menu__link-text">Pacientes</span>
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" id="menu_usuarios">
-                    <a href="/Admin/Usuarios" class="kt-menu__link">
-                        <span class="kt-menu__link-text">Usuarios</span>
-                    </a>
-                </li>
 
                 @if (User.IsInRole("Administrador"))
                 {
