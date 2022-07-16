@@ -19,7 +19,7 @@ namespace netCoreNew.Models
         [Required]
         public string Telefono { get; set; }
         public DateTime FechaAlta { get; set; }
-        public DateTime? UltimaConexion { get; set; }
+        
         [EmailAddress]
         [Required]
         public string Email { get; set; }
