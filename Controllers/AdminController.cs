@@ -220,7 +220,7 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult CreatePaciente(int id)
         {
-            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetAll(), "Id", "Nombre");
+            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetList(c => c.Activo), "Id", "Nombre");
 
             return PartialView("_ModalPaciente", new Paciente
             {
@@ -250,7 +250,7 @@ namespace netCoreNew.Controllers
         {
             var result = pacienteService.GetById(id);
 
-            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetAll(), "Id", "Nombre", result.IdObraSocial);
+            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetList(c => c.Activo) , "Id", "Nombre", result.IdObraSocial);
 
             return PartialView("_ModalPaciente", result);
         }
@@ -305,6 +305,113 @@ namespace netCoreNew.Controllers
 
             return Json(new { success = true, message = Enum.Valores.Eliminacion });
         }
+        #endregion
+
+        #region OBRAS_SOCIALES
+        [HttpGet]
+        public IActionResult ObrasSociales()
+        {
+            ViewData["Title"] = "Obras Sociales";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaObrasSociales()
+        {
+            var final = CargarObrasSociales(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarObrasSociales(int? id)
+        {
+            return obraSocialService.GetList(c => (id == null ? c.Activo : c.Id == id))
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,
+                    demora = c.DemoraPago,                   
+                    observaciones = c.Observaciones,
+                    activo = c.Activo
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateObraSocial(int id)
+        {
+            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetList(c => c.Activo), "Id", "Nombre");
+
+            return PartialView("_ModalObraSocial", new ObraSocial
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateObraSocial(ObraSocial model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.Activo = true;
+
+            obraSocialService.Add(model);
+
+            var final = CargarObrasSociales(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditObraSocial(int id)
+        {
+            var result = obraSocialService.GetById(id);
+
+            ViewBag.IdObraSocial = new SelectList(obraSocialService.GetList(c => c.Activo), "Id", "Nombre", result.Id);
+
+            return PartialView("_ModalObraSocial", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditObraSocial(ObraSocial model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var obraSocial = obraSocialService.GetById(model.Id);
+
+            obraSocial.Nombre = model.Nombre;
+            obraSocial.DemoraPago = model.DemoraPago;
+            obraSocial.Observaciones = model.Observaciones;
+            obraSocial.Activo = true;
+            
+            obraSocialService.Edit(obraSocial);
+
+            var final = CargarObrasSociales(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        public IActionResult ActivarObraSocial(int id)
+        {
+            var model = obraSocialService.GetById(id);
+
+            model.Activo = !model.Activo;
+
+            obraSocialService.Edit(model);
+
+            var final = CargarObrasSociales(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
+        }
+
+
         #endregion
 
         //#region PROVEEDORES

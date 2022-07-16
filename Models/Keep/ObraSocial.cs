@@ -15,5 +15,7 @@ namespace netCoreNew.Models
         public int DemoraPago { get; set; }
         
         public string Observaciones { get; set; }
+        
+        public bool Activo { get; set; }
     }
 }
