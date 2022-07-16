@@ -21,40 +21,45 @@ namespace netCoreNew.Controllers
     [Authorize]
     public class AdminController : BaseController
     {
-        private readonly IUsuarioService usuarioService;
-        private readonly IProveedorService proveedorService;
-        private readonly IInsumoxCategoriaService articuloService;
-        private readonly IRolService rolService;
-        private readonly INegocioService negocioService;
-        private readonly IProyectoService proyectoService;
-        private readonly IRecuentoService recuentoService;
-        private readonly IDetalleRecuentoService detalleRecuentoService;
-        private readonly ICodigoProveedorService codigoProveedorService;
+        private readonly IUsuarioService usuarioService;        
+        private readonly IInsumoxCategoriaService insumoxCategoriaService;
+        private readonly IRolService rolService;        
+        private readonly IPrestacionxAtencionService prestacionxAtencionService;        
+        private readonly IPrestacionService prestacionService;        
+        private readonly IPrecioService precioService;        
+        private readonly IPacienteService pacienteService;        
+        private readonly IObraSocialService obraSocialService;        
+        private readonly IInsumoService insumoService;        
+        private readonly ICategoriaPrestacionService categoriaPrestacionService;        
+        private readonly IAtencionService atencionService;        
         private readonly IWebHostEnvironment hostingEnvironment;
 
 
         public AdminController(
-            IUsuarioService usuarioService,
-            IProveedorService proveedorService,
-            IInsumoxCategoriaService articuloService,
+            IUsuarioService usuarioService,            
+            IInsumoxCategoriaService insumoxCategoriaService,
             IRolService rolService,
-            INegocioService negocioService,
-            IProyectoService proyectoService,
-            IRecuentoService recuentoService,
-            IDetalleRecuentoService detalleRecuentoService,
-            ICodigoProveedorService codigoProveedorService,
-
+            IPrestacionxAtencionService prestacionxAtencionService,
+            IPrestacionService prestacionService,
+            IPrecioService precioService,
+            IPacienteService pacienteService,
+            IObraSocialService obraSocialService,
+            IInsumoService insumoService,
+            ICategoriaPrestacionService categoriaPrestacionService,
+            IAtencionService atencionService,
             IWebHostEnvironment hostingEnvironment)
         {
-            this.usuarioService = usuarioService;
-            this.proveedorService = proveedorService;
-            this.articuloService = articuloService;
-            this.rolService = rolService;
-            this.negocioService = negocioService;
-            this.proyectoService = proyectoService;
-            this.recuentoService = recuentoService;
-            this.detalleRecuentoService = detalleRecuentoService;
-            this.codigoProveedorService = codigoProveedorService;
+            this.usuarioService = usuarioService;           
+            this.insumoxCategoriaService = insumoxCategoriaService;
+            this.rolService = rolService;  
+            this.prestacionxAtencionService = prestacionxAtencionService;  
+            this.prestacionService = prestacionService;  
+            this.precioService = precioService;  
+            this.pacienteService = pacienteService;  
+            this.obraSocialService = obraSocialService;  
+            this.insumoService = insumoService;  
+            this.categoriaPrestacionService = categoriaPrestacionService;  
+            this.atencionService = atencionService;              
             this.hostingEnvironment = hostingEnvironment;
         }
 
