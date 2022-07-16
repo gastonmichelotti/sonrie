@@ -101,6 +101,7 @@ namespace netCoreNew
             services.AddScoped<IAtencionService, AtencionService>();
             services.AddScoped<ICategoriaPrestacionService, CategoriaPrestacionService>();
             services.AddScoped<IInsumoService, InsumoService>();
+            services.AddScoped<IPrecioService, PrecioService>();
             
 
             services.AddScoped<IEntidadesLogicService, EntidadesLogicService>();

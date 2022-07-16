@@ -21,6 +21,7 @@ namespace netCoreNew.Data
         public DbSet<PrestacionxAtencion> PrestacionxAtencion { get; set; }        
         public DbSet<CategoriaPestacion> CategoriaPretacion  { get; set; }        
         public DbSet<Insumo> Insumo { get; set; }        
+        public DbSet<Precio> Precio { get; set; }        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
