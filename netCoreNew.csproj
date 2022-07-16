@@ -42,6 +42,7 @@
     <Compile Remove="Models\Keep\CodigoProveedor.cs" />
     <Compile Remove="Models\Keep\DetalleRecuento.cs" />
     <Compile Remove="Models\Keep\Negocio.cs" />
+    <Compile Remove="Models\Keep\Pieza.cs" />
     <Compile Remove="Models\Keep\Proveedor.cs" />
     <Compile Remove="Models\Keep\Proyecto.cs" />
     <Compile Remove="Models\Keep\Recuento.cs" />

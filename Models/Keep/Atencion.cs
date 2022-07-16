@@ -22,6 +22,10 @@ namespace netCoreNew.Models
         public int IdFormadePago { get; set; }
         public int IdEstadoAtencion { get; set; }
 
+        public int IdUsuario { get; set; }
+        [ForeignKey("IdUsuario")]
+        public Usuario Usuario { get; set; }
+
         public ICollection<PrestacionxAtencion> Detalles { get; set; }
 
     }
