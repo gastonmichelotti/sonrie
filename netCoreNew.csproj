@@ -38,6 +38,10 @@
     <Compile Remove="Business\ProveedorService.cs" />
     <Compile Remove="Business\ProyectoService.cs" />
     <Compile Remove="Business\RecuentoService.cs" />
+    <Compile Remove="Migrations\20220716011207_initSonrie.cs" />
+    <Compile Remove="Migrations\20220716011207_initSonrie.Designer.cs" />
+    <Compile Remove="Migrations\20220716011741_init2.cs" />
+    <Compile Remove="Migrations\20220716011741_init2.Designer.cs" />
     <Compile Remove="Models\Keep\Articulo - Copy.cs" />
     <Compile Remove="Models\Keep\CodigoProveedor.cs" />
     <Compile Remove="Models\Keep\DetalleRecuento.cs" />

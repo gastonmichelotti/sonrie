@@ -2,7 +2,7 @@
 
 namespace netCoreNew.Migrations
 {
-    public partial class NombreMarcaEtiquetas2 : Migration
+    public partial class init2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

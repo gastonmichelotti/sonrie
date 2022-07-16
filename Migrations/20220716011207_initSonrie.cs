@@ -2,7 +2,7 @@
 
 namespace netCoreNew.Migrations
 {
-    public partial class firstS : Migration
+    public partial class initSonrie : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
