@@ -20,11 +20,33 @@ namespace netCoreNew.Enum
             Error = "Ups! Surgió un error inesperado";
     }
 
-    public enum ProveedoresEnum
+    public enum FormaDePagoEnum
     {
-        Richetta = 3,
-        Schneider = 4,
+        Contado = 1,
+        Debito = 2,
+        Transferencia = 3,
+        Credito = 4,
+        Prepagado = 5
     }
+    
+    public enum EstadoAtencionEnum
+    {
+        PendientePago = 1,
+        PagadaParcial = 2,
+        Pagada = 3,        
+    }
+
+    public enum CaraEnum
+    {
+        Oclusal = 1, 
+        Distal = 2, 
+        Mesial = 3,
+        Vestibular = 4, 
+        Palatino = 5, 
+        Lingual = 6, 
+        Gingival = 7, 
+    }
+    
 }
 
 
