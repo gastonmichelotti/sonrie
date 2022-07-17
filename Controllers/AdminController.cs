@@ -63,6 +63,34 @@ namespace netCoreNew.Controllers
             this.hostingEnvironment = hostingEnvironment;
         }
 
+        #region DOLAR_Y_GENERALES
+
+        [HttpGet]
+        public IActionResult Dolar()
+        {
+            var result = negocioService.GetAll().First();
+
+            return PartialView("_ModalMonto", result);
+        }
+
+        [HttpPost]
+        public IActionResult Montos(Negocio model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var result = negocioService.GetById(model.Id);
+
+            result.MontoDiferencia = model.MontoDiferencia;
+            result.MontoMinimo = model.MontoMinimo;
+
+            negocioService.Edit(result);
+
+            return Json(new { success = true, message = Valores.Edicion });
+        }
+
         #region ROLES
         [HttpGet]
         public IActionResult Roles()

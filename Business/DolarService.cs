@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace netCoreNew.Business
 {
-    public class NegocioService : GenericRepository<Negocio>, INegocioService
+    public class DolarService : GenericRepository<Dolar>, IDolarService
     {
-        public NegocioService(NetCoreNewContext context) : base(context)
+        public DolarService(NetCoreNewContext context) : base(context)
         {
             _context = context;
         }

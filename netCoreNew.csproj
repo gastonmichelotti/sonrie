@@ -29,11 +29,9 @@
     <Compile Remove="Business\DetalleRecuentoService.cs" />
     <Compile Remove="Business\ICodigoProveedorService.cs" />
     <Compile Remove="Business\IDetalleRecuentoService.cs" />
-    <Compile Remove="Business\INegocioService.cs" />
     <Compile Remove="Business\IProveedorService.cs" />
     <Compile Remove="Business\IProyectoService.cs" />
     <Compile Remove="Business\IRecuentoService.cs" />
-    <Compile Remove="Business\NegocioService.cs" />
     <Compile Remove="Business\ProductoService.cs" />
     <Compile Remove="Business\ProveedorService.cs" />
     <Compile Remove="Business\ProyectoService.cs" />
