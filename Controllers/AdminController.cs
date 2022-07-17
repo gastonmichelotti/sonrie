@@ -32,6 +32,7 @@ namespace netCoreNew.Controllers
         private readonly IInsumoService insumoService;        
         private readonly ICategoriaPrestacionService categoriaPrestacionService;        
         private readonly IAtencionService atencionService;        
+        private readonly IDolarService dolarService;        
         private readonly IWebHostEnvironment hostingEnvironment;
 
 
@@ -47,6 +48,7 @@ namespace netCoreNew.Controllers
             IInsumoService insumoService,
             ICategoriaPrestacionService categoriaPrestacionService,
             IAtencionService atencionService,
+            IDolarService dolarService,
             IWebHostEnvironment hostingEnvironment)
         {
             this.usuarioService = usuarioService;           
@@ -60,6 +62,7 @@ namespace netCoreNew.Controllers
             this.insumoService = insumoService;  
             this.categoriaPrestacionService = categoriaPrestacionService;  
             this.atencionService = atencionService;              
+            this.dolarService = dolarService;              
             this.hostingEnvironment = hostingEnvironment;
         }
 
@@ -68,28 +71,32 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult Dolar()
         {
-            var result = negocioService.GetAll().First();
+            var result = dolarService.GetAll().First();
 
-            return PartialView("_ModalMonto", result);
+            return PartialView("_ModalDolar", result);
         }
 
         [HttpPost]
-        public IActionResult Montos(Negocio model)
+        public IActionResult Dolar(Dolar model)
         {
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = Valores.Incorrectos });
             }
 
-            var result = negocioService.GetById(model.Id);
+            var result = dolarService.GetById(model.Id);
 
-            result.MontoDiferencia = model.MontoDiferencia;
-            result.MontoMinimo = model.MontoMinimo;
+            result.ValorDolar = model.ValorDolar;
+            result.Fecha = CurrentDate;
 
-            negocioService.Edit(result);
+            dolarService.Edit(result);
 
             return Json(new { success = true, message = Valores.Edicion });
         }
+
+        #endregion
+
+
 
         #region ROLES
         [HttpGet]
@@ -129,7 +136,7 @@ namespace netCoreNew.Controllers
 
             });
         }
-
+        
         [HttpPost]
         public IActionResult CreateRol(Rol model)
         {
