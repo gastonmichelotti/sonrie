@@ -71,7 +71,7 @@ namespace netCoreNew.Controllers
         [HttpGet]
         public IActionResult Dolar()
         {
-            var result = dolarService.GetAll().First();
+            var result = dolarService.GetAll().LastOrDefault();
 
             return PartialView("_ModalDolar", result);
         }
@@ -84,12 +84,10 @@ namespace netCoreNew.Controllers
                 return Json(new { success = false, message = Valores.Incorrectos });
             }
 
-            var result = dolarService.GetById(model.Id);
+            model.Id = 0;
+            model.Fecha = CurrentDate;
 
-            result.ValorDolar = model.ValorDolar;
-            result.Fecha = CurrentDate;
-
-            dolarService.Edit(result);
+            dolarService.Add(model);
 
             return Json(new { success = true, message = Valores.Edicion });
         }

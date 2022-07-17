@@ -827,12 +827,14 @@
 
         $('#btn_config').on('click', function (e) {
 
+            debugger;
+
             KTApp.block('.modal-body', {});
 
-            $("#title_modal_nuevo").html("Configuración de aprobación");
+            $("#title_modal_nuevo").html("Configuraciones Generales");
             $("#btn_modal_nuevo").show();
 
-            $.get("/Admin/Negocio", {}, function (result) {
+            $.get("/Admin/Dolar", {}, function (result) {
 
                 $('#content_modal_nuevo').html(result);
 
@@ -856,8 +858,10 @@
 
                     KTApp.block('.modal-body', {});
 
+                    debugger;
+
                     $.ajax({
-                        url: "/Admin/Negocio",
+                        url: "/Admin/Dolar",
                         type: "POST",
                         data: _data,
                         cache: false,
