@@ -518,6 +518,105 @@ namespace netCoreNew.Controllers
 
         #endregion
 
+        #region CATEGORIAS
+        [HttpGet]
+        public IActionResult CategoriasPrestacion()
+        {
+            ViewData["Title"] = "Categorias de Prestacion";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaCategoriasPrestacion()
+        {
+            var final = CargarCategoriasPrestacion(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarCategoriasPrestacion(int? id)
+        {
+            return categoriaPrestacionService.GetList(c => (id == null ? !c.Eliminado : c.Id == id))
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,                                        
+                    observaciones = c.Observaciones
+
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateCategoriaPrestacion(int id)
+        {
+
+            return PartialView("_ModalCategoriaPrestacion", new CategoriaPrestacion
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateCategoriaPrestacion(CategoriaPrestacion model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.Eliminado = false;
+
+            categoriaPrestacionService.Add(model);
+
+            var final = CargarCategoriasPrestacion(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditCategoriaPretacion(int id)
+        {
+            var result = categoriaPrestacionService.GetById(id);
+
+            return PartialView("_ModalCategoriaPrestacion", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditCategoriaPretacion(CategoriaPrestacion model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var categoria = categoriaPrestacionService.GetById(model.Id);
+
+            categoria.Nombre = model.Nombre;           
+            categoria.Observaciones = model.Observaciones;
+            categoria.Eliminado = false;
+
+            categoriaPrestacionService.Edit(categoria);
+
+            var final = CargarCategoriasPrestacion(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        public IActionResult EliminarCategoriaPrestacion(int id)
+        {
+            var model = categoriaPrestacionService.GetById(id);
+
+            model.Eliminado = true;
+
+            categoriaPrestacionService.Edit(model);
+
+            return Json(new { success = true, message = Enum.Valores.Eliminacion });
+        }
+
+        #endregion
+
 
 
         //#region PROVEEDORES

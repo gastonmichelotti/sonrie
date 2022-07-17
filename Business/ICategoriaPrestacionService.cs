@@ -3,7 +3,7 @@ using netCoreNew.Repository;
 
 namespace netCoreNew.Business
 {
-    public interface ICategoriaPrestacionService : IGenericRepository<CategoriaPestacion>
+    public interface ICategoriaPrestacionService : IGenericRepository<CategoriaPrestacion>
     {
     
     }

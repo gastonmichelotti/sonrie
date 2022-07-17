@@ -13,7 +13,7 @@ namespace netCoreNew.Models
         
         public int IdCategoriaPrestacion { get; set; }
         [ForeignKey("IdCategoriaPrestacion")]
-        public CategoriaPestacion CategoriaPestacion { get; set; }
+        public CategoriaPrestacion CategoriaPrestacion { get; set; }
 
         public int IdInsumo { get; set; }
         [ForeignKey("IdInsumo")]
