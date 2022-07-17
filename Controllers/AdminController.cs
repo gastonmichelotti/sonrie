@@ -414,6 +414,112 @@ namespace netCoreNew.Controllers
 
         #endregion
 
+        #region INSUMOS
+        [HttpGet]
+        public IActionResult Insumos()
+        {
+            ViewData["Title"] = "Insumos";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaInsumos()
+        {
+            var final = CargarInsumos(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarInsumos(int? id)
+        {
+            return insumoService.GetList(c => (id == null ? !c.Eliminado : c.Id == id))
+                .Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,
+                    unidad = c.UnidadVenta,
+                    precioUSD = "USD" + c.PrecioDolar.ToString("N2"),
+                    etiquetas = c.Etiquetas,
+                    observaciones = c.Observaciones
+                   
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateInsumo(int id)
+        {
+            
+            return PartialView("_ModalInsumo", new Insumo
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateInsumo(Insumo model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.Eliminado = false;
+
+            insumoService.Add(model);
+
+            var final = CargarInsumos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditInsumo(int id)
+        {
+            var result = insumoService.GetById(id);            
+
+            return PartialView("_ModalInsumos", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditInsumo(Insumo model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var insumo = insumoService.GetById(model.Id);
+
+            insumo.Nombre = model.Nombre;
+            insumo.UnidadVenta = model.UnidadVenta;
+            insumo.PrecioDolar = model.PrecioDolar;
+            insumo.Observaciones = model.Observaciones;
+            insumo.Eliminado = false;
+
+            insumoService.Edit(insumo);
+
+            var final = CargarInsumos(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+        public IActionResult EliminarInsumo(int id)
+        {
+            var model = insumoService.GetById(id);
+
+            model.Eliminado = true;
+
+            insumoService.Edit(model);
+
+            return Json(new { success = true, message = Enum.Valores.Eliminacion });
+        }
+
+        #endregion
+
+
+
         //#region PROVEEDORES
         //[HttpGet]
         //public IActionResult Proveedores()
