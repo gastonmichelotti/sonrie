@@ -16,6 +16,9 @@ namespace netCoreNew.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Redirect { get; set; }
+        public string Observaciones { get; set; }
+
+        public bool Eliminado { get; set; }
 
         public ICollection<Usuario> Usuarios { get; set; }
     }

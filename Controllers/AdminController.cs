@@ -63,6 +63,104 @@ namespace netCoreNew.Controllers
             this.hostingEnvironment = hostingEnvironment;
         }
 
+        #region ROLES
+        [HttpGet]
+        public IActionResult Roles()
+        {
+            ViewData["Title"] = "Roles";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaRoles()
+        {
+            var final = CargarRoles(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarRoles(int? id)
+        {
+            return rolService.GetList(c => (id == null ? !c.Eliminado : c.Id == id))
+                .Select(c => new
+                {
+                    id = c.Id,                    
+                    nombre = c.Nombre,
+                    redirect = c.Redirect,
+                    observaciones = c.Observaciones
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreateRol(int id)
+        {
+            return PartialView("_ModalRol", new Rol
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreateRol(Rol model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.Eliminado = false;
+
+            rolService.Add(model);
+
+            var final = CargarRoles(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditRol(int id)
+        {
+            var result = rolService.GetById(id);
+
+            return PartialView("_ModalRol", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditRol(Rol model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var rol = rolService.GetById(model.Id);
+
+            rol.Nombre = model.Nombre;
+            rol.Redirect = model.Redirect;
+            rol.Observaciones = model.Observaciones;
+
+            rolService.Edit(rol);
+
+            var final = CargarRoles(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+
+
+        public IActionResult EliminarRol(int id)
+        {
+            var model = rolService.GetById(id);
+
+            model.Eliminado = true;
+
+            rolService.Edit(model);
+
+            return Json(new { success = true, message = Enum.Valores.Eliminacion });
+        }
+        #endregion
+
         #region USUARIOS
         [HttpGet]
         public IActionResult Usuarios()
@@ -182,7 +280,6 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, message = Enum.Valores.Eliminacion });
         }
         #endregion
-
 
         #region PACIENTES
         [HttpGet]
@@ -721,6 +818,8 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, message = Enum.Valores.Eliminacion });
         }
         #endregion
+
+
 
 
 

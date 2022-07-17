@@ -46,14 +46,23 @@
                     <div class="kt-menu__submenu">
                         <span class="kt-menu__arrow"></span>
                         <ul class="kt-menu__subnav">
-                            
-                            <li class="kt-menu__item" aria-haspopup="true" id="menu_obrasSociales">
-                                <a href="/Admin/Usuarios" class="kt-menu__link">
-                                    <span class="kt-menu__link-text">Usuarios</span>
-                                </a>
-                            </li>
-                            
-                            
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="kt-menu__item" aria-haspopup="true" id="menu_roles">
+                                    <a href="/Admin/Roles" class="kt-menu__link">
+                                        <span class="kt-menu__link-text">Roles</span>
+                                    </a>
+                                </li>  
+
+
+                                <li class="kt-menu__item" aria-haspopup="true" id="menu_obrasSociales">
+                                    <a href="/Admin/Usuarios" class="kt-menu__link">
+                                        <span class="kt-menu__link-text">Usuarios</span>
+                                    </a>
+                                </li>
+                            }
+
                             <li class="kt-menu__item" aria-haspopup="true" id="menu_obrasSociales">
                                 <a href="/Admin/ObrasSociales" class="kt-menu__link">
                                     <span class="kt-menu__link-text">Obras Sociales</span>
