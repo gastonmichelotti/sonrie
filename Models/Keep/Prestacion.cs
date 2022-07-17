@@ -18,6 +18,10 @@ namespace netCoreNew.Models
         public int IdCategoriaPrestacion { get; set; }          
         [ForeignKey("IdCategoriaPrestacion")]        
         public CategoriaPrestacion CategoriaPrestacion { get; set; }
-        
+
+        public bool Eliminado { get; set; }
+
+        public ICollection<Precio> Precios { get; set; }
+
     }
 }

@@ -23,7 +23,7 @@ namespace netCoreNew.Models
         public double PrecioPesos { get; set; }
         public double CoseguroPesos { get; set; }
 
-        public DateTime FechaUltimaActualizacion { get; set; }
+        public DateTime Fecha { get; set; }
         public string Observaciones { get; set; }
     }
 }

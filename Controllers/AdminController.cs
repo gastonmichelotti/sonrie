@@ -617,6 +617,111 @@ namespace netCoreNew.Controllers
 
         #endregion
 
+        #region PRESTACIONES
+        [HttpGet]
+        public IActionResult Prestaciones()
+        {
+            ViewData["Title"] = "Prestaciones";
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CargarTablaPrestaciones()
+        {
+            var final = CargarPrestaciones(null);
+
+            return Json(new { success = true, data = final });
+        }
+
+        private IEnumerable<object> CargarPrestaciones(int? id)
+        {
+            return prestacionService.GetList(c => (id == null ? !c.Eliminado : c.Id == id), c => c.CategoriaPrestacion, c => c.Precios)
+                .Select(c => new
+                {
+                    id = c.Id,
+                    codigo = c.Codigo,
+                    nombre = c.Nombre,
+                    categoria = c.CategoriaPrestacion.Nombre,                                        
+                    observaciones = c.Observaciones,                   
+                })
+                .OrderBy(c => c.nombre);
+        }
+
+        [HttpGet]
+        public IActionResult CreatePrestacion(int id)
+        {
+            ViewBag.IdCategoriaPrestacion = new SelectList(categoriaPrestacionService.GetList(c => !c.Eliminado), "Id", "Nombre");
+
+            return PartialView("_ModalPrestacion", new Prestacion
+            {
+
+            });
+        }
+
+        [HttpPost]
+        public IActionResult CreatePrestacion(Prestacion model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            model.Eliminado = false;
+            
+            prestacionService.Add(model);
+
+            var final = CargarPrestaciones(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Creacion });
+        }
+
+        [HttpGet]
+        public IActionResult EditPrestacion(int id)
+        {
+            var result = prestacionService.GetById(id);
+
+            ViewBag.IdCategoriaPrestacion = new SelectList(categoriaPrestacionService.GetList(c => !c.Eliminado), "Id", "Nombre", result.IdCategoriaPrestacion);
+
+            return PartialView("_ModalPrestacion", result);
+        }
+
+        [HttpPost]
+        public IActionResult EditPrestacion(Prestacion model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = Valores.Incorrectos });
+            }
+
+            var prestacion = prestacionService.GetById(model.Id);
+
+            prestacion.Nombre = model.Nombre;
+            prestacion.Codigo = model.Codigo;
+            prestacion.IdCategoriaPrestacion = model.IdCategoriaPrestacion;
+            prestacion.Observaciones = model.Observaciones;
+            
+
+            prestacionService.Edit(prestacion);
+
+            var final = CargarPrestaciones(model.Id).First();
+
+            return Json(new { success = true, data = final, message = Valores.Edicion });
+        }
+                
+
+        public IActionResult EliminarPrestacion(int id)
+        {
+            var model = prestacionService.GetById(id);
+
+            model.Eliminado = true;
+
+            prestacionService.Edit(model);
+
+            return Json(new { success = true, message = Enum.Valores.Eliminacion });
+        }
+        #endregion
+
 
 
         //#region PROVEEDORES
