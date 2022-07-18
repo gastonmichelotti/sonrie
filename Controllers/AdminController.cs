@@ -632,7 +632,7 @@ namespace netCoreNew.Controllers
                     id = c.Id,
                     nombre = c.Nombre,
                     unidad = c.UnidadVenta,
-                    precioUSD = "USD" + c.PrecioDolar.ToString("N2"),
+                    precioUSD = "USD " + c.PrecioDolar.ToString("N2"),
                     etiquetas = c.Etiquetas,
                     observaciones = c.Observaciones
                    
@@ -672,7 +672,7 @@ namespace netCoreNew.Controllers
         {
             var result = insumoService.GetById(id);            
 
-            return PartialView("_ModalInsumos", result);
+            return PartialView("_ModalInsumo", result);
         }
 
         [HttpPost]
@@ -689,6 +689,7 @@ namespace netCoreNew.Controllers
             insumo.UnidadVenta = model.UnidadVenta;
             insumo.PrecioDolar = model.PrecioDolar;
             insumo.Observaciones = model.Observaciones;
+            insumo.Etiquetas = model.Etiquetas;
             insumo.Eliminado = false;
 
             insumoService.Edit(insumo);
