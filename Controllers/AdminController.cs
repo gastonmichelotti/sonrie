@@ -549,6 +549,61 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, data = final, message = Enum.Valores.Edicion });
         }
 
+        [HttpGet]
+        public IActionResult EditInlinePreciosOS(int id)
+        {
+            var result = precioService.GetList(c => c.IdObraSocial == id, c => c.ObraSocial, c => c.Prestacion)
+                .Select(c => new EditPreciosVM
+                {
+                    Id = c.Id,
+                    Prestacion = c.Prestacion.Codigo +  " - " + c.Prestacion.Nombre,
+                    ObraSocial = c.ObraSocial.Nombre,
+                    PrecioPesos = c.PrecioPesos,
+                    CoseguroPesos = c.CoseguroPesos,
+                });
+
+            return PartialView("_ModalPreciosInlineOS", result);
+        }
+
+
+        public IActionResult EditInlinePreciosOSPOST(int id, string valor, string campo)
+        {
+            var model = precioService.GetById(id);
+
+            if (model == null)
+            {
+                return Json(new { Resultado = false, Mensaje = "Precios no encontrados" });
+            }
+
+            switch (campo)
+            {
+                case "precioPesos":
+                    model.PrecioPesos = double.Parse(valor);
+                    precioService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Éxito!",
+                    });
+                case "coseguroPesos":
+                    model.CoseguroPesos = double.Parse(valor);
+                    precioService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Exito!",
+                    });
+                default:
+                    break;
+            }
+
+            return Json(new
+            {
+                Resultado = false,
+                Mensaje = "Hubo un error al modificar el valor",
+            });
+        }
+
 
         #endregion
 
