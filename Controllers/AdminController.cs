@@ -492,6 +492,13 @@ namespace netCoreNew.Controllers
 
             obraSocialService.Add(model);
 
+            var prestaciones = prestacionService.GetList(c => !c.Eliminado).ToList();
+
+            foreach (var prestacion in prestaciones)
+            {
+                precioService.Add(new Precio(prestacion.Id, model.Id, 0, 0));
+            }            
+
             var final = CargarObrasSociales(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Creacion });
@@ -841,6 +848,13 @@ namespace netCoreNew.Controllers
             
             prestacionService.Add(model);
 
+            var obrasSociales = obraSocialService.GetList(c => c.Activo).ToList();
+
+            foreach (var obraSocial in obrasSociales)
+            {
+                precioService.Add(new Precio(model.Id, obraSocial.Id, 0, 0));
+            }
+
             var final = CargarPrestaciones(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Creacion });
@@ -889,6 +903,62 @@ namespace netCoreNew.Controllers
             prestacionService.Edit(model);
 
             return Json(new { success = true, message = Enum.Valores.Eliminacion });
+        }
+
+
+        [HttpGet]
+        public IActionResult EditInlinePrecios(int id)
+        {
+            var result = precioService.GetList(c => c.IdPrestacion == id, c => c.ObraSocial, c => c.Prestacion)
+                .Select(c => new EditPreciosVM
+                {
+                    Id = c.Id,
+                    Prestacion = c.Prestacion.Nombre,
+                    ObraSocial = c.ObraSocial.Nombre,
+                    PrecioPesos = c.PrecioPesos,
+                    CoseguroPesos = c.CoseguroPesos,                    
+                });
+
+            return PartialView("_ModalPreciosInline", result);
+        }
+
+        
+        public IActionResult EditInlinePreciosPOST(int id, string valor, string campo)
+        {
+            var model = precioService.GetById(id);
+
+            if (model == null)
+            {
+                return Json(new { Resultado = false, Mensaje = "Precios no encontrados" });
+            }
+
+            switch (campo)
+            {
+                case "precioPesos":
+                    model.PrecioPesos = double.Parse(valor);
+                    precioService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Éxito!",
+                    });
+                case "coseguroPesos":
+                    model.CoseguroPesos = double.Parse(valor);
+                    precioService.Edit(model);
+                    return Json(new
+                    {
+                        Resultado = true,
+                        Mensaje = "Exito!",
+                    });
+                default:
+                    break;
+            }
+
+            return Json(new
+            {
+                Resultado = false,
+                Mensaje = "Hubo un error al modificar el valor",
+            });
         }
         #endregion
 

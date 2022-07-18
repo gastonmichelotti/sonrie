@@ -9,6 +9,14 @@ namespace netCoreNew.Models
 {
     public class Precio : IEntityBase
     {
+        public Precio(int IdPrestacion, int IdObraSocial, double PrecioPesos, double CoseguroPesos)
+        {
+            this.IdPrestacion = IdPrestacion;
+            this.IdObraSocial = IdObraSocial;
+            this.PrecioPesos = PrecioPesos;
+            this.CoseguroPesos = CoseguroPesos;
+        }
+
         public int Id { get; set; }
         [Required]
 

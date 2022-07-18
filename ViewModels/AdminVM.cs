@@ -19,5 +19,15 @@ namespace netCoreNew.ViewModels
     //    public int IdRecuento { get; set; }
     //    public string IdDetalles { get; set; }    //}
 
-    
+    public class EditPreciosVM
+    {
+        public int Id { get; set; }
+        public string Prestacion { get; set; }
+        public string ObraSocial { get; set; }
+        public double PrecioPesos { get; set; }
+        public double CoseguroPesos { get; set; }
+       
+    }
+
+
 }

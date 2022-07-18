@@ -1,0 +1,34 @@
+﻿@model IEnumerable<netCoreNew.ViewModels.EditPreciosVM>
+
+<table class="table table-striped m-table">
+    <thead>
+        <tr>
+            <th>
+                Obra Social
+            </th>            
+            <th>
+                Precio ($)
+            </th>
+            <th>
+                Coseguro ($)
+            </th>            
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.ObraSocial
+                </td>            
+                <td>
+                    <a href="#" class="xeditable" data-type="number" data-pk="@item.Id" data-field="precioPesos" data-urlSend="/Admin/EditInlinePreciosPOST">@item.PrecioPesos</a>
+                </td>
+                <td>
+                    <a href="#" class="xeditable" data-type="number" data-pk="@item.Id" data-field="coseguroPesos" data-urlSend="/Admin/EditInlinePreciosPOST">@item.CoseguroPesos</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
