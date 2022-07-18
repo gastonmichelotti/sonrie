@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace netCoreNew.Controllers
 {
@@ -682,6 +683,8 @@ namespace netCoreNew.Controllers
         public IActionResult CreateCategoriaPrestacion(int id)
         {
 
+            ViewBag.IdInsumo = new SelectList(insumoService.GetList(c => !c.Eliminado), "Id", "Nombre");
+
             return PartialView("_ModalCategoriaPrestacion", new CategoriaPrestacion
             {
 
@@ -696,7 +699,16 @@ namespace netCoreNew.Controllers
                 return Json(new { success = false, message = Valores.Incorrectos });
             }
 
-            model.Eliminado = false;
+            model.Eliminado = false;            
+
+            foreach (var item in model.Items)
+            {
+                model.Detalles.Add(new InsumoxCategoria
+                {
+                    IdInsumo = item.IdInsumo,
+                    Cantidad = item.Cantidad,                   
+                });
+            }
 
             categoriaPrestacionService.Add(model);
 
@@ -706,15 +718,30 @@ namespace netCoreNew.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditCategoriaPretacion(int id)
+        public IActionResult EditCategoriaPrestacion(int id)
         {
+            ViewBag.IdInsumo = new SelectList(insumoService.GetList(c => !c.Eliminado), "Id", "Nombre");
+
             var result = categoriaPrestacionService.GetById(id);
+
+            var items = insumoxCategoriaService.GetList(c => c.IdCategoriaPrestacion == id).Select(c => new
+            {
+                Nombre = c.IdInsumo + "+" + c.Cantidad
+            });
+
+            //result.ItemsLoad = string.Join(';', items.Select(c => c.Nombre));
+
+            result.ItemsLoad = JsonConvert.SerializeObject(insumoxCategoriaService.GetList(c => c.IdCategoriaPrestacion == id).Select(c => new
+            {
+                IdInsumo = c.IdInsumo,
+                Cantidad = c.Cantidad
+            }));
 
             return PartialView("_ModalCategoriaPrestacion", result);
         }
 
         [HttpPost]
-        public IActionResult EditCategoriaPretacion(CategoriaPrestacion model)
+        public IActionResult EditCategoriaPrestacion(CategoriaPrestacion model)
         {
             if (!ModelState.IsValid)
             {
@@ -722,6 +749,19 @@ namespace netCoreNew.Controllers
             }
 
             var categoria = categoriaPrestacionService.GetById(model.Id);
+
+            var detalles = insumoxCategoriaService.GetList(c => c.IdCategoriaPrestacion == model.Id);
+
+            insumoxCategoriaService.DeleteRange(detalles.ToArray());
+
+            foreach (var item in model.Items)
+            {
+                categoria.Detalles.Add(new InsumoxCategoria
+                {
+                    IdInsumo = item.IdInsumo,
+                    Cantidad = item.Cantidad,                    
+                });
+            }
 
             categoria.Nombre = model.Nombre;           
             categoria.Observaciones = model.Observaciones;

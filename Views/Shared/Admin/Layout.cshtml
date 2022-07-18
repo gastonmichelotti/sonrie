@@ -287,18 +287,14 @@
 
             $("#title_modal_nuevo").html("Editar");
             $("#btn_modal_nuevo").show();
-            $("#btn_modal_nuevo_2").show();
 
             $.get(urlEdit, { id: btn.data("id") }, function (result) {
+
+                debugger;
 
                 $('#content_modal_nuevo').html(result);
 
                 InitModal();
-
-                if (urlEdit == "/Admin/EditRecuento")
-                {
-                    $("#btn_modal_nuevo_2").show();
-                }
 
                 $('#btn_modal_nuevo').unbind('click').click(function (e) {
 
@@ -345,51 +341,7 @@
 
                 });
 
-                $('#btn_modal_nuevo_2').unbind('click').click(function (e) {
-
-
-                    e.preventDefault();
-
-                    btn = $(this);
-
-                    btn.attr('disabled', true);
-
-                    var form = btn.closest("form");
-                    $.validator.unobtrusive.parse(form[0]);
-                    var _data = new FormData(form[0]);
-
-                    if (!form.valid()) {
-                        formError(btn, "Algunos datos no son correctos");
-                        return;
-                    }
-
-                    KTApp.block('.modal-body', {});
-
-                    $.ajax({
-                        url: "/Admin/GuardarComo",
-                        type: "POST",
-                        data: _data,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function (result) {
-                            if (result.success) {
-                                $('#modal_nuevo').modal('toggle');
-                                successMessage(result.message);
-                                tabla.row.add(result.data).draw(false);;
-                            }
-                            else {
-                                formError(btn, result.message);
-                            }
-                            return;
-                        },
-                        error: function (xhr, textStatus) {
-                            formError(btn, "Algunos datos no son correctos");
-                            return;
-                        }
-                    });
-
-                });
+                
 
                 }).fail(function (xhr, status, error) {
                 errorMessage("Ups.. Surgio un error inesperado");
@@ -648,6 +600,52 @@
                 });
             });
 
+            $('.repeaterCategoria').each(function () {
+
+                debugger;
+
+                var defaultValues = {
+                    'IdInsumo': -1,
+                    'Cantidad': 0
+                };
+
+                var repeater = $(this).repeater({
+
+                    initEmpty: $(this).data("empty"),
+
+                    defaultValues: defaultValues,
+
+                    ready: function () {
+
+                    },
+
+                    show: function () {
+                        $(this).slideDown();
+
+                        $('.kt-selectpicker').each(function () {
+                            var valor = $(this).val();
+                            $(this).selectpicker();
+                            $(this).val(valor);
+                            $(this).selectpicker('refresh');
+                        });
+
+                        if($("#Id").val() != 0)
+                        {
+                        }
+                    },
+
+                    hide: function (deleteElement) {
+                        $(this).slideUp(deleteElement);
+                    }
+
+                });
+
+                var items = $(this).data("items");                
+
+                repeater.setList(items);
+
+            });
+
             $('.repeater').each(function () {
 
                 var defaultValues = {
@@ -719,7 +717,9 @@
 
                 });
 
-                var items = $(this).data("items");
+                debugger;
+
+                var items = $(this).data("items");                
 
                 var listado = [];
 
@@ -823,6 +823,21 @@
 
             console.log("InitTabla");
 
+        }
+
+        function ActualizarRepeaterCategoria(wait) {
+
+            if ($("#Id").val() == 0) {
+                return;
+            }
+
+            if (wait) {
+                setTimeout(function () {
+                    ActualizarRepeaterCategoria();
+                }, 1000);
+            }
+
+            console.log("ActualizarRepeaterCategoria");
         }
 
         $('#btn_config').on('click', function (e) {
