@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace netCoreNew.Business
 {
-    public class AtencionService : GenericRepository<Atencion>, IAtencionService
+    public class EstadoAtencionService : GenericRepository<EstadoAtencion>, IEstadoAtencionService
     {
-        public AtencionService(NetCoreNewContext context) : base(context)
+        public EstadoAtencionService(NetCoreNewContext context) : base(context)
         {
             _context = context;
         }

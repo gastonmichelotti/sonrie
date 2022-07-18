@@ -1,9 +1,9 @@
-﻿using netCoreNew.Models;
+﻿susing netCoreNew.Models;
 using netCoreNew.Repository;
 
 namespace netCoreNew.Business
 {
-    public interface IAtencionService : IGenericRepository<Atencion>
+    public interface IEstadoAtencionService : IGenericRepository<EstadoAtencion>
     {
     
     }

@@ -19,9 +19,12 @@ namespace netCoreNew.Models
         public Atencion Atencion { get; set; }
 
         public int IdPieza { get; set; }
+
         public string Caras { get; set; }
 
-        public bool Particular { get; set; }           
+        public bool Particular { get; set; }
+
+        public bool Observaciones { get; set; }
 
     }
 }

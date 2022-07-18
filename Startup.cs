@@ -103,7 +103,8 @@ namespace netCoreNew
             services.AddScoped<IInsumoService, InsumoService>();
             services.AddScoped<IPrecioService, PrecioService>();
             services.AddScoped<IDolarService, DolarService>();
-            
+            services.AddScoped<IEstadoAtencionService, EstadoAtencionService>();
+
 
             services.AddScoped<IEntidadesLogicService, EntidadesLogicService>();
 
