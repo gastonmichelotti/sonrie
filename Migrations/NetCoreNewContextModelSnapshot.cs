@@ -41,6 +41,12 @@ namespace netCoreNew.Migrations
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
+                    b.Property<float>("MontoEfectivo")
+                        .HasColumnType("real");
+
+                    b.Property<float>("MontoOS")
+                        .HasColumnType("real");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdPaciente");
@@ -296,20 +302,18 @@ namespace netCoreNew.Migrations
                     b.Property<int>("IdAtencion")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdObraSocial")
-                        .HasColumnType("int");
-
                     b.Property<int>("IdPieza")
                         .HasColumnType("int");
 
                     b.Property<int>("IdPrestacion")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Particular")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdAtencion");
-
-                    b.HasIndex("IdObraSocial");
 
                     b.HasIndex("IdPrestacion");
 
@@ -466,12 +470,6 @@ namespace netCoreNew.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("netCoreNew.Models.ObraSocial", "ObraSocial")
-                        .WithMany()
-                        .HasForeignKey("IdObraSocial")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("netCoreNew.Models.Prestacion", "Prestacion")
                         .WithMany()
                         .HasForeignKey("IdPrestacion")
@@ -479,8 +477,6 @@ namespace netCoreNew.Migrations
                         .IsRequired();
 
                     b.Navigation("Atencion");
-
-                    b.Navigation("ObraSocial");
 
                     b.Navigation("Prestacion");
                 });

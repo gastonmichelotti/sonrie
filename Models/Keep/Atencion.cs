@@ -26,6 +26,10 @@ namespace netCoreNew.Models
         [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
 
+        public float MontoEfectivo { get; set; }
+
+        public float MontoOS { get; set; }
+
         public ICollection<PrestacionxAtencion> Detalles { get; set; }
 
     }

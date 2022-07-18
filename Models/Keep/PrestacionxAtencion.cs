@@ -21,9 +21,7 @@ namespace netCoreNew.Models
         public int IdPieza { get; set; }
         public string Caras { get; set; }
 
-        public int IdObraSocial { get; set; }
-        [ForeignKey("IdObraSocial")]
-        public ObraSocial ObraSocial { get; set; }        
+        public bool Particular { get; set; }           
 
     }
 }
