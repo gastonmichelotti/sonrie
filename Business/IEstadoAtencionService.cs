@@ -1,4 +1,4 @@
-﻿susing netCoreNew.Models;
+﻿using netCoreNew.Models;
 using netCoreNew.Repository;
 
 namespace netCoreNew.Business

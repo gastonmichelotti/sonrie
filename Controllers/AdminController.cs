@@ -96,8 +96,6 @@ namespace netCoreNew.Controllers
 
         #endregion
 
-
-
         #region ROLES
         [HttpGet]
         public IActionResult Roles()
@@ -736,7 +734,7 @@ namespace netCoreNew.Controllers
                 .Select(c => new
                 {
                     id = c.Id,
-                    fecha = c.Fecha,                                        
+                    fecha = c.Fecha.ToShortDateString(),                                        
                     paciente = c.Paciente.Nombre + " " + c.Paciente.Apellido,
                     profesional = c.Usuario.Nombre,
                     montoOS = c.MontoOS.ToString("C2"),
@@ -750,9 +748,13 @@ namespace netCoreNew.Controllers
 
         [HttpGet]
         public IActionResult CreateAtencion(int id)
-        {
+        {   
 
-            ViewBag.IdPaciente = new SelectList(pacienteService.GetList(c => !c.Eliminado), "Id", "Nombre");
+            ViewBag.IdPaciente = new SelectList(pacienteService.GetList(c => !c.Eliminado).Select(c => new
+            {
+                Id = c.Id,
+                Nombre = c.Nombre + " " + c.Apellido
+            }), "Id", "Nombre"); 
             ViewBag.IdPrestacion = new SelectList(prestacionService.GetList(c => !c.Eliminado), "Id", "Nombre");
             ViewBag.IdUsuario = new SelectList(usuarioService.GetList(c => c.Activo), "Id", "Nombre");
             ViewBag.IdPieza = new SelectList(System.Enum.GetValues(typeof(Valores.PiezaEnum)));
@@ -761,8 +763,9 @@ namespace netCoreNew.Controllers
 
             return PartialView("_ModalAtencion", new Atencion
             {
-
-            });
+                Fecha = CurrentDate,
+                IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id
+            }) ;
         }
 
         [HttpPost]
@@ -771,36 +774,43 @@ namespace netCoreNew.Controllers
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = Valores.Incorrectos });
-            }                     
+            }
+
+            var prestaciones = prestacionService.GetList(c => !c.Eliminado, c=> c.Precios).ToArray();
+            var obraSocialPaciente = pacienteService.GetById(model.IdPaciente).IdObraSocial;
 
             foreach (var item in model.Items)
             {
                 model.Detalles.Add(new PrestacionxAtencion
                 {
-                    IdPrestacion= item.IdPrestacion,
+                    IdPrestacion = item.IdPrestacion,
                     IdPieza = item.IdPieza,
                     Caras = item.Caras,
                     Particular = item.Particular,
                     Observaciones = item.Observaciones
-                        
+
                 });
-            }
-
-
-            //TODO-GASTON: SEGUIR ACA LO COMENTADO 
-            //model.MontoEfectivo = model.Detalles.Sum(c => c.Prestacion.Monto
+                //TODO: ARMAR RULO DE TOMAR PRECIOS PARTICULARES IF CHECJBOX PARTICULAR == TRUE
+                model.MontoEfectivo += prestaciones.Where(y => y.Id == item.IdPrestacion).FirstOrDefault().Precios.Where(c => c.IdObraSocial == obraSocialPaciente).Sum(x => x.CoseguroPesos);
+                model.MontoOS += prestaciones.Where(y => y.Id == item.IdPrestacion).FirstOrDefault().Precios.Where(c => c.IdObraSocial == obraSocialPaciente).Sum(x => x.PrecioPesos);
+                
+            }           
 
             atencionService.Add(model);
 
             var final = CargarAtenciones(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Creacion });
-        }
+                }
 
         [HttpGet]
         public IActionResult EditAtencion(int id)
         {
-            ViewBag.IdPaciente = new SelectList(pacienteService.GetList(c => !c.Eliminado), "Id", "Nombre");
+            ViewBag.IdPaciente = new SelectList(pacienteService.GetList(c => !c.Eliminado).Select(c => new
+            {
+                Id = c.Id,
+                Nombre = c.Nombre + " " + c.Apellido
+            }), "Id", "Nombre");    
             ViewBag.IdPrestacion = new SelectList(prestacionService.GetList(c => !c.Eliminado), "Id", "Nombre");
             ViewBag.IdUsuario = new SelectList(usuarioService.GetList(c => c.Activo), "Id", "Nombre");
             ViewBag.IdPieza = new SelectList(System.Enum.GetValues(typeof(Valores.PiezaEnum)));
@@ -836,6 +846,13 @@ namespace netCoreNew.Controllers
 
             prestacionxAtencionService.DeleteRange(detalles.ToArray());
 
+            atencion.MontoOS = 0;
+
+            atencion.MontoEfectivo = 0;
+
+            var prestaciones = prestacionService.GetList(c => !c.Eliminado, c => c.Precios).ToArray();
+            var obraSocialPaciente = pacienteService.GetById(model.IdPaciente).IdObraSocial;
+
             foreach (var item in model.Items)
             {
                 atencion.Detalles.Add(new PrestacionxAtencion
@@ -846,6 +863,11 @@ namespace netCoreNew.Controllers
                     Particular = item.Particular,
                     Observaciones = item.Observaciones
                 });
+
+                //TODO: ARMAR RULO DE TOMAR PRECIOS PARTICULARES IF CHECJBOX PARTICULAR == TRUE
+                atencion.MontoEfectivo += prestaciones.Where(y => y.Id == item.IdPrestacion).FirstOrDefault().Precios.Where(c => c.IdObraSocial == obraSocialPaciente).Sum(x => x.CoseguroPesos);
+                atencion.MontoOS += prestaciones.Where(y => y.Id == item.IdPrestacion).FirstOrDefault().Precios.Where(c => c.IdObraSocial == obraSocialPaciente).Sum(x => x.PrecioPesos);
+    
             }
 
             atencion.Fecha = model.Fecha;
@@ -854,20 +876,20 @@ namespace netCoreNew.Controllers
             atencion.IdUsuario = model.IdUsuario;
             atencion.IdEstadoAtencion = model.IdEstadoAtencion;
 
-            categoriaPrestacionService.Edit(categoria);
+            atencionService.Edit(atencion);
 
-            var final = CargarCategoriasPrestacion(model.Id).First();
+            var final = CargarAtenciones(model.Id).First();
 
             return Json(new { success = true, data = final, message = Valores.Edicion });
         }
 
-        public IActionResult EliminarCategoriaPrestacion(int id)
+        public IActionResult EliminarAtencion(int id)
         {
-            var model = categoriaPrestacionService.GetById(id);
+            var model = atencionService.GetById(id);
 
             model.Eliminado = true;
 
-            categoriaPrestacionService.Edit(model);
+            atencionService.Edit(model);
 
             return Json(new { success = true, message = Enum.Valores.Eliminacion });
         }
@@ -1178,6 +1200,6 @@ namespace netCoreNew.Controllers
             return Json(new { success = true, message = Enum.Valores.Eliminacion });
         }
 
-
+        #endregion
     }
 }

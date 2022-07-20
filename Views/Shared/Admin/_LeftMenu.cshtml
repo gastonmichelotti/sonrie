@@ -59,7 +59,10 @@
                                     <a href="/Admin/Roles" class="kt-menu__link">
                                         <span class="kt-menu__link-text">Roles</span>
                                     </a>
-                                </li>  
+                                </li>
+
+
+
 
 
                                 <li class="kt-menu__item" aria-haspopup="true" id="menu_obrasSociales">
@@ -80,7 +83,7 @@
                                     <span class="kt-menu__link-text">Insumos</span>
                                 </a>
                             </li>
-                            
+
                             <li class="kt-menu__item" aria-haspopup="true" id="menu_categoriasPrestacion">
                                 <a href="/Admin/CategoriasPrestacion" class="kt-menu__link">
                                     <span class="kt-menu__link-text">Categorias de Prestaciones</span>
@@ -92,10 +95,10 @@
                                     <span class="kt-menu__link-text">Prestaciones</span>
                                 </a>
                             </li>
-                            
+
                         </ul>
                     </div>
-                </li>               
+                </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" id="menu_pacientes">
                     <a href="/Admin/Pacientes" class="kt-menu__link">
@@ -103,14 +106,20 @@
                     </a>
                 </li>
 
+                <li class="kt-menu__item" aria-haspopup="true" id="menu_atenciones">
+                    <a href="/Admin/Atenciones" class="kt-menu__link">
+                        <span class="kt-menu__link-text">Atenciones</span>
+                    </a>
+                </li>
+
 
                 @if (User.IsInRole("Administrador"))
                 {
                     @*<li class="kt-menu__item" aria-haspopup="true">
-                        <a href="#." class="kt-menu__link" data-toggle="modal" data-target="#modal_nuevo" id="btn_config">
-                            <span class="kt-menu__link-text">Config</span>
-                        </a>
-                    </li>*@
+                <a href="#." class="kt-menu__link" data-toggle="modal" data-target="#modal_nuevo" id="btn_config">
+                    <span class="kt-menu__link-text">Config</span>
+                </a>
+            </li>*@
                 }
 
             </ul>

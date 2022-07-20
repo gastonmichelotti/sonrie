@@ -24,7 +24,7 @@ namespace netCoreNew.Models
 
         public bool Particular { get; set; }
 
-        public bool Observaciones { get; set; }
+        public string Observaciones { get; set; }
 
     }
 }

@@ -4,7 +4,7 @@
         Back = "",
         UrlBack = "",
         Current = "Listado",
-        UrlCurrent = "/Admin/Pacientes"
+        UrlCurrent = "/Admin/Atenciones"
     };
 }
 
@@ -38,12 +38,12 @@
                 <thead>
                     <tr>
                         <th class="all">Id</th>
-                        <th class="all">Nombre</th>
-                        <th class="all">Apellido</th>
-                        <th class="all">Teléfono</th>
-                        <th class="all">Obra Social</th>
-                        <th class="all">Plan</th>
-                        <th class="all">Num. Afiliado</th>
+                        <th class="all">Fecha</th>
+                        <th class="all">Paciente</th>
+                        <th class="all">Profesional</th>
+                        <th class="all">Monto Obra Social</th>
+                        <th class="all">Monto Efectivo</th>
+                        <th class="all">Estado</th>
                         <th class="all">Acciones</th>
                     </tr>
                 </thead>
@@ -58,11 +58,10 @@
 
 </div>
 
-@section Styles{
 
-}
-
-@section Scripts{
+    @section Styles{
+    }
+    @section Scripts{
 
     <script src="~/admin/js/InitDatatable.js"></script>
 
@@ -75,18 +74,18 @@
         var tabla;
         var columns = [
             { "data": "id" },
-            { "data": "nombre" },
-            { "data": "apellido" },
-            { "data": "telefono" },
-            { "data": "obraSocial" },
-            { "data": "plan" },
-            { "data": "numAfiliado" },
+            { "data": "fecha" },
+            { "data": "paciente" },
+            { "data": "profesional" },
+            { "data": "montoOS" },
+            { "data": "montoEFT" },
+            { "data": "estado" },
             { "data": "" }
         ];
         var columnDefs = [{
             "defaultContent": "-",
             "targets": "_all"
-        },        
+        },
         {
             targets: -1,
             orderable: false,
@@ -105,12 +104,11 @@
             return {
 
                 init: function () {
-                    initTable("/Admin/CargarTablaPacientes");
+                    initTable("/Admin/CargarTablaAtenciones");
                     initMetodos(
-                        "/Admin/CreatePaciente",
-                        "/Admin/EditPacientes",
-                        "/Admin/EliminarPaciente",
-                        
+                        "/Admin/CreateAtencion",
+                        "/Admin/EditAtencion",
+                        "/Admin/EliminarAtencion",
                     );
                 },
 
@@ -118,8 +116,48 @@
 
         }();
 
+
+
         jQuery(document).ready(function () {
             DataTable.init();
+        });
+
+        $("#fecha").daterangepicker({
+            autoApply: true,
+            locale: {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Guardar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Custom",
+                "weekLabel": "S",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ],
+                "firstDay": 1
+            }
         });
 
     </script>

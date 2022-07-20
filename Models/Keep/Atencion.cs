@@ -31,10 +31,10 @@ namespace netCoreNew.Models
         [ForeignKey("IdEstadoAtencion")]
         public EstadoAtencion EstadoAtencion { get; set; }
 
-        public float MontoEfectivo { get; set; }
+        public double MontoEfectivo { get; set; }
 
-        public float MontoOS { get; set; }        
-
+        public double MontoOS { get; set; }   
+    
         public bool Eliminado { get; set; }
 
         public string Observaciones { get; set; }

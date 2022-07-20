@@ -26,6 +26,9 @@ namespace netCoreNew.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
@@ -41,13 +44,18 @@ namespace netCoreNew.Migrations
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
-                    b.Property<float>("MontoEfectivo")
-                        .HasColumnType("real");
+                    b.Property<double>("MontoEfectivo")
+                        .HasColumnType("float");
 
-                    b.Property<float>("MontoOS")
-                        .HasColumnType("real");
+                    b.Property<double>("MontoOS")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdEstadoAtencion");
 
                     b.HasIndex("IdPaciente");
 
@@ -94,6 +102,24 @@ namespace netCoreNew.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Dolar");
+                });
+
+            modelBuilder.Entity("netCoreNew.Models.EstadoAtencion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EstadoAtencion");
                 });
 
             modelBuilder.Entity("netCoreNew.Models.Insumo", b =>
@@ -308,6 +334,9 @@ namespace netCoreNew.Migrations
                     b.Property<int>("IdPrestacion")
                         .HasColumnType("int");
 
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Particular")
                         .HasColumnType("bit");
 
@@ -385,6 +414,12 @@ namespace netCoreNew.Migrations
 
             modelBuilder.Entity("netCoreNew.Models.Atencion", b =>
                 {
+                    b.HasOne("netCoreNew.Models.EstadoAtencion", "EstadoAtencion")
+                        .WithMany()
+                        .HasForeignKey("IdEstadoAtencion")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("netCoreNew.Models.Paciente", "Paciente")
                         .WithMany()
                         .HasForeignKey("IdPaciente")
@@ -396,6 +431,8 @@ namespace netCoreNew.Migrations
                         .HasForeignKey("IdUsuario")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("EstadoAtencion");
 
                     b.Navigation("Paciente");
 

@@ -38,7 +38,7 @@ namespace netCoreNew.Enum
 
         public enum PiezaEnum
         {
-            P0 = 0,
+            NoAplica = 0,
             P11 = 11,
             P12 = 12,
             P13 = 13,

@@ -481,11 +481,11 @@
 
             $("#btn_modal_nuevo_2").hide();
 
-            $('.tags').each(function () {
+            @*$('.tags').each(function () {
 
                 $(this).tagsinput();
 
-            });
+            });*@
 
             $('.select2Simple').each(function () {
                 $(this).select2({
@@ -598,6 +598,52 @@
                     pickerPosition: "bottom-left",
                     format: "dd/mm/yyyy"
                 });
+            });
+
+            $('.repeaterAtencion').each(function () {
+
+                debugger;                              
+
+                var repeater = $(this).repeater({
+
+                    initEmpty: $(this).data("empty"),
+
+                    ready: function () {
+
+                    },
+
+                    show: function () {
+                        $(this).slideDown();
+
+                        $('.kt-selectpicker').each(function () {
+                            var valor = $(this).val();
+                            $(this).selectpicker();
+                            $(this).val(valor);
+                            $(this).selectpicker('refresh');
+                        });
+
+                        //Me falta inicializar el 
+                        if ($("#Id").val() != 0) {
+                        }
+
+                        //TODO-GASTON: Ver esto del tags imput che culiado
+                        $('.tags').each(function () {
+
+                            $(this).tagsinput();
+
+                        });
+                    },
+
+                    hide: function (deleteElement) {
+                        $(this).slideUp(deleteElement);
+                    }
+
+                });
+
+                var items = $(this).data("items");
+
+                repeater.setList(items);
+
             });
 
             $('.repeaterCategoria').each(function () {
@@ -838,6 +884,22 @@
             }
 
             console.log("ActualizarRepeaterCategoria");
+        }
+
+
+        function ActualizarRepeaterAtencion(wait) {
+
+            if ($("#Id").val() == 0) {
+                return;
+            }
+
+            if (wait) {
+                setTimeout(function () {
+                    ActualizarRepeaterAtencion();
+                }, 1000);
+            }
+
+            console.log("ActualizarRepeaterAtencion");
         }
 
         $('#btn_config').on('click', function (e) {
