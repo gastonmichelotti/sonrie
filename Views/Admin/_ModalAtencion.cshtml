@@ -4,18 +4,10 @@
 
 <div class="row">
 
-    <div class="form-group col-md-4">
-        <label asp-for="@Model.Fecha" class="">Fecha</label>
-        <input asp-for="@Model.Fecha" class="form-control dateOnlyPicker">
-        <input asp-for="@Model.Fecha" type="hidden">
-    </div>
-
-    <div class="form-group col-md-4">
-        <label asp-for="@Model.IdPaciente" class="">Paciente</label>
-        <select asp-for="@Model.IdPaciente" asp-items="@ViewBag.IdPaciente" class="form-control select2Simple">
-            <option selected value="">-</option>
-        </select>
-        <span asp-validation-for="@Model.IdPaciente" class="text-danger"></span>
+    <div class="form-group col-md-2">
+        <label asp-for="@Model.FechaString" class="">Fecha</label>
+        <input asp-for="@Model.FechaString" class="form-control dateOnlyPicker">
+        <input asp-for="@Model.FechaString" type="hidden">
     </div>
 
     <div class="form-group col-md-4">
@@ -26,23 +18,35 @@
         <span asp-validation-for="@Model.IdUsuario" class="text-danger"></span>
     </div>
 
-    <div class="form-group col-md-6">
-        <label asp-for="@Model.IdEstadoAtencion" class="">Estado</label>
-        <select asp-for="@Model.IdEstadoAtencion" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.EstadoAtencionEnum>()" class="form-control select2Simple">            
-        </select>
-        <span asp-validation-for="@Model.IdEstadoAtencion" class="text-danger"></span>
-    </div>
+</div>
+
+<div class="row">
 
     <div class="form-group col-md-6">
+        <label asp-for="@Model.IdPaciente" class="">Paciente</label>
+        <select asp-for="@Model.IdPaciente" asp-items="@ViewBag.IdPaciente" class="form-control select2Simple">
+            <option selected value="">-</option>
+        </select>
+        <span asp-validation-for="@Model.IdPaciente" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-3">
         <label asp-for="@Model.IdFormadePago" class="">Forma de Pago</label>
-        <select asp-for="@Model.IdFormadePago" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.FormaDePagoEnum>()" class="form-control select2Simple">         
+        <select asp-for="@Model.IdFormadePago" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.FormaDePagoEnum>()" class="form-control select2Simple">
         </select>
         <span asp-validation-for="@Model.IdFormadePago" class="text-danger"></span>
     </div>
 
+    <div class="form-group col-md-3">
+        <label asp-for="@Model.IdEstadoAtencion" class="">Estado</label>
+        <select asp-for="@Model.IdEstadoAtencion" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.EstadoAtencionEnum>()" class="form-control select2Simple">
+        </select>
+        <span asp-validation-for="@Model.IdEstadoAtencion" class="text-danger"></span>
+    </div>
+
     <div class="form-group col-md-12">
         <label asp-for="@Model.Observaciones" class=""></label>
-        <input asp-for="@Model.Observaciones" class="form-control">
+        <textarea asp-for="@Model.Observaciones" class="form-control" style="height: calc((1.5em + 1.3rem + 2px)*2);"></textarea>
         <span asp-validation-for="@Model.Observaciones" class="text-danger"></span>
     </div>
 </div>
@@ -57,16 +61,20 @@
 
             <div class="row text-center mb-2 headerRepeater">
 
-                <div class="col-md-5">
+                <div class="col-md-3">
                     Prestacion
-                </div>                
+                </div>
 
-                <div class="col-md-2">
+                <div class="col-md-1">
                     Pieza
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     Cara/s
+                </div>
+
+                <div class="col-md-4">
+                    Obs.
                 </div>
 
                 <div class="col-md-1">
@@ -85,18 +93,22 @@
 
                     <div data-repeater-item class="form-group row align-items-center rowRepeater rowRepeaterAtencion" name="inner-group">
 
-                        <div class="col-md-5">
+                        <div class="col-md-3">
                             <select name="IdPrestacion" asp-items="@ViewBag.IdPrestacion" data-container=".modal-body" class="form-control kt-selectpicker" data-live-search="true" title="== Prestacion ==">
                             </select>
                         </div>
-                       
-                        <div class="col-md-2">
+
+                        <div class="col-md-1">
                             <select name="IdPieza" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.PiezaEnum>()" data-container=".modal-body" class="form-control kt-selectpicker" data-live-search="true" title="== Pieza ==">
                             </select>
                         </div>
 
-                        <div class="col-md-3">
-                            <input name="Caras" type="text" class="form-control tags"  style="text-align: center">
+                        <div class="col-md-2">
+                            <input name="Caras" type="text" class="form-control tags" style="text-align: center">
+                        </div>
+
+                        <div class="col-md-4">
+                            <textarea name="Observaciones" type="text" class="form-control" style="height: calc(1.5em + 1.3rem + 2px);"></textarea>
                         </div>
 
                         <div class="col-md-1">

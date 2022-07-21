@@ -32,6 +32,9 @@ namespace netCoreNew.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FechaString")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("IdEstadoAtencion")
                         .HasColumnType("int");
 

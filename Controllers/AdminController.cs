@@ -763,7 +763,7 @@ namespace netCoreNew.Controllers
 
             return PartialView("_ModalAtencion", new Atencion
             {
-                Fecha = CurrentDate,
+                FechaString = CurrentDate.ToShortDateString(),
                 IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id
             }) ;
         }
@@ -793,7 +793,7 @@ namespace netCoreNew.Controllers
                 //TODO: ARMAR RULO DE TOMAR PRECIOS PARTICULARES IF CHECJBOX PARTICULAR == TRUE
                 model.MontoEfectivo += prestaciones.Where(y => y.Id == item.IdPrestacion).FirstOrDefault().Precios.Where(c => c.IdObraSocial == obraSocialPaciente).Sum(x => x.CoseguroPesos);
                 model.MontoOS += prestaciones.Where(y => y.Id == item.IdPrestacion).FirstOrDefault().Precios.Where(c => c.IdObraSocial == obraSocialPaciente).Sum(x => x.PrecioPesos);
-                
+                model.Fecha = DateTime.ParseExact(model.FechaString, "dd/MM/yyyy", null);
             }           
 
             atencionService.Add(model);

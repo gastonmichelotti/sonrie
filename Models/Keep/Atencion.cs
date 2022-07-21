@@ -17,6 +17,8 @@ namespace netCoreNew.Models
 
         public DateTime Fecha { get; set; }
 
+        public string FechaString { get; set; }
+
         public int IdPaciente { get; set; }
         [ForeignKey("IdPaciente")]
         public Paciente Paciente { get; set; }
