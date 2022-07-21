@@ -763,7 +763,7 @@ namespace netCoreNew.Controllers
 
             return PartialView("_ModalAtencion", new Atencion
             {
-                FechaString = CurrentDate.ToShortDateString(),
+                FechaString = CurrentDate.ToString("dd/MM/yyyy"),
                 IdUsuario = usuarioService.GetByEmail(User.Identity.Name).Id
             }) ;
         }
@@ -875,6 +875,7 @@ namespace netCoreNew.Controllers
             atencion.IdFormadePago = model.IdFormadePago;
             atencion.IdUsuario = model.IdUsuario;
             atencion.IdEstadoAtencion = model.IdEstadoAtencion;
+            atencion.Fecha = DateTime.ParseExact(model.FechaString, "dd/MM/yyyy", null);
 
             atencionService.Edit(atencion);
 
