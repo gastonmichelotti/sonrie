@@ -74,6 +74,7 @@
             background-clip: padding-box;
             border: 1px solid #e2e5ec;
             border-radius: 4px;
+            box-shadow: none;
         }
 
         .kt-error_container .kt-error_title > h1 {
@@ -100,6 +101,16 @@
             font-size: .8rem;
             line-height: 1.6rem;
         }
+
+        .sinsombra{
+            box-shadow: none;
+        }
+
+        .check_center {
+            display: flex;
+            justify-content: space-around;
+        }
+
     </style>
 
     @RenderSection("styles", required: false)
@@ -481,11 +492,11 @@
 
             $("#btn_modal_nuevo_2").hide();
 
-            @*$('.tags').each(function () {
+            $('.tags').each(function () {
 
                 $(this).tagsinput();
 
-            });*@
+            });
 
             $('.select2Simple').each(function () {
                 $(this).select2({
@@ -622,15 +633,16 @@
                             $(this).selectpicker('refresh');
                         });
 
-                        //Me falta inicializar el 
+                        
                         if ($("#Id").val() != 0) {
                         }
 
-                        //TODO-GASTON: Ver esto del tags imput che culiado
-                        $('.tags').each(function () {
+                        
+
+                        $('.tags_repeater').each(function () {
 
                             $(this).tagsinput();
-
+                            $(this).addClass("sinsombra");
                         });
                     },
 

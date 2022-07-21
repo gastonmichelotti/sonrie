@@ -69,11 +69,11 @@
                     Pieza
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-3">
                     Cara/s
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     Obs.
                 </div>
 
@@ -99,20 +99,20 @@
                         </div>
 
                         <div class="col-md-1">
-                            <select name="IdPieza" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.PiezaEnum>()" data-container=".modal-body" class="form-control kt-selectpicker" data-live-search="true" title="== Pieza ==">
+                            <select name="IdPieza" asp-items="Html.GetEnumSelectList<netCoreNew.Enum.Valores.PiezaEnum>()" data-container=".modal-body" class="form-control kt-selectpicker" data-live-search="true" title="Pieza">
                             </select>
                         </div>
 
-                        <div class="col-md-2">
-                            <input name="Caras" type="text" class="form-control tags" style="text-align: center">
+                        <div class="col-md-3">
+                            <input name="Caras" type="text" class="form-control tags_repeater"/>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <textarea name="Observaciones" type="text" class="form-control" style="height: calc(1.5em + 1.3rem + 2px);"></textarea>
                         </div>
 
-                        <div class="col-md-1">
-                            <input name="Particular" type="checkbox" class="" title="Particular" value="true">
+                        <div class="col-md-1 check_center" display="flex">
+                            <input name="Particular" type="checkbox" title="Particular" value="true">
                         </div>
 
                         <div class="col-md-1">
