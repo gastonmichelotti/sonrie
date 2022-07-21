@@ -36,12 +36,31 @@
         <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
             <ul class="kt-menu__nav">
 
+                <li class="kt-menu__item" aria-haspopup="true" id="menu_pacientes">
+                    <a href="/Admin/Pacientes" class="kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <i class="la la-user"></i>
+                        </span>
+                        <span class="kt-menu__link-text pacientelabel pl-2" style="color: white; border-radius: 5px;font-weight: 400;">Pacientes</span>
+                    </a>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" id="menu_atenciones">
+                    <a href="/Admin/Atenciones" class="kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <i class="la la-book"></i>
+                        </span>
+                        <span class="kt-menu__link-text atencionlabel pl-2" style="color: white; border-radius: 5px; font-weight: 400;">Atenciones</span>
+
+                    </a>
+                </li>
+
                 <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" id="menu_configuraciones">
                     <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
                         <span class="kt-menu__link-icon">
                             <i class="la la-gear"></i>
                         </span>
-                        <span class="kt-menu__link-text">Configuraciones</span><i class="kt-menu__ver-arrow la la-angle-right"></i>
+                        <span class="kt-menu__link-text configuracionlabel labelg pl-2">Configuraciones</span><i class="kt-menu__ver-arrow la la-angle-right"></i>
                     </a>
                     <div class="kt-menu__submenu">
                         <span class="kt-menu__arrow"></span>
@@ -60,10 +79,6 @@
                                         <span class="kt-menu__link-text">Roles</span>
                                     </a>
                                 </li>
-
-
-
-
 
                                 <li class="kt-menu__item" aria-haspopup="true" id="menu_obrasSociales">
                                     <a href="/Admin/Usuarios" class="kt-menu__link">
@@ -98,18 +113,6 @@
 
                         </ul>
                     </div>
-                </li>
-
-                <li class="kt-menu__item" aria-haspopup="true" id="menu_pacientes">
-                    <a href="/Admin/Pacientes" class="kt-menu__link">
-                        <span class="kt-menu__link-text pacientelabel" style="color: white; border-radius: 5px; padding-left: 9px; font-weight: 400;">Pacientes</span>
-                    </a>
-                </li>
-
-                <li class="kt-menu__item" aria-haspopup="true" id="menu_atenciones">
-                    <a href="/Admin/Atenciones" class="kt-menu__link">
-                        <span class="kt-menu__link-text atencionlabel" style="color: white; border-radius: 5px; padding-left: 9px; font-weight: 400;">Atenciones</span>
-                    </a>
                 </li>
 
 
