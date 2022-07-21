@@ -24,6 +24,9 @@
     <Content Remove="wwwroot\files\Recuentos\**" />
     <EmbeddedResource Remove="wwwroot\files\Recuentos\**" />
     <None Remove="wwwroot\files\Recuentos\**" />
+    <Content Remove="wwwroot\favicon.png" />
+    <Content Remove="wwwroot\logoLogin.png" />
+    <Content Remove="wwwroot\logomenu.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Business\CodigoProveedorService.cs" />
@@ -123,6 +126,9 @@
     <None Include="wwwroot\admin\vendors\bootstrap4-editable\img\loading.gif" />
     <None Include="wwwroot\admin\vendors\bootstrap4-editable\js\bootstrap-editable.js" />
     <None Include="wwwroot\admin\vendors\bootstrap4-editable\js\bootstrap-editable.min.js" />
+    <None Include="wwwroot\favicon.png" />
+    <None Include="wwwroot\logoLogin.png" />
+    <None Include="wwwroot\logomenu.png" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

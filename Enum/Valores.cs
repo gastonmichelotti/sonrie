@@ -6,7 +6,7 @@ namespace netCoreNew.Enum
     public static class Valores
     {
         public static string
-            Nombre = "Intelmec",
+            Nombre = "Sonríe Odontología",
             Slogan = "",
             Url = "",
             Descripcion = "",
