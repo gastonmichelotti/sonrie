@@ -1150,7 +1150,7 @@ namespace netCoreNew.Controllers
             result.ItemsLoad = JsonConvert.SerializeObject(insumoxCategoriaService.GetList(c => c.IdCategoriaPrestacion == id).Select(c => new
             {
                 IdInsumo = c.IdInsumo,
-                Cantidad = c.Cantidad
+                Cantidad = c.Cantidad.ToString().Replace('.', ',')//control de punto y coma para que el front siempre trabaje con coma y evito error de siempre
             }));
 
             return PartialView("_ModalCategoriaPrestacion", result);
